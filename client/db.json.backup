@@ -1,0 +1,417 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "role": "admin",
+      "username": "admin",
+      "password": "admin@123",
+      "name": "Admin"
+    },
+    {
+      "id": "2",
+      "role": "supervisor",
+      "username": "ward5sup",
+      "password": "ward5@123",
+      "name": "Ward 5 Supervisor"
+    },
+    {
+      "id": "3",
+      "role": "supervisor",
+      "username": "ward3sup",
+      "password": "ward3@123",
+      "name": "Ward 3 Supervisor"
+    },
+    {
+      "id": "4",
+      "role": "supervisor",
+      "username": "ward12sup",
+      "password": "ward12@123",
+      "name": "Ward 12 Supervisor"
+    },
+    {
+      "id": "5",
+      "role": "admin",
+      "username": "admin2",
+      "password": "admin@456",
+      "name": "System Admin"
+    }
+  ],
+  "citizens": [
+    {
+      "id": "1",
+      "phone": "9999999999"
+    },
+    {
+      "id": "2",
+      "phone": "9888888888"
+    },
+    {
+      "id": "3",
+      "phone": "9777777777"
+    },
+    {
+      "id": "4",
+      "phone": "9666666666"
+    },
+    {
+      "id": "5",
+      "phone": "9555555555"
+    },
+    {
+      "id": "6",
+      "phone": "9444444444"
+    },
+    {
+      "id": "7",
+      "phone": "9333333333"
+    },
+    {
+      "id": "8",
+      "phone": "9222222222"
+    },
+    {
+      "id": "9",
+      "phone": "9111111111"
+    },
+    {
+      "id": "10",
+      "phone": "9000000000"
+    }
+  ],
+  "vehicles": [
+    {
+      "id": "1",
+      "number": "OD-07-GT-1023",
+      "driver": "Ramesh",
+      "ward": "Ward 5",
+      "status": "Active"
+    },
+    {
+      "id": "2",
+      "number": "OD-07-GT-1048",
+      "driver": "Suresh",
+      "ward": "Ward 12",
+      "status": "Inactive"
+    },
+    {
+      "id": "3",
+      "number": "OD-07-GT-1099",
+      "driver": "Mahesh",
+      "ward": "Ward 3",
+      "status": "Maintenance"
+    },
+    {
+      "id": "4",
+      "number": "OD-07-GT-1101",
+      "driver": "Amit",
+      "ward": "Ward 7",
+      "status": "Active"
+    },
+    {
+      "id": "5",
+      "number": "OD-07-GT-1102",
+      "driver": "Sunil",
+      "ward": "Ward 9",
+      "status": "Active"
+    },
+    {
+      "id": "6",
+      "number": "OD-07-GT-1103",
+      "driver": "Raju",
+      "ward": "Ward 1",
+      "status": "Inactive"
+    },
+    {
+      "id": "7",
+      "number": "OD-07-GT-1104",
+      "driver": "Manoj",
+      "ward": "Ward 11",
+      "status": "Active"
+    },
+    {
+      "id": "8",
+      "number": "OD-07-GT-1105",
+      "driver": "Bikash",
+      "ward": "Ward 8",
+      "status": "Maintenance"
+    },
+    {
+      "id": "9",
+      "number": "OD-07-GT-1106",
+      "driver": "Santosh",
+      "ward": "Ward 6",
+      "status": "Active"
+    },
+    {
+      "id": "10",
+      "number": "OD-07-GT-1107",
+      "driver": "Niranjan",
+      "ward": "Ward 4",
+      "status": "Active"
+    }
+  ],
+  "complaints": [
+    {
+      "id": "1",
+      "title": "Garbage not collected",
+      "ward": "Ward 3",
+      "status": "pending",
+      "image": ""
+    },
+    {
+      "id": "2",
+      "title": "Overflowing dustbin",
+      "ward": "Ward 5",
+      "status": "pending",
+      "image": ""
+    },
+    {
+      "id": "3",
+      "title": "Missed pickup",
+      "ward": "Ward 12",
+      "status": "Resolved",
+      "image": ""
+    },
+    {
+      "id": "4",
+      "title": "Illegal dumping",
+      "ward": "Ward 7",
+      "status": "Pending",
+      "image": ""
+    },
+    {
+      "id": "5",
+      "title": "Bad odor issue",
+      "ward": "Ward 9",
+      "status": "In Progress",
+      "image": ""
+    },
+    {
+      "id": "6",
+      "title": "Broken dustbin",
+      "ward": "Ward 1",
+      "status": "Resolved",
+      "image": ""
+    },
+    {
+      "id": "7",
+      "title": "Garbage vehicle delay",
+      "ward": "Ward 11",
+      "status": "Pending",
+      "image": ""
+    },
+    {
+      "id": "8",
+      "title": "No door collection",
+      "ward": "Ward 8",
+      "status": "Resolved",
+      "image": ""
+    },
+    {
+      "id": "9",
+      "title": "Waste burning",
+      "ward": "Ward 6",
+      "status": "Pending",
+      "image": ""
+    },
+    {
+      "id": "10",
+      "title": "Overflow near market",
+      "ward": "Ward 4",
+      "status": "In Progress",
+      "image": ""
+    }
+  ],
+  "attendance": [
+    {
+      "id": "1",
+      "staff": "Suresh",
+      "role": "Driver",
+      "ward": "Ward 12",
+      "status": "Present",
+      "checkIn": "06:45 AM",
+      "checkOut": "02:30 PM",
+      "method": "GPS"
+    },
+    {
+      "id": "2",
+      "staff": "Ramesh",
+      "role": "Driver",
+      "ward": "Ward 5",
+      "status": "Present",
+      "checkIn": "06:50 AM",
+      "checkOut": "02:40 PM",
+      "method": "Biometric"
+    },
+    {
+      "id": "3",
+      "staff": "Mahesh",
+      "role": "Helper",
+      "ward": "Ward 3",
+      "status": "Absent",
+      "checkIn": "-",
+      "checkOut": "-",
+      "method": "-"
+    },
+    {
+      "id": "4",
+      "staff": "Amit",
+      "role": "Driver",
+      "ward": "Ward 7",
+      "status": "Leave",
+      "checkIn": "-",
+      "checkOut": "-",
+      "method": "Leave"
+    },
+    {
+      "id": "5",
+      "staff": "Sunil",
+      "role": "Helper",
+      "ward": "Ward 9",
+      "status": "Present",
+      "checkIn": "07:05 AM",
+      "checkOut": "03:15 PM",
+      "method": "GPS"
+    },
+    {
+      "id": "6",
+      "staff": "Raju",
+      "role": "Driver",
+      "ward": "Ward 1",
+      "status": "Absent",
+      "checkIn": "-",
+      "checkOut": "-",
+      "method": "-"
+    },
+    {
+      "id": "7",
+      "staff": "Manoj",
+      "role": "Helper",
+      "ward": "Ward 11",
+      "status": "Present",
+      "checkIn": "06:55 AM",
+      "checkOut": "02:50 PM",
+      "method": "Biometric"
+    },
+    {
+      "id": "8",
+      "staff": "Bikash",
+      "role": "Driver",
+      "ward": "Ward 8",
+      "status": "Leave",
+      "checkIn": "-",
+      "checkOut": "-",
+      "method": "Leave"
+    },
+    {
+      "id": "9",
+      "staff": "Santosh",
+      "role": "Helper",
+      "ward": "Ward 6",
+      "status": "Present",
+      "checkIn": "07:10 AM",
+      "checkOut": "03:00 PM",
+      "method": "GPS"
+    },
+    {
+      "id": "10",
+      "staff": "Niranjan",
+      "role": "Driver",
+      "ward": "Ward 4",
+      "status": "Present",
+      "checkIn": "06:40 AM",
+      "checkOut": "02:20 PM",
+      "method": "Biometric"
+    }
+  ],
+  "queueFulfillment": [
+    {
+      "id": "QF-2025-001",
+      "category": "MCC",
+      "cube": "Cube-01",
+      "status": "Pending",
+      "date": "24 Jul 2025",
+      "supervisor": "Ramesh Kumar"
+    },
+    {
+      "id": "QF-2025-002",
+      "category": "MRF",
+      "cube": "Cube-02",
+      "status": "Verified",
+      "date": "24 Jul 2025",
+      "supervisor": "Ramesh Kumar"
+    },
+    {
+      "id": "QF-2025-003",
+      "category": "MCC",
+      "cube": "Cube-03",
+      "status": "Fulfilled",
+      "date": "23 Jul 2025",
+      "supervisor": "Mahesh Patra"
+    },
+    {
+      "id": "QF-2025-004",
+      "category": "MRF",
+      "cube": "Cube-04",
+      "status": "Pending",
+      "date": "23 Jul 2025",
+      "supervisor": "Suresh Das"
+    },
+    {
+      "id": "QF-2025-005",
+      "category": "MCC",
+      "cube": "Cube-05",
+      "status": "Verified",
+      "date": "22 Jul 2025",
+      "supervisor": "Amit Nayak"
+    },
+    {
+      "id": "QF-2025-006",
+      "category": "MRF",
+      "cube": "Cube-06",
+      "status": "Fulfilled",
+      "date": "22 Jul 2025",
+      "supervisor": "Sunil Kumar"
+    },
+    {
+      "id": "QF-2025-007",
+      "category": "MCC",
+      "cube": "Cube-07",
+      "status": "Pending",
+      "date": "21 Jul 2025",
+      "supervisor": "Raju Das"
+    },
+    {
+      "id": "QF-2025-008",
+      "category": "MRF",
+      "cube": "Cube-08",
+      "status": "Verified",
+      "date": "21 Jul 2025",
+      "supervisor": "Manoj Behera"
+    },
+    {
+      "id": "QF-2025-009",
+      "category": "MCC",
+      "cube": "Cube-09",
+      "status": "Fulfilled",
+      "date": "20 Jul 2025",
+      "supervisor": "Bikash Rout"
+    },
+    {
+      "id": "QF-2025-010",
+      "category": "MRF",
+      "cube": "Cube-10",
+      "status": "Pending",
+      "date": "20 Jul 2025",
+      "supervisor": "Santosh Mishra"
+    },
+    {
+      "id": "QF-2026-011",
+      "category": "MCC",
+      "cube": "Cube-01",
+      "status": "Pending",
+      "date": "02 Jan 2026",
+      "supervisor": "Ramesh Kumar"
+    }
+  ]
+}
