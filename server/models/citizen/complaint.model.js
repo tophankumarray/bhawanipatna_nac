@@ -25,7 +25,7 @@ const complaintSchema = new mongoose.Schema(
     },
 
     category: {
-      type: String,
+      type: [String],
       required: true,
       enum: [
         "Illegal Dumping of C & D Waste",

@@ -25,6 +25,7 @@ export const createComplaint = async (req, res) => {
       data: complaint,
     });
   } catch (error) {
+    console.error("Create complaint error:", error);
     res.status(500).json({
       success: false,
       message: "Failed to submit complaint",
