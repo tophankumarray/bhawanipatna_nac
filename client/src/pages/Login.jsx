@@ -20,6 +20,8 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showNotice, setShowNotice] = useState(true);
+  const [generatedOtp, setGeneratedOtp] = useState("");
+
 
   const wasteCategories = [
     { name: "PAPER", color: "bg-blue-500", icon: "📄" },
@@ -59,6 +61,10 @@ const Login = () => {
       console.error("Failed to ensure citizen exists", error);
     }
   };
+  const generateOtp = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
 
   // -------- citizen login --------
 
@@ -67,11 +73,19 @@ const Login = () => {
       alert("Phone number must be 10 digits");
       return;
     }
-    setShowOtpInput(true);
+    // setShowOtpInput(true);
+
+    const otp = generateOtp();
+  setGeneratedOtp(otp);
+  setShowOtpInput(true);
+
+  // DEMO PURPOSE ONLY
+  console.log("Generated OTP:", otp);
+  toast.info(`Demo OTP: ${otp}`);
   };
 
   const handleVerifyOtp = async () => {
-    if (otp === "123456") {
+    if (otp === generatedOtp) {
       await ensureCitizenExists(phone);
 
       await saveLoginLog({
@@ -91,7 +105,7 @@ const Login = () => {
         username: null,
         status: "failed"
       });
-      alert("Invalid OTP");
+      toast.error("Invalid OTP");
     }
   };
 
@@ -349,7 +363,7 @@ const Login = () => {
                     />
                     <p className="text-xs text-center text-gray-500 mt-2">
                       Demo OTP:{" "}
-                      <span className="font-bold text-emerald-600">123456</span>
+                      <span className="font-bold text-emerald-600">{generatedOtp}</span>
                     </p>
                     <button
                       onClick={handleVerifyOtp}

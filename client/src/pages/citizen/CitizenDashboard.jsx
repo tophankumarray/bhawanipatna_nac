@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useEffect, useState } from "react";
-import api from "../../api/api";
+import api from "../../api/api.js";
 export default function CitizenDashboard() {
   const [stats, setStats] = useState({
     total: 0,
