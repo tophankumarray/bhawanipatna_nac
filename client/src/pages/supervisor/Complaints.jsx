@@ -98,7 +98,11 @@ const Complaints = () => {
     setComplaints((prev) =>
       prev.map((c) =>
         c.id === id
-          ? { ...c, status: newStatus, updatedAt: new Date().toLocaleTimeString() }
+          ? {
+              ...c,
+              status: newStatus,
+              updatedAt: new Date().toLocaleTimeString(),
+            }
           : c
       )
     );
@@ -127,27 +131,24 @@ const Complaints = () => {
 
   return (
     <div className="space-y-6">
-
       {/* HEADER */}
       <div>
-        <h2 className="text-2xl font-semibold">
-          Citizen Complaint Management
-        </h2>
+        <h2 className="text-2xl font-semibold">Citizen Complaint Management</h2>
         <p className="text-sm text-gray-500">
           Supervisor resolution & monitoring (ICT Compliant)
         </p>
       </div>
 
       {/* FILTER BUTTONS */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 flex-wrap">
         {FILTERS.map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
             className={`px-4 py-2 rounded-full text-sm border transition ${
               filter === f
-                ? "bg-green-600 text-white"
-                : "bg-white text-gray-600 hover:bg-gray-100"
+                ? "bg-green-600 text-white border-green-600"
+                : "bg-white text-gray-600 hover:bg-gray-100 border-gray-300"
             }`}
           >
             {f}
@@ -155,21 +156,24 @@ const Complaints = () => {
         ))}
       </div>
 
-      {/* TABLE */}
-      <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
+      {/* ================= DESKTOP TABLE VIEW ================= */}
+      <div className="hidden md:block bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm border-collapse border border-gray-300">
             <thead className="bg-gray-50 sticky top-0 z-10">
               <tr className="text-gray-600 uppercase text-xs tracking-wide">
                 {TABLE_HEADERS.map((h) => (
-                  <th key={h} className="px-5 py-4">
+                  <th
+                    key={h}
+                    className="px-5 py-4 text-left border border-gray-300"
+                  >
                     {h}
                   </th>
                 ))}
               </tr>
             </thead>
 
-            <tbody className="divide-y">
+            <tbody>
               {filteredComplaints.map((c) => {
                 const breached = isSLABreached(c.sla, c.status);
                 const nextStatuses = STATUS_FLOW[c.status] || [];
@@ -181,26 +185,40 @@ const Complaints = () => {
                       breached ? "bg-red-50" : ""
                     }`}
                   >
-                    <td className="px-5 py-4 font-medium">{c.id}</td>
+                    <td className="px-5 py-4 font-medium border border-gray-300">
+                      {c.id}
+                    </td>
 
-                    <td className="px-5 py-4">
+                    <td className="px-5 py-4 border border-gray-300">
                       <img
                         src={c.image}
                         onClick={() => setPreview(c.image)}
                         className="w-14 h-14 rounded-lg object-cover border cursor-pointer"
+                        alt="complaint"
                       />
                     </td>
 
-                    <td className="px-5 py-4">{c.ward}</td>
-                    <td className="px-5 py-4">{c.type}</td>
+                    <td className="px-5 py-4 border border-gray-300">
+                      {c.ward}
+                    </td>
 
-                    <td className={`px-5 py-4 ${PRIORITY_COLOR[c.priority?.toLowerCase()]}`}>
+                    <td className="px-5 py-4 border border-gray-300">
+                      {c.type}
+                    </td>
+
+                    <td
+                      className={`px-5 py-4 border border-gray-300 ${
+                        PRIORITY_COLOR[c.priority?.toLowerCase()]
+                      }`}
+                    >
                       {c.priority}
                     </td>
 
-                    <td className="px-5 py-4">{c.vehicle}</td>
+                    <td className="px-5 py-4 border border-gray-300">
+                      {c.vehicle}
+                    </td>
 
-                    <td className="px-5 py-4">
+                    <td className="px-5 py-4 border border-gray-300">
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-semibold ${
                           STATUS_COLOR[c.status?.toLowerCase()]
@@ -210,7 +228,7 @@ const Complaints = () => {
                       </span>
                     </td>
 
-                    <td className="px-5 py-4 text-xs">
+                    <td className="px-5 py-4 text-xs border border-gray-300">
                       {breached ? (
                         <span className="text-red-600 font-semibold">
                           SLA Breached
@@ -220,7 +238,7 @@ const Complaints = () => {
                       )}
                     </td>
 
-                    <td className="px-5 py-4">
+                    <td className="px-5 py-4 border border-gray-300">
                       <button
                         onClick={() => setMapView(c.location)}
                         className="text-green-600 text-xs font-medium hover:underline"
@@ -229,14 +247,12 @@ const Complaints = () => {
                       </button>
                     </td>
 
-                    <td className="px-5 py-4">
+                    <td className="px-5 py-4 border border-gray-300">
                       {nextStatuses.length ? (
                         <select
                           defaultValue=""
-                          onChange={(e) =>
-                            updateStatus(c.id, e.target.value)
-                          }
-                          className="border rounded-lg px-3 py-1 text-xs"
+                          onChange={(e) => updateStatus(c.id, e.target.value)}
+                          className="border border-gray-300 rounded-lg px-3 py-1 text-xs"
                         >
                           <option value="" disabled>
                             Update
@@ -259,11 +275,114 @@ const Complaints = () => {
         </div>
       </div>
 
+      {/* ================= MOBILE CARD VIEW ================= */}
+      <div className="md:hidden space-y-4">
+        {filteredComplaints.map((c) => {
+          const breached = isSLABreached(c.sla, c.status);
+          const nextStatuses = STATUS_FLOW[c.status] || [];
+
+          return (
+            <div
+              key={c.id}
+              className={`bg-white rounded-xl shadow p-4 border space-y-3 ${
+                breached ? "border-red-300 bg-red-50" : "border-gray-200"
+              }`}
+            >
+              {/* Top Row */}
+              <div className="flex justify-between items-start gap-3">
+                <div>
+                  <p className="text-xs text-gray-500">Complaint ID</p>
+                  <h3 className="font-semibold text-gray-800">#{c.id}</h3>
+                </div>
+
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                    STATUS_COLOR[c.status?.toLowerCase()]
+                  }`}
+                >
+                  {c.status}
+                </span>
+              </div>
+
+              {/* Photo + Details */}
+              <div className="flex gap-3">
+                <img
+                  src={c.image}
+                  onClick={() => setPreview(c.image)}
+                  className="w-20 h-20 rounded-lg object-cover border cursor-pointer"
+                  alt="complaint"
+                />
+
+                <div className="flex-1 space-y-1">
+                  <p className="text-sm font-medium text-gray-800">{c.type}</p>
+                  <p className="text-xs text-gray-500">Ward: {c.ward}</p>
+
+                  <p
+                    className={`text-xs ${
+                      PRIORITY_COLOR[c.priority?.toLowerCase()]
+                    }`}
+                  >
+                    Priority: {c.priority}
+                  </p>
+
+                  <p className="text-xs text-gray-500">
+                    Vehicle:{" "}
+                    <span className="font-medium text-gray-700">
+                      {c.vehicle}
+                    </span>
+                  </p>
+                </div>
+              </div>
+
+              {/* SLA + Route */}
+              <div className="flex justify-between items-center text-xs">
+                {breached ? (
+                  <span className="text-red-600 font-semibold">
+                    SLA Breached
+                  </span>
+                ) : (
+                  <span className="text-green-600 font-medium">On Time</span>
+                )}
+
+                <button
+                  onClick={() => setMapView(c.location)}
+                  className="text-green-600 font-medium hover:underline"
+                >
+                  View Route
+                </button>
+              </div>
+
+              {/* Action */}
+              <div className="flex justify-between items-center gap-2">
+                {nextStatuses.length ? (
+                  <select
+                    defaultValue=""
+                    onChange={(e) => updateStatus(c.id, e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs"
+                  >
+                    <option value="" disabled>
+                      Update Status
+                    </option>
+                    {nextStatuses.map((s) => (
+                      <option key={s}>{s}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <span className="text-xs text-green-600 font-semibold">
+                    Completed
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
       {/* IMAGE MODAL */}
       {preview && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
           <div className="bg-white p-4 rounded-xl shadow-xl">
-            <img src={preview} className="max-w-md rounded" />
+            <img src={preview} className="max-w-md rounded" alt="preview" />
             <button
               onClick={() => setPreview(null)}
               className="mt-3 w-full bg-green-600 text-white py-2 rounded"

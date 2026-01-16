@@ -31,6 +31,9 @@ import QueueFulfillment from "../pages/supervisor/QueueFulfillment";
 import SupervisorDashboard from "../pages/supervisor/SupervisorDashboard";
 import Vehicles from "../pages/supervisor/Vehicles";
 import Wards from "../pages/supervisor/Wards";
+import WealthCenter from "../pages/supervisor/WealthCenter";
+import MachineryDefect from "../pages/supervisor/MachineryDefect";
+import MoKhataDashboard from "../pages/supervisor/MoKhataDashboard";
 
 export default function AppRoutes() {
   return (
@@ -93,7 +96,10 @@ export default function AppRoutes() {
           <Route path="attendance" element={<Attendance />} />
           <Route path="analytics" element={<Analytics />} />
           <Route path="live-tracking" element={<TrackVehicle />} />
-          <Route path="queue-fulfillment" element={<QueueFulfillment />} />
+          {/* <Route path="queue-fulfillment" element={<QueueFulfillment />} /> */}
+          <Route path="/supervisor/wealthcenter" element={<WealthCenter/>}/>
+          <Route path="/supervisor/machinery-defect" element={<MachineryDefect />} />
+          <Route path="/supervisor/mokhata" element={<MoKhataDashboard />} />
         </Route>
 
       </Routes>

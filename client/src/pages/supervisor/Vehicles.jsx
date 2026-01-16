@@ -1,16 +1,25 @@
 // @ts-nocheck
 // src/pages/supervisor/Vehicles.jsx
 
-import { MapPin, Search, Truck, X } from "lucide-react";
+import {
+  MapPin,
+  Search,
+  Truck,
+  X,
+  CheckCircle,
+  XCircle,
+  Wrench,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import api from "../../api/api";
 
 /* ================= SUMMARY CONFIG ================= */
 
 const SUMMARY_CARDS = [
-  { title: "Total Vehicles", key: "total", color: "bg-blue-600" },
-  { title: "Active", key: "Active", color: "bg-green-600" },
-  { title: "Maintenance", key: "Maintenance", color: "bg-yellow-500" },
+  { title: "Total Vehicles", key: "total", color: "bg-blue-600", icon: Truck },
+  { title: "Active", key: "Active", color: "bg-green-600", icon: CheckCircle },
+  { title: "Inactive", key: "Inactive", color: "bg-red-600", icon: XCircle },
+  { title: "Maintenance", key: "Maintenance", color: "bg-yellow-500", icon: Wrench },
 ];
 
 /* ================= TABLE HEADERS ================= */
@@ -31,9 +40,9 @@ const TABLE_HEADERS = [
 /* ================= STATUS STYLES ================= */
 
 const STATUS_STYLES = {
-  Active: "bg-green-100 text-green-700",
-  Inactive: "bg-red-100 text-red-700",
-  Maintenance: "bg-yellow-100 text-yellow-800",
+  Active: "bg-green-100 text-green-700 border border-green-300",
+  Inactive: "bg-red-100 text-red-700 border border-red-300",
+  Maintenance: "bg-yellow-100 text-yellow-800 border border-yellow-300",
 };
 
 /* ================= VEHICLES PAGE ================= */
@@ -88,14 +97,14 @@ const Vehicles = () => {
   const summaryValues = {
     total: vehicles.length,
     Active: vehicles.filter((v) => v.status === "Active").length,
+    Inactive: vehicles.filter((v) => v.status === "Inactive").length,
     Maintenance: vehicles.filter((v) => v.status === "Maintenance").length,
   };
 
   return (
     <div className="space-y-8">
-
       {/* HEADER */}
-      <div className="bg-gradient-to-r from-green-600 to-emerald-500 text-white rounded-2xl p-6 shadow flex items-center gap-3">
+      <div className="bg-gradient-to-r from-green-600 to-emerald-500 text-white rounded-xl p-6 shadow flex items-center gap-3">
         <Truck size={28} />
         <div>
           <h2 className="text-2xl font-bold">Vehicle Management</h2>
@@ -105,20 +114,21 @@ const Vehicles = () => {
         </div>
       </div>
 
-      {/* SUMMARY */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      {/* SUMMARY CARDS */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {SUMMARY_CARDS.map((card) => (
           <SummaryCard
             key={card.title}
             title={card.title}
             value={summaryValues[card.key]}
             color={card.color}
+            icon={card.icon}
           />
         ))}
       </div>
 
       {/* SEARCH */}
-      <div className="bg-white rounded-xl shadow p-4 flex items-center gap-3">
+      <div className="bg-white rounded-xl shadow p-4 flex items-center gap-3 border border-gray-200">
         <Search size={18} className="text-gray-400" />
         <input
           type="text"
@@ -130,12 +140,15 @@ const Vehicles = () => {
       </div>
 
       {/* TABLE */}
-      <div className="bg-white rounded-xl shadow overflow-x-auto">
-        <table className="w-full text-sm">
+      <div className="bg-white rounded-xl shadow overflow-x-auto border border-gray-200">
+        <table className="w-full text-sm border-collapse">
           <thead className="bg-gray-100">
             <tr>
               {TABLE_HEADERS.map((h) => (
-                <th key={h} className="px-4 py-3 text-left">
+                <th
+                  key={h}
+                  className="px-4 py-3 text-left border border-gray-300 font-semibold"
+                >
                   {h}
                 </th>
               ))}
@@ -145,43 +158,51 @@ const Vehicles = () => {
           <tbody>
             {filteredVehicles.length === 0 ? (
               <tr>
-                <td colSpan={10} className="text-center py-8 text-gray-500">
+                <td
+                  colSpan={10}
+                  className="text-center py-8 text-gray-500 border border-gray-300"
+                >
                   No vehicles found
                 </td>
               </tr>
             ) : (
               filteredVehicles.map((v) => (
-                <tr key={v.id} className="border-b hover:bg-gray-50">
-                  <td className="px-4 py-3 font-medium">{v.number}</td>
-                  <td className="px-4 py-3">{v.type}</td>
-                  <td className="px-4 py-3">{v.ward}</td>
-                  <td className="px-4 py-3">{v.route}</td>
-                  <td className="px-4 py-3">{v.driver}</td>
+                <tr key={v.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-3 font-medium border border-gray-300">
+                    {v.number}
+                  </td>
+                  <td className="px-4 py-3 border border-gray-300">{v.type}</td>
+                  <td className="px-4 py-3 border border-gray-300">{v.ward}</td>
+                  <td className="px-4 py-3 border border-gray-300">{v.route}</td>
+                  <td className="px-4 py-3 border border-gray-300">{v.driver}</td>
 
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 border border-gray-300">
                     <Badge
                       value={v.gps}
                       color={
                         v.gps === "Online"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
+                          ? "bg-green-100 text-green-700 border border-green-300"
+                          : "bg-red-100 text-red-700 border border-red-300"
                       }
                     />
                   </td>
 
-                  <td className="px-4 py-3">
-                    <Badge value={v.trip} color="bg-blue-100 text-blue-700" />
+                  <td className="px-4 py-3 border border-gray-300">
+                    <Badge
+                      value={v.trip}
+                      color="bg-blue-100 text-blue-700 border border-blue-300"
+                    />
                   </td>
 
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 border border-gray-300">
                     <StatusBadge status={v.status} />
                   </td>
 
-                  <td className="px-4 py-3 text-xs text-gray-500">
+                  <td className="px-4 py-3 text-xs text-gray-500 border border-gray-300">
                     {v.updatedAt}
                   </td>
 
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 border border-gray-300">
                     <button
                       onClick={() => setSelectedVehicle(v)}
                       className="flex items-center gap-1 text-green-600 hover:underline text-xs"
@@ -212,7 +233,6 @@ const Vehicles = () => {
 const VehicleStatusModal = ({ vehicle, onClose }) => (
   <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
     <div className="bg-white rounded-2xl w-full max-w-md p-6 relative shadow-xl">
-
       <button
         onClick={onClose}
         className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
@@ -248,10 +268,18 @@ const VehicleStatusModal = ({ vehicle, onClose }) => (
 
 /* ================= REUSABLE ================= */
 
-const SummaryCard = ({ title, value, color }) => (
-  <div className={`rounded-xl p-5 text-white shadow ${color}`}>
-    <p className="text-sm opacity-90">{title}</p>
-    <h3 className="text-3xl font-bold mt-1">{value}</h3>
+const SummaryCard = ({ title, value, color, icon: Icon }) => (
+  <div
+    className={`w-full p-5 rounded-xl shadow text-white ${color} flex items-center justify-between`}
+  >
+    <div>
+      <p className="text-sm opacity-90">{title}</p>
+      <h3 className="text-3xl font-bold mt-1">{value}</h3>
+    </div>
+
+    <div className="bg-white/20 p-3 rounded-xl">
+      <Icon size={28} />
+    </div>
   </div>
 );
 
