@@ -1,14 +1,15 @@
 // @ts-nocheck
 import { useEffect, useState } from "react";
 import api from "../../api/api";
+import { Users, UserCheck, UserX, CalendarOff } from "lucide-react";
 
 /* ================= CONFIG ================= */
 
 const SUMMARY_CONFIG = [
-  { title: "Total Staff", key: "total" },
-  { title: "Present", key: "Present", color: "text-green-600" },
-  { title: "Absent", key: "Absent", color: "text-red-600" },
-  { title: "On Leave", key: "Leave", color: "text-yellow-600" },
+  { title: "Total Staff", key: "total", color: "bg-blue-600", icon: Users },
+  { title: "Present", key: "Present", color: "bg-green-600", icon: UserCheck },
+  { title: "Absent", key: "Absent", color: "bg-red-600", icon: UserX },
+  { title: "On Leave", key: "Leave", color: "bg-yellow-500", icon: CalendarOff },
 ];
 
 const TABLE_HEADERS = [
@@ -23,16 +24,16 @@ const TABLE_HEADERS = [
 ];
 
 const STATUS_STYLES = {
-  Present: "bg-green-100 text-green-700",
-  Absent: "bg-red-100 text-red-700",
-  Leave: "bg-yellow-100 text-yellow-800",
+  Present: "bg-green-100 text-green-700 border border-green-300",
+  Absent: "bg-red-100 text-red-700 border border-red-300",
+  Leave: "bg-yellow-100 text-yellow-800 border border-yellow-300",
 };
 
 const METHOD_STYLES = {
-  GPS: "bg-blue-100 text-blue-700",
-  Biometric: "bg-purple-100 text-purple-700",
-  Leave: "bg-yellow-100 text-yellow-700",
-  "-": "bg-gray-100 text-gray-500",
+  GPS: "bg-blue-100 text-blue-700 border border-blue-300",
+  Biometric: "bg-purple-100 text-purple-700 border border-purple-300",
+  Leave: "bg-yellow-100 text-yellow-700 border border-yellow-300",
+  "-": "bg-gray-100 text-gray-500 border border-gray-300",
 };
 
 /* ================= MAIN COMPONENT ================= */
@@ -87,7 +88,6 @@ const Attendance = () => {
 
   return (
     <div className="space-y-8">
-
       {/* HEADER */}
       <div>
         <h1 className="text-xl font-semibold text-gray-800">
@@ -98,25 +98,29 @@ const Attendance = () => {
         </p>
       </div>
 
-      {/* SUMMARY */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {/* SUMMARY CARDS (LIKE VEHICLES PAGE) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {SUMMARY_CONFIG.map((card) => (
           <SummaryCard
             key={card.title}
             title={card.title}
             value={summaryValues[card.key]}
             color={card.color}
+            icon={card.icon}
           />
         ))}
       </div>
 
-      {/* DESKTOP TABLE */}
-      <div className="hidden md:block bg-white rounded-xl shadow overflow-x-auto">
-        <table className="w-full text-sm">
+      {/* DESKTOP TABLE (FULL BORDER) */}
+      <div className="hidden md:block bg-white rounded-xl shadow overflow-x-auto border border-gray-200">
+        <table className="w-full text-sm border-collapse border border-gray-300">
           <thead className="bg-green-600 text-white">
             <tr>
               {TABLE_HEADERS.map((h) => (
-                <th key={h} className="px-4 py-3 text-left">
+                <th
+                  key={h}
+                  className="px-4 py-3 text-left border border-green-700"
+                >
                   {h}
                 </th>
               ))}
@@ -125,19 +129,21 @@ const Attendance = () => {
 
           <tbody>
             {staff.map((s) => (
-              <tr key={s.id} className="border-b hover:bg-gray-50">
-                <td className="px-4 py-3 font-medium">{s.name}</td>
-                <td className="px-4 py-3">{s.role}</td>
-                <td className="px-4 py-3">{s.ward}</td>
-                <td className="px-4 py-3">{s.checkIn}</td>
-                <td className="px-4 py-3">{s.checkOut}</td>
-                <td className="px-4 py-3">
+              <tr key={s.id} className="hover:bg-gray-50">
+                <td className="px-4 py-3 font-medium border border-gray-300">
+                  {s.name}
+                </td>
+                <td className="px-4 py-3 border border-gray-300">{s.role}</td>
+                <td className="px-4 py-3 border border-gray-300">{s.ward}</td>
+                <td className="px-4 py-3 border border-gray-300">{s.checkIn}</td>
+                <td className="px-4 py-3 border border-gray-300">{s.checkOut}</td>
+                <td className="px-4 py-3 border border-gray-300">
                   <MethodBadge method={s.method} />
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-3 border border-gray-300">
                   <StatusBadge status={s.status} />
                 </td>
-                <td className="px-4 py-3 text-xs text-gray-600">
+                <td className="px-4 py-3 text-xs text-gray-600 border border-gray-300">
                   {s.remarks}
                 </td>
               </tr>
@@ -151,7 +157,7 @@ const Attendance = () => {
         {staff.map((s) => (
           <div
             key={s.id}
-            className="bg-white rounded-xl shadow p-4 space-y-2"
+            className="bg-white rounded-xl shadow p-4 space-y-2 border border-gray-200"
           >
             <div className="flex justify-between items-center">
               <h3 className="font-semibold">{s.name}</h3>
@@ -169,9 +175,7 @@ const Attendance = () => {
 
             <div className="flex justify-between items-center">
               <MethodBadge method={s.method} />
-              <span className="text-xs text-gray-500">
-                {s.remarks}
-              </span>
+              <span className="text-xs text-gray-500">{s.remarks}</span>
             </div>
           </div>
         ))}
@@ -179,7 +183,7 @@ const Attendance = () => {
 
       {/* NOTE */}
       <p className="text-xs text-gray-500">
-        Attendance is captured via GPS / Biometric systems.  
+        Attendance is captured via GPS / Biometric systems.
         Supervisors can verify records but cannot modify entries.
       </p>
     </div>
@@ -188,10 +192,18 @@ const Attendance = () => {
 
 /* ================= REUSABLE COMPONENTS ================= */
 
-const SummaryCard = ({ title, value, color }) => (
-  <div className="bg-white rounded-xl shadow p-4">
-    <p className="text-xs text-gray-500">{title}</p>
-    <h3 className={`text-2xl font-bold ${color || ""}`}>{value}</h3>
+const SummaryCard = ({ title, value, color, icon: Icon }) => (
+  <div
+    className={`w-full p-5 rounded-xl shadow text-white ${color} flex items-center justify-between`}
+  >
+    <div>
+      <p className="text-sm opacity-90">{title}</p>
+      <h3 className="text-3xl font-bold mt-1">{value}</h3>
+    </div>
+
+    <div className="bg-white/20 p-3 rounded-xl">
+      <Icon size={28} />
+    </div>
   </div>
 );
 
@@ -207,7 +219,7 @@ const StatusBadge = ({ status }) => (
 
 const MethodBadge = ({ method }) => (
   <span
-    className={`px-3 py-1 rounded-full text-xs ${
+    className={`px-3 py-1 rounded-full text-xs font-medium ${
       METHOD_STYLES[method]
     }`}
   >

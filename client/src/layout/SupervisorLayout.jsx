@@ -10,6 +10,8 @@ import {
   Navigation,
   LogOut,
   ListChecks,
+  Landmark,
+  Wrench,
 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
@@ -28,11 +30,13 @@ const SupervisorLayout = () => {
     { name: "Complaints", path: "/supervisor/complaints", icon: <FileWarning size={18} /> },
     { name: "Attendance", path: "/supervisor/attendance", icon: <UserCheck size={18} /> },
     { name: "Analytics", path: "/supervisor/analytics", icon: <BarChart3 size={18} /> },
-    {
-      name: "Queue Fulfillment",
-      path: "/supervisor/queue-fulfillment",
-      icon: <ListChecks size={18} />,
-    },
+    // {
+    //   name: "Queue Fulfillment",
+    //   path: "/supervisor/queue-fulfillment",
+    //   icon: <ListChecks size={18} />,
+    // // },
+    { name: "Wealth Center", path: "/supervisor/wealthcenter", icon: <Landmark size={18} /> },
+    { name: "Machinery Defect", path: "/supervisor/machinery-defect", icon: <Wrench size={18} /> },
     { name: "Live Tracking", path: "/supervisor/live-tracking", icon: <Navigation size={18} /> },
   ];
 
@@ -52,7 +56,7 @@ const SupervisorLayout = () => {
 
       {/* ================= MOBILE TOP BAR ================= */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-40 
-        bg-gradient-to-r from-emerald-600 to-green-700
+        bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600
         shadow px-4 py-3 flex items-center justify-between text-white">
         <div className="flex items-center gap-2">
           <img src={LOGO} className="h-8 w-8 rounded-full bg-white p-1" />
@@ -67,7 +71,7 @@ const SupervisorLayout = () => {
       {open && (
         <div className="fixed inset-0 z-50 bg-black/40">
           <aside className="w-64 
-            bg-gradient-to-b from-emerald-600 to-green-700 
+            bg-gradient-to-b from-emerald-400 via-emerald-500 to-teal-500
             h-full shadow-lg p-4 flex flex-col text-white">
             
             <div className="flex items-center justify-between mb-6">
@@ -111,7 +115,7 @@ const SupervisorLayout = () => {
 
       {/* ================= DESKTOP SIDEBAR ================= */}
       <aside className="hidden md:flex w-64 
-        bg-gradient-to-b from-emerald-600 to-green-700
+        bg-gradient-to-b from-emerald-400 via-emerald-500 to-teal-500
         shadow flex-col fixed left-0 top-0 h-screen text-white">
 
         <div className="px-6 py-5 border-b border-white/20 flex items-center gap-3">
@@ -146,7 +150,7 @@ const SupervisorLayout = () => {
 
       {/* ================= TOP HEADER ================= */}
       <header className="hidden md:flex fixed top-0 left-64 right-0 h-20 
-        bg-white border-b z-40 items-center justify-end px-6 bg-gradient-to-r from-emerald-600 to-green-500">
+        bg-white border-b z-40 items-center justify-end px-6 bg-gradient-to-b from-emerald-400 via-emerald-500 to-teal-700">
         <button
           onClick={handleLogout}
           className="flex items-center gap-2 
