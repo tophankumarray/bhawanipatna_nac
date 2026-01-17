@@ -28,8 +28,8 @@ export const createComplaint = async (req, res) => {
     console.error("Create complaint error:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to submit complaint",
-      error: error.message,
+      message: error.message,
+      
     });
   }
 };

@@ -86,7 +86,7 @@ export default function CitizenDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 p-6">
+    <div className=" rounded-3xl">
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-4xl font-extrabold text-green-700">
