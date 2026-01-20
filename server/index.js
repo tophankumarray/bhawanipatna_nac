@@ -3,8 +3,9 @@ import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./utils/db.js";
 import complaintRoutes from "./routes/complaint.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
 
-
+dotenv.config({ path: ".env" });
 
 const app = express();
 
@@ -12,7 +13,7 @@ const app = express();
 connectDB();
 
 
-dotenv.config({ path: ".env" });
+
 
 
 
@@ -33,6 +34,7 @@ app.get("/", (req, res) => {
 
 // Routes
 app.use("/api/complaints", complaintRoutes);
+app.use("/api/admin", adminRoutes);
 
 
 
