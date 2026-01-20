@@ -191,7 +191,7 @@ const Vehicles = () => {
   return (
     <div className="space-y-8">
       {/* HEADER */}
-      <div className="bg-gradient-to-r from-green-600 to-emerald-500 text-white rounded-xl p-6 shadow flex items-center justify-between gap-3">
+      <div className="bg-gradient-to-r from-green-600 to-emerald-500 text-white rounded-xl p-6 shadow flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex items-center gap-3">
           <Truck size={28} />
           <div>
@@ -203,7 +203,7 @@ const Vehicles = () => {
         </div>
 
         {/* ✅ DOWNLOAD BUTTONS */}
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3 justify-start md:justify-end">
           <button
             onClick={handleDownloadPDF}
             className="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm font-semibold"
@@ -245,8 +245,8 @@ const Vehicles = () => {
         />
       </div>
 
-      {/* TABLE */}
-      <div className="bg-white rounded-xl shadow overflow-x-auto border border-gray-200">
+      {/* ================= DESKTOP TABLE ================= */}
+      <div className="hidden md:block bg-white rounded-xl shadow overflow-x-auto border border-gray-200">
         <table className="w-full text-sm border-collapse">
           <thead className="bg-gray-100">
             <tr>
@@ -323,6 +323,87 @@ const Vehicles = () => {
         </table>
       </div>
 
+      {/* ================= MOBILE VIEW (CARDS) ================= */}
+      <div className="md:hidden space-y-4">
+        {filteredVehicles.length === 0 ? (
+          <div className="bg-white rounded-xl shadow border border-gray-200 p-6 text-center text-gray-500">
+            No vehicles found
+          </div>
+        ) : (
+          filteredVehicles.map((v) => (
+            <div
+              key={v.id}
+              className="bg-white rounded-2xl shadow border border-gray-200 p-5"
+            >
+              {/* Top */}
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs text-gray-500 font-semibold">
+                    Vehicle No
+                  </p>
+                  <h3 className="text-xl font-bold text-gray-800">
+                    {v.number}
+                  </h3>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Last Update: {v.updatedAt}
+                  </p>
+                </div>
+
+                <StatusBadge status={v.status} />
+              </div>
+
+              {/* Details */}
+              <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                <div className="bg-gray-50 rounded-xl p-3 border">
+                  <p className="text-xs text-gray-500 font-semibold">Type</p>
+                  <p className="font-bold text-gray-800">{v.type}</p>
+                </div>
+
+                <div className="bg-gray-50 rounded-xl p-3 border">
+                  <p className="text-xs text-gray-500 font-semibold">Ward</p>
+                  <p className="font-bold text-gray-800">{v.ward}</p>
+                </div>
+
+                <div className="bg-gray-50 rounded-xl p-3 border">
+                  <p className="text-xs text-gray-500 font-semibold">Route</p>
+                  <p className="font-bold text-gray-800">{v.route}</p>
+                </div>
+
+                <div className="bg-gray-50 rounded-xl p-3 border">
+                  <p className="text-xs text-gray-500 font-semibold">Driver</p>
+                  <p className="font-bold text-gray-800">{v.driver}</p>
+                </div>
+              </div>
+
+              {/* Badges */}
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Badge
+                  value={`GPS: ${v.gps}`}
+                  color={
+                    v.gps === "Online"
+                      ? "bg-green-100 text-green-700 border border-green-300"
+                      : "bg-red-100 text-red-700 border border-red-300"
+                  }
+                />
+
+                <Badge
+                  value={`Trip: ${v.trip}`}
+                  color="bg-blue-100 text-blue-700 border border-blue-300"
+                />
+              </div>
+
+              {/* Action */}
+              <button
+                onClick={() => setSelectedVehicle(v)}
+                className="mt-4 w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-xl font-semibold"
+              >
+                <MapPin size={16} /> View Status
+              </button>
+            </div>
+          ))
+        )}
+      </div>
+
       {/* VIEW STATUS MODAL */}
       {selectedVehicle && (
         <VehicleStatusModal
@@ -337,7 +418,7 @@ const Vehicles = () => {
 /* ================= MODAL ================= */
 
 const VehicleStatusModal = ({ vehicle, onClose }) => (
-  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
     <div className="bg-white rounded-2xl w-full max-w-md p-6 relative shadow-xl">
       <button
         onClick={onClose}
@@ -364,7 +445,7 @@ const VehicleStatusModal = ({ vehicle, onClose }) => (
 
       <button
         onClick={onClose}
-        className="mt-6 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg"
+        className="mt-6 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-semibold"
       >
         Close
       </button>
