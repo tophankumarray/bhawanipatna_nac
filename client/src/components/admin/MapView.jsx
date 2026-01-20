@@ -29,7 +29,6 @@ const MapController = ({ vehicles, selectedVehicle, autoCenter }) => {
         duration: 1.5
       });
       
-      // Wait for the fly animation to complete, then open the popup
       setTimeout(() => {
         map.eachLayer((layer) => {
           if (layer instanceof L.Marker) {
@@ -40,7 +39,7 @@ const MapController = ({ vehicles, selectedVehicle, autoCenter }) => {
             }
           }
         });
-      }, 1600); // Slightly longer than animation duration
+      }, 1600);
     }
   }, [selectedVehicle, map]);
 
@@ -64,13 +63,10 @@ const MapView = ({ vehicles = [], selectedVehicle = null }) => {
         const trail = vehicleTrails.current[vehicle.id];
         const lastPoint = trail[trail.length - 1];
         
-        // Add new point if it's different from the last one
         if (!lastPoint || 
             lastPoint[0] !== vehicle.location.lat || 
             lastPoint[1] !== vehicle.location.lng) {
           trail.push([vehicle.location.lat, vehicle.location.lng]);
-          
-          // Keep only last 20 points to avoid memory issues
           if (trail.length > 20) {
             trail.shift();
           }
@@ -79,22 +75,22 @@ const MapView = ({ vehicles = [], selectedVehicle = null }) => {
     });
   }, [vehicles]);
 
-  // Map tile layers - all FREE! No API keys needed
+  // ✅ ONLY 3 RELIABLE MAP TYPES - Terrain REMOVED
   const mapTiles = {
     satellite: {
       url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-      attribution: 'Tiles &copy; Esri',
+      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
       name: '🛰️ Satellite'
     },
     street: {
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      attribution: '&copy; OpenStreetMap',
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       name: '🗺️ Street'
     },
-    terrain: {
-      url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
-      attribution: '&copy; OpenTopoMap',
-      name: '⛰️ Terrain'
+    hybrid: {
+      url: 'https://mt1.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',
+      attribution: 'Google',
+      name: '🟫 Hybrid'
     }
   };
 
@@ -152,7 +148,7 @@ const MapView = ({ vehicles = [], selectedVehicle = null }) => {
             <span className="text-xs font-semibold text-emerald-700">Live</span>
           </div>
 
-          {/* Map type buttons */}
+          {/* Map type buttons - Terrain REMOVED */}
           {Object.entries(mapTiles).map(([key, tile]) => (
             <button
               key={key}
@@ -201,7 +197,7 @@ const MapView = ({ vehicles = [], selectedVehicle = null }) => {
         zoom={12} 
         style={{ width: '100%', height: '500px', borderRadius: '12px', zIndex: 0 }}
       >
-        {/* Dynamic Tile Layer based on mapType */}
+        {/* Dynamic Tile Layer - Terrain REMOVED */}
         <TileLayer
           url={mapTiles[mapType].url}
           attribution={mapTiles[mapType].attribution}
@@ -309,10 +305,10 @@ const MapView = ({ vehicles = [], selectedVehicle = null }) => {
         )}
       </div>
 
-      {/* Info Banner */}
+      {/* Info Banner - Updated */}
       <div className="mt-4 bg-gradient-to-r from-blue-50 to-emerald-50 border border-blue-200 rounded-lg p-3">
         <p className="text-xs text-gray-700 text-center">
-          ✨ <span className="font-semibold">100% Free Maps</span> • Using OpenStreetMap & Leaflet • No API Keys Required • Unlimited Usage
+          ✨ <span className="font-semibold">100% Free Maps</span> • Esri Satellite, OpenStreetMap, Google Hybrid • No API Keys Required
         </p>
       </div>
     </div>

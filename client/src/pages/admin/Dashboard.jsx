@@ -15,8 +15,6 @@ import TodaysPerformance from '../../components/admin/TodaysPerformance';
 import VehiclesStatus from '../../components/admin/VehiclesStatus';
 import WardCoverage from '../../components/admin/WardCoverage';
 
-
-
 const AdminDashboard = () => {
   // State management for dashboard data
   const [dashboardData, setDashboardData] = useState({
@@ -252,7 +250,7 @@ const AdminDashboard = () => {
   // Stats cards configuration
   const statsCards = [
     {
-      title: "Waste Collected",
+      title: "Waste Collection",
       value: dashboardData.stats.waste,
       icon: "♻️",
       gradient: "from-emerald-500 to-teal-600",
@@ -266,7 +264,7 @@ const AdminDashboard = () => {
       link: "/admin/vehicles"
     },
     {
-      title: "Staff Present",
+      title: "Staff Details",
       value: dashboardData.stats.activeStaff,
       icon: "👷",
       gradient: "from-blue-500 to-indigo-600",
@@ -295,10 +293,9 @@ const AdminDashboard = () => {
     }
   ];
 
-  
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-emerald-50 via-green-50/50 to-teal-50 relative overflow-hidden">
+      <div className="flex items-center justify-center min-h-screen bg-linear-to-br from-emerald-50 via-green-50/50 to-teal-50 relative overflow-hidden">
         {/* Animated background circles */}
         <div className="absolute top-20 left-20 w-72 h-72 bg-green-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
         <div className="absolute top-40 right-20 w-72 h-72 bg-emerald-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
@@ -308,7 +305,7 @@ const AdminDashboard = () => {
           <div className="inline-flex items-center justify-center mb-4">
             <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-emerald-600"></div>
           </div>
-          <p className="text-xl font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent animate-pulse">Loading dashboard...</p>
+          <p className="text-xl font-semibold bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent animate-pulse">Loading dashboard...</p>
           <p className="text-sm text-gray-500 mt-2">Please wait while we fetch your data</p>
         </div>
       </div>
@@ -316,30 +313,60 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-100 via-teal-50 to-cyan-100 p-4 sm:p-6 lg:p-8 relative overflow-hidden">
+    <div className="min-h-screen bg-linear-to-br from-emerald-100 via-teal-50 to-cyan-100 p-4 sm:p-6 lg:p-8 relative overflow-hidden">
       {/* Decorative background elements */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-green-300/40 to-emerald-300/40 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob"></div>
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-teal-300/40 to-cyan-300/40 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob animation-delay-2000"></div>
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-lime-200/20 to-green-200/20 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+      <div className="absolute top-0 right-0 w-96 h-96 bg-linear-to-br from-green-300/40 to-emerald-300/40 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-linear-to-tr from-teal-300/40 to-cyan-300/40 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob animation-delay-2000"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-linear-to-br from-lime-200/20 to-green-200/20 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
       
+      {/* Swachhtam Portal Marquee - Jan 25 to Feb 25 ONLY */}
+      {(() => {
+        const now = new Date();
+        const startDate = new Date('2026-01-20');
+        const endDate = new Date('2026-02-25');
+        const isSwachhtamPeriod = now >= startDate && now <= endDate;
+        
+        if (!isSwachhtamPeriod) return null;
+        
+        return (
+          <div className="w-full bg-linear-to-r from-orange-500 via-red-500 to-pink-600 shadow-lg mb-6">
+            <div className="overflow-hidden">
+              <div className="flex animate-marquee whitespace-nowrap py-3 px-6">
+                <div className="flex items-center gap-8">
+                  <span className="text-white font-bold text-lg flex items-center gap-3">
+                    🚨 LOGIN TO SWACHHTAM PORTAL NOW 🚨
+                  </span>
+                    <a 
+              href="https://admin.sbmurban.org/u/login" 
+              target="_blank" 
+              
+              className="text-white font-bold text-lg flex items-center gap-3 hover:text-orange-200 underline decoration-2 underline-offset-2 transition-all duration-200 hover:scale-105"
+  
+            >
+              📱 https://admin.sbmurban.org/u/login 📱
+            </a>
+                  <span className="text-white font-bold text-lg flex items-center gap-3">
+                    🚨 LOGIN TO SWACHHTAM PORTAL NOW 🚨
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
       <div className="relative z-10">
         {/* Welcome Header */}
         <div className="mb-8 sm:mb-10">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
-              <h1 className="text-4xl sm:text-4xl font-extrabold bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent mb-3 animate-gradient">
+              <h1 className="text-4xl sm:text-4xl font-extrabold bg-linear-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent mb-3 animate-gradient">
                 Command & Control Center 🌿
               </h1>
               <p className="text-gray-600 text-lg flex items-center gap-2">
                 <span className="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                 Real-time monitoring of waste management operations across all wards
               </p>
-              {/* {error && (
-                <p className="text-orange-600 text-sm mt-2 flex items-center gap-2">
-                  <span>⚠️</span>
-                  {error}
-                </p>
-              )} */}
             </div>
             <div className="flex items-center gap-3">
               <button
@@ -398,13 +425,13 @@ const AdminDashboard = () => {
 
         {/* Fuel Management */}
         <div className="mb-6 sm:mb-8">
-            <MapView vehicles={dashboardData.vehicleLocations} />
+          <MapView vehicles={dashboardData.vehicleLocations} />
         </div>
 
         {/* Map & Recent Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
           <div className="lg:col-span-2">
-          <FuelManagement data={dashboardData.fuelManagement} />
+            <FuelManagement data={dashboardData.fuelManagement} />
           </div>
           <RecentActivity activities={dashboardData.recentActivities} />
         </div>
