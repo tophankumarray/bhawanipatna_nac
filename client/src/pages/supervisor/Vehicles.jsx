@@ -9,9 +9,17 @@ import {
   CheckCircle,
   XCircle,
   Wrench,
+  Download,
+  FileSpreadsheet,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import api from "../../api/api";
+
+/* ✅ PDF + Excel */
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 /* ================= SUMMARY CONFIG ================= */
 
@@ -19,7 +27,12 @@ const SUMMARY_CARDS = [
   { title: "Total Vehicles", key: "total", color: "bg-blue-600", icon: Truck },
   { title: "Active", key: "Active", color: "bg-green-600", icon: CheckCircle },
   { title: "Inactive", key: "Inactive", color: "bg-red-600", icon: XCircle },
-  { title: "Maintenance", key: "Maintenance", color: "bg-yellow-500", icon: Wrench },
+  {
+    title: "Maintenance",
+    key: "Maintenance",
+    color: "bg-yellow-500",
+    icon: Wrench,
+  },
 ];
 
 /* ================= TABLE HEADERS ================= */
@@ -101,16 +114,109 @@ const Vehicles = () => {
     Maintenance: vehicles.filter((v) => v.status === "Maintenance").length,
   };
 
+  /* ================= DOWNLOAD PDF ================= */
+  const handleDownloadPDF = () => {
+    if (!vehicles.length) return alert("No vehicle data found!");
+
+    const doc = new jsPDF("landscape");
+
+    doc.setFontSize(16);
+    doc.text("Vehicle Report", 14, 15);
+
+    autoTable(doc, {
+      startY: 25,
+      head: [
+        [
+          "Vehicle No",
+          "Type",
+          "Ward",
+          "Route",
+          "Driver",
+          "GPS",
+          "Trip",
+          "Status",
+          "Last Update",
+        ],
+      ],
+      body: vehicles.map((v) => [
+        v.number,
+        v.type,
+        v.ward,
+        v.route,
+        v.driver,
+        v.gps,
+        v.trip,
+        v.status,
+        v.updatedAt,
+      ]),
+      styles: { fontSize: 9 },
+      headStyles: { fillColor: [22, 163, 74] }, // green
+    });
+
+    doc.save("vehicles-report.pdf");
+  };
+
+  /* ================= DOWNLOAD EXCEL ================= */
+  const handleDownloadExcel = () => {
+    if (!vehicles.length) return alert("No vehicle data found!");
+
+    const excelData = vehicles.map((v) => ({
+      "Vehicle No": v.number,
+      Type: v.type,
+      Ward: v.ward,
+      Route: v.route,
+      Driver: v.driver,
+      GPS: v.gps,
+      Trip: v.trip,
+      Status: v.status,
+      "Last Update": v.updatedAt,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Vehicles");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const file = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    saveAs(file, "vehicles-report.xlsx");
+  };
+
   return (
     <div className="space-y-8">
       {/* HEADER */}
-      <div className="bg-gradient-to-r from-green-600 to-emerald-500 text-white rounded-xl p-6 shadow flex items-center gap-3">
-        <Truck size={28} />
-        <div>
-          <h2 className="text-2xl font-bold">Vehicle Management</h2>
-          <p className="text-sm opacity-90">
-            Fleet monitoring & operational status
-          </p>
+      <div className="bg-gradient-to-r from-green-600 to-emerald-500 text-white rounded-xl p-6 shadow flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <Truck size={28} />
+          <div>
+            <h2 className="text-2xl font-bold">Vehicle Management</h2>
+            <p className="text-sm opacity-90">
+              Fleet monitoring & operational status
+            </p>
+          </div>
+        </div>
+
+        {/* ✅ DOWNLOAD BUTTONS */}
+        <div className="flex gap-3">
+          <button
+            onClick={handleDownloadPDF}
+            className="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm font-semibold"
+          >
+            <Download size={16} /> PDF
+          </button>
+
+          <button
+            onClick={handleDownloadExcel}
+            className="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm font-semibold"
+          >
+            <FileSpreadsheet size={16} /> Excel
+          </button>
         </div>
       </div>
 

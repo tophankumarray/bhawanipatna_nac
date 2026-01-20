@@ -381,11 +381,11 @@ function WealthCenter() {
             <div className="bg-white/20 p-3 rounded-xl backdrop-blur-sm">
               <Cuboid className="h-7 w-7" />
             </div>
-            <h1 className="text-4xl font-bold">Wealth Center Tracker</h1>
+            <h1 className="text-4xl font-bold">Wealth Center</h1>
           </div>
-          <p className="text-amber-100 text-lg ml-16">
+          {/* <p className="text-amber-100 text-lg ml-16">
             MCC (14 cubes) & MRF (6 cubes) Management
-          </p>
+          </p> */}
         </div>
       </div>
 
@@ -413,6 +413,43 @@ function WealthCenter() {
           >
             <Factory className="h-5 w-5" /> MRF
           </button>
+          
+
+          <button
+        onClick={() => {
+          if (activeTab === "MCC") {
+            navigate("/supervisor/mokhata"); // ✅ Mo Khata Page Route
+          } else {
+            setShowAgency(true);
+          }
+        }}
+        className={`px-6 py-4 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-xl hover:scale-105 duration-200 flex items-center gap-2 justify-center whitespace-nowrap cursor-pointer ${
+          activeTab === "MCC"
+            ? "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+            : "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+        }`}
+      >
+        {activeTab === "MCC" ? (
+          <>
+            <Cuboid className="h-5 w-5" />
+            MO Khata
+          </>
+        ) : (
+          <>
+            <BadgeIndianRupee className="h-5 w-5" />
+            Agency
+          </>
+        )}
+      </button>
+
+      {/* RIGHT BOTTOM Add Record Button */}
+      <button
+        onClick={() => setShowRecordForm(true)}
+        className="px-6 py-4 bg-gradient-to-r from-amber-600 to-orange-600 text-white font-bold rounded-xl hover:from-amber-700 hover:to-orange-700 transition-all shadow-lg hover:shadow-xl hover:scale-105 duration-200 flex items-center gap-2 justify-center whitespace-nowrap cursor-pointer"
+      >
+        <Plus className="h-5 w-5" />
+        Add Record
+      </button>
 
           <button
             onClick={resetAll}
@@ -580,7 +617,7 @@ function WealthCenter() {
                       </div>
                     </div>
 
-                    <div className="flex justify-end gap-3">
+                    {/* <div className="flex justify-end gap-3">
                       {activeTab === "MCC" ? (
                         <button
                           onClick={() => updateStatus("MCC", record.id, "Sent")}
@@ -600,7 +637,7 @@ function WealthCenter() {
                           <ArrowRight className="h-4 w-4" />
                         </button>
                       )}
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               ))}
@@ -608,42 +645,7 @@ function WealthCenter() {
         )}
       </div>
 
-      {/* LEFT BOTTOM BUTTON */}
-      <button
-        onClick={() => {
-          if (activeTab === "MCC") {
-            navigate("/supervisor/mokhata"); // ✅ Mo Khata Page Route
-          } else {
-            setShowAgency(true);
-          }
-        }}
-        className={`px-6 py-4 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-xl hover:scale-105 duration-200 flex items-center gap-2 justify-center whitespace-nowrap fixed left-72 bottom-12 cursor-pointer ${
-          activeTab === "MCC"
-            ? "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-            : "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
-        }`}
-      >
-        {activeTab === "MCC" ? (
-          <>
-            <Cuboid className="h-5 w-5" />
-            MO Khata
-          </>
-        ) : (
-          <>
-            <BadgeIndianRupee className="h-5 w-5" />
-            Agency
-          </>
-        )}
-      </button>
-
-      {/* RIGHT BOTTOM Add Record Button */}
-      <button
-        onClick={() => setShowRecordForm(true)}
-        className="px-6 py-4 bg-gradient-to-r from-amber-600 to-orange-600 text-white font-bold rounded-xl hover:from-amber-700 hover:to-orange-700 transition-all shadow-lg hover:shadow-xl hover:scale-105 duration-200 flex items-center gap-2 justify-center whitespace-nowrap fixed right-7 bottom-12 cursor-pointer"
-      >
-        <Plus className="h-5 w-5" />
-        Add Record
-      </button>
+     
 
       {/* Add Record Modal */}
       <FormModal
@@ -755,7 +757,7 @@ function WealthCenter() {
           label="Material"
           value={agencyForm.material}
           onChange={(v) => setAgencyForm((p) => ({ ...p, material: v }))}
-          options={["Khata", "Plastic", "Paper", "Metal", "Glass"]}
+          options={[ "Plastic", "Paper", "Metal", "Glass"]}
         />
 
         <InputField

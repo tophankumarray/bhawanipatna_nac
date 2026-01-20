@@ -440,7 +440,7 @@ const SupervisorDashboard = () => {
       title: "Total Vehicles",
       value: vehicles.length,
       icon: <Truck />,
-      color: "bg-gradient-to-br from-emerald-500 to-green-600",
+      color: "bg-gradient-to-br from-sky-500 to-sky-600",
     },
     {
       title: "Active Complaints",
