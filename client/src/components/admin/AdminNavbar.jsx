@@ -1,9 +1,115 @@
 // @ts-nocheck
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import api from '../../api/api';
 
 const AdminNavbar = ({ onMenuClick }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [contactData, setContactData] = useState({
+    contactLevel: 'ULB',
+    state: 'ODISHA',
+    district: 'BUGUDA',
+    cityULB: 'BUGUDA (NAC)',
+    designation: '',
+    name: '',
+    officialMobile: '',
+    officialEmail: '',
+    officialLandline: '',
+    whatsappNumber: '',
+    personalEmail: '',
+    personalPhone: '',
+    address: 'NAC,BUGUDA',
+    twitter: '',
+    facebook: '',
+    instagram: '',
+    linkedIn: ''
+  });
+
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+
+  const handleContactChange = (e) => {
+    const { name, value } = e.target;
+    setContactData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleContactSubmit = (e) => {
+    e.preventDefault();
+    // Here you would typically make an API call to save the contact details
+    console.log('Contact Details:', contactData);
+    toast.success('Contact details updated successfully!');
+    setShowContactModal(false);
+  };
+
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+
+    // Validate passwords match
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error('New password and confirm password do not match!');
+      return;
+    }
+
+    // Validate password length
+    if (passwordData.newPassword.length < 6) {
+      toast.error('Password must be at least 6 characters long!');
+      return;
+    }
+
+    try {
+      // Get current user from localStorage
+      const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+      
+      // In a real app, you would verify currentPassword with backend
+      // For now, we'll just update the password in db.json via API
+      
+      // Update password via API (assuming user id is available)
+      const userId = currentUser.id || '1'; // Default to admin user id
+      
+      const response = await api.patch(`/users/${userId}`, {
+        password: passwordData.newPassword
+      });
+
+      if (response.status === 200) {
+        toast.success('Password changed successfully!');
+        setPasswordData({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        });
+        setShowPasswordModal(false);
+      }
+    } catch (error) {
+      console.error('Error changing password:', error);
+      toast.error('Failed to change password. Please try again.');
+    }
+  };
+
+  const handleContactCancel = () => {
+    setShowContactModal(false);
+    setShowUserMenu(false);
+  };
+
+  const handlePasswordCancel = () => {
+    setPasswordData({
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    });
+    setShowPasswordModal(false);
+    setShowUserMenu(false);
+  };
 
   return (
     <nav className="bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 shadow-lg fixed top-0 right-0 left-0 lg:left-64 z-40 h-16">
@@ -62,7 +168,7 @@ const AdminNavbar = ({ onMenuClick }) => {
               </div>
               <div className="text-left hidden md:block">
                 <p className="text-sm font-semibold text-white">Admin</p>
-                <p className="text-xs text-white/80">SuperAdmin</p>
+                
               </div>
               <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -72,12 +178,24 @@ const AdminNavbar = ({ onMenuClick }) => {
             {/* Dropdown Menu */}
             {showUserMenu && (
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 border border-gray-200">
-                <Link to="/admin/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  Profile
-                </Link>
-                <Link to="/admin/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  Settings
-                </Link>
+                <button 
+                  onClick={() => {
+                    setShowContactModal(true);
+                    setShowUserMenu(false);
+                  }}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  Contact Details
+                </button>
+                <button 
+                  onClick={() => {
+                    setShowPasswordModal(true);
+                    setShowUserMenu(false);
+                  }}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  Change Password
+                </button>
                 <hr className="my-2" />
                 <Link to="/" className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
                   Logout
@@ -87,6 +205,382 @@ const AdminNavbar = ({ onMenuClick }) => {
           </div>
         </div>
       </div>
+
+      {/* Contact Details Modal */}
+      {showContactModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-gradient-to-r from-emerald-500 to-teal-500 p-6 rounded-t-2xl">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-white">CONTACT DETAILS</h2>
+                <button
+                  onClick={handleContactCancel}
+                  className="text-white hover:text-gray-200 text-2xl font-bold transition-colors"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+
+            <form onSubmit={handleContactSubmit} className="p-6">
+              {/* First Row */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Contact Level *
+                  </label>
+                  <select
+                    name="contactLevel"
+                    value={contactData.contactLevel}
+                    onChange={handleContactChange}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50"
+                  >
+                    <option value="ULB">ULB</option>
+                    <option value="State">State</option>
+                    <option value="District">District</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    State *
+                  </label>
+                  <input
+                    type="text"
+                    name="state"
+                    value={contactData.state}
+                    onChange={handleContactChange}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    District *
+                  </label>
+                  <input
+                    type="text"
+                    name="district"
+                    value={contactData.district}
+                    onChange={handleContactChange}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    City/ULB *
+                  </label>
+                  <input
+                    type="text"
+                    name="cityULB"
+                    value={contactData.cityULB}
+                    onChange={handleContactChange}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50"
+                  />
+                </div>
+              </div>
+
+              {/* Second Row */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Designation *
+                  </label>
+                  <input
+                    type="text"
+                    name="designation"
+                    value={contactData.designation}
+                    onChange={handleContactChange}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Name *
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={contactData.name}
+                    onChange={handleContactChange}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Official Mobile *
+                  </label>
+                  <input
+                    type="tel"
+                    name="officialMobile"
+                    value={contactData.officialMobile}
+                    onChange={handleContactChange}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">It will be used for OTP</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Official Email *
+                  </label>
+                  <input
+                    type="email"
+                    name="officialEmail"
+                    value={contactData.officialEmail}
+                    onChange={handleContactChange}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">It will be used for OTP</p>
+                </div>
+              </div>
+
+              {/* Third Row */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Official Landline
+                  </label>
+                  <input
+                    type="tel"
+                    name="officialLandline"
+                    value={contactData.officialLandline}
+                    onChange={handleContactChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    WhatsApp Number
+                  </label>
+                  <input
+                    type="tel"
+                    name="whatsappNumber"
+                    value={contactData.whatsappNumber}
+                    onChange={handleContactChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Personal Email
+                  </label>
+                  <input
+                    type="email"
+                    name="personalEmail"
+                    value={contactData.personalEmail}
+                    onChange={handleContactChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Not shown on public portal.</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Personal Phone
+                  </label>
+                  <input
+                    type="tel"
+                    name="personalPhone"
+                    value={contactData.personalPhone}
+                    onChange={handleContactChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Not shown on public portal.</p>
+                </div>
+              </div>
+
+              {/* Address Row */}
+              <div className="mb-4">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Address
+                </label>
+                <textarea
+                  name="address"
+                  value={contactData.address}
+                  onChange={handleContactChange}
+                  rows="2"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50"
+                ></textarea>
+              </div>
+
+              {/* Social Media Row */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Twitter
+                  </label>
+                  <input
+                    type="text"
+                    name="twitter"
+                    value={contactData.twitter}
+                    onChange={handleContactChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Facebook
+                  </label>
+                  <input
+                    type="text"
+                    name="facebook"
+                    value={contactData.facebook}
+                    onChange={handleContactChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Instagram
+                  </label>
+                  <input
+                    type="text"
+                    name="instagram"
+                    value={contactData.instagram}
+                    onChange={handleContactChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Linked In
+                  </label>
+                  <input
+                    type="text"
+                    name="linkedIn"
+                    value={contactData.linkedIn}
+                    onChange={handleContactChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50"
+                  />
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 justify-start">
+                <button
+                  type="submit"
+                  className="px-8 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg font-semibold hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg"
+                >
+                  Update
+                </button>
+                <button
+                  type="button"
+                  onClick={handleContactCancel}
+                  className="px-8 py-2.5 bg-gray-400 text-white rounded-lg font-semibold hover:bg-gray-500 transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Change Password Modal */}
+      {showPasswordModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+            <div className="bg-gradient-to-r from-emerald-500 to-teal-500 p-6 rounded-t-2xl">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-white">CHANGE PASSWORD</h2>
+                <button
+                  onClick={handlePasswordCancel}
+                  className="text-white hover:text-gray-200 text-2xl font-bold transition-colors"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+
+            <form onSubmit={handlePasswordSubmit} className="p-6">
+              <div className="space-y-4">
+                {/* Current Password */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Current Password *
+                  </label>
+                  <input
+                    type="password"
+                    name="currentPassword"
+                    value={passwordData.currentPassword}
+                    onChange={handlePasswordChange}
+                    required
+                    placeholder="Enter current password"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50"
+                  />
+                </div>
+
+                {/* New Password */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    New Password *
+                  </label>
+                  <input
+                    type="password"
+                    name="newPassword"
+                    value={passwordData.newPassword}
+                    onChange={handlePasswordChange}
+                    required
+                    placeholder="Enter new password"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Must be at least 6 characters long</p>
+                </div>
+
+                {/* Confirm Password */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Confirm New Password *
+                  </label>
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    value={passwordData.confirmPassword}
+                    onChange={handlePasswordChange}
+                    required
+                    placeholder="Confirm new password"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-gray-50"
+                  />
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 justify-start mt-6">
+                <button
+                  type="submit"
+                  className="px-8 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg font-semibold hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg"
+                >
+                  Update Password
+                </button>
+                <button
+                  type="button"
+                  onClick={handlePasswordCancel}
+                  className="px-8 py-2.5 bg-gray-400 text-white rounded-lg font-semibold hover:bg-gray-500 transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

@@ -101,9 +101,6 @@ const Attendance = () => {
     setShowModal(true);
   };
 
-  const handleEdit = () => {
-    toast.info('Edit attendance feature coming soon!');
-  };
 
   const getStatusColor = (status) => {
     const colors = {
@@ -287,7 +284,7 @@ const Attendance = () => {
                 key={member.id}
                 member={member}
                 onViewDetails={handleViewDetails}
-                onEdit={handleEdit}
+              
               />
             ))}
           </div>
@@ -388,22 +385,8 @@ const Attendance = () => {
                   >
                     Close
                   </button>
-                  <button
-                    onClick={() => {
-                      if (selectedStaff.phone) {
-                        window.location.href = `tel:${selectedStaff.phone}`;
-                      }
-                    }}
-                    className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white py-2 rounded-xl font-semibold transition-all"
-                  >
-                    Call
-                  </button>
-                  <button
-                    onClick={() => toast.info('Attendance history coming soon!')}
-                    className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-2 rounded-xl font-semibold transition-all"
-                  >
-                    View History
-                  </button>
+                
+                 
                 </div>
               </div>
             </div>

@@ -17,7 +17,7 @@ const Vehicle = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [newVehicle, setNewVehicle] = useState({
     registrationNumber: '',
-    type: 'compactor',
+    type: 'cesspool',
     model: '',
     capacity: '',
     fuelType: 'diesel',
@@ -110,18 +110,18 @@ const Vehicle = () => {
     }
   };
 
-  const handleDeleteVehicle = async (vehicleId) => {
-    if (!window.confirm('Are you sure you want to delete this vehicle?')) return;
+  // const handleDeleteVehicle = async (vehicleId) => {
+  //   if (!window.confirm('Are you sure you want to delete this vehicle?')) return;
     
-    try {
-      await api.delete(`/vehicles/${vehicleId}`);
-      toast.success('Vehicle deleted successfully');
-      fetchVehicles();
-    } catch (error) {
-      console.error('Error deleting vehicle:', error);
-      toast.error('Failed to delete vehicle');
-    }
-  };
+  //   try {
+  //     await api.delete(`/vehicles/${vehicleId}`);
+  //     toast.success('Vehicle deleted successfully');
+  //     fetchVehicles();
+  //   } catch (error) {
+  //     console.error('Error deleting vehicle:', error);
+  //     toast.error('Failed to delete vehicle');
+  //   }
+  // };
 
   const handleViewDetails = (vehicle) => {
     setSelectedVehicle(vehicle);
@@ -208,10 +208,13 @@ const Vehicle = () => {
                 onChange={(e) => setFilters({ ...filters, type: e.target.value })}
                 className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
               >
-                <option value="all">All Types</option>
-                <option value="compactor">Compactor</option>
-                <option value="tipper">Tipper</option>
-                <option value="mini-truck">Mini Truck</option>
+                      <option value="all">All Types</option>
+                      <option value="cesspool">Cesspool</option>
+                      <option value="tractor">Tractor</option>
+                      <option value="jcb">JCB</option>
+                      <option value="bucket-truck">Bucket Truck</option>
+                      <option value="ev">Electric Vehicle</option>
+                      <option value="road-sweeper-truck ">Road Sweeper Truck </option>
               </select>
             </div>
           </div>
@@ -230,7 +233,7 @@ const Vehicle = () => {
                 vehicle={vehicle}
                 onViewDetails={handleViewDetails}
                 onTrackLive={handleTrackLive}
-                onDelete={handleDeleteVehicle}
+                // onDelete={handleDeleteVehicle}
               />
             ))}
           </div>
@@ -395,9 +398,13 @@ const Vehicle = () => {
                       onChange={(e) => setNewVehicle({ ...newVehicle, type: e.target.value })}
                       className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                     >
-                      <option value="compactor">Compactor</option>
-                      <option value="tipper">Tipper</option>
-                      <option value="mini-truck">Mini Truck</option>
+                      <option value="cesspool">Cesspool</option>
+                      <option value="tractor">Tractor</option>
+                      <option value="jcb">JCB</option>
+                      <option value="bucket-truck">Bucket Truck</option>
+                      <option value="ev">Electric Vehicle</option>
+                      <option value="road-sweeper-truck ">Road Sweeper Truck </option>
+
                     </select>
                   </div>
                 </div>

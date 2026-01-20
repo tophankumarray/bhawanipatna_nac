@@ -40,10 +40,10 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
       } lg:translate-x-0 w-64 bg-gradient-to-b from-emerald-400 via-emerald-500 to-teal-500 shadow-2xl h-screen fixed left-0 top-0 transition-transform duration-300 z-50 overflow-y-auto`}>
         {/* Logo Section */}
         <div className="p-6 border-b border-emerald-300/30">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-white">
-              Admin
-            </h1>
+          <div className="flex items-center gap-4 justify-between">
+            <div className="text-2xl font-bold text-white ">
+              <img className="rounded-full size-20" src="/image.jpg"/>
+            </div>
             <button 
               onClick={() => setIsOpen(!isOpen)}
               className="p-1 hover:bg-white/10 rounded lg:hidden text-white"
@@ -52,8 +52,9 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
+             <p className="text-xl text-white font-bold mt-1">BUGUDA NAC</p>
           </div>
-          <p className="text-xs text-white/80 mt-1">Admin Panel</p>
+         
         </div>
 
         {/* Menu Items */}

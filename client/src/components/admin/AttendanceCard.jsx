@@ -106,12 +106,6 @@ const AttendanceCard = ({ member, onViewDetails, onEdit }) => {
           >
             View Details
           </button>
-          <button
-            onClick={() => onEdit(member)}
-            className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white py-2 rounded-lg text-sm font-semibold shadow-md transition-all"
-          >
-            Edit
-          </button>
         </div>
       </div>
     </div>

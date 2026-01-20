@@ -188,7 +188,7 @@ const Ward = () => {
       gradient: "from-blue-500 to-indigo-500"
     },
     {
-      title: "Completed Today",
+      title: "Collection Completed Today",
       value: wards.filter(w => w.status === 'completed').length,
       icon: "✅",
       gradient: "from-emerald-500 to-teal-500"
