@@ -11,6 +11,8 @@ export default function CitizenLayout() {
     { path: "/citizen/complaint", label: "Post Complaint", icon: "📝" },
     { path: "/citizen/track", label: "Track Vehicle", icon: "🚛" },
     { path: "/citizen/payments", label: "Service & Payments", icon: "💳" },
+    { path: "/citizen/checkpoint", label: "Checkpoint", icon: "📍" },
+
   ];
 
   const linkClass = ({ isActive }) =>
