@@ -1,0 +1,9 @@
+- [x] Remove categoryIcons object
+- [x] Remove createIcon function
+- [x] Remove filters, search, center states and related functions
+- [x] Update useEffect to remove initialFilters logic
+- [x] Remove CONTROLS div (search input and Locate Me button)
+- [x] Remove FILTERS div (checkboxes with icons)
+- [x] Change visibleCheckpoints to checkpoints
+- [x] Remove icon prop from Marker components
+- [x] Update legend to remove icon spans

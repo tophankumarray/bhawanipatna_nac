@@ -142,13 +142,13 @@ const TrackVehicle = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-linear-to-br from-emerald-50 via-white to-teal-50 p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-xl p-6 mb-6 border border-gray-100">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                 Live Vehicle Tracking
               </h1>
               <p className="text-gray-600 mt-1">Real-time monitoring of all vehicles</p>
@@ -231,7 +231,7 @@ const TrackVehicle = () => {
               {filteredVehicles.map((vehicle) => (
                 <div
                   key={vehicle.id}
-                  className="bg-gradient-to-r from-gray-50 to-white hover:from-emerald-50 hover:to-teal-50 border border-gray-200 rounded-xl p-4 transition-all duration-300 cursor-pointer"
+                  className="bg-linear-to-r from-gray-50 to-white hover:from-emerald-50 hover:to-teal-50 border border-gray-200 rounded-xl p-4 transition-all duration-300 cursor-pointer"
                   onClick={() => {
                     setSelectedVehicle(vehicle);
                     // Scroll to map smoothly
@@ -307,7 +307,7 @@ const TrackVehicle = () => {
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div 
-                        className="bg-gradient-to-r from-emerald-500 to-teal-500 h-2 rounded-full transition-all"
+                        className="bg-linear-to-r from-emerald-500 to-teal-500 h-2 rounded-full transition-all"
                         style={{ width: `${vehicle.routeProgress}%` }}
                       ></div>
                     </div>

@@ -215,15 +215,15 @@ const Complaint = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-100 via-teal-50 to-cyan-100 p-4 sm:p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-linear-to-br from-emerald-100 via-teal-50 to-cyan-100 p-4 sm:p-6 relative overflow-hidden">
       {/* Decorative background elements */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-green-300/40 to-emerald-300/40 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob"></div>
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-teal-300/40 to-cyan-300/40 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob animation-delay-2000"></div>
+      <div className="absolute top-0 right-0 w-96 h-96 bg-linear-to-br from-green-300/40 to-emerald-300/40 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-linear-to-tr from-teal-300/40 to-cyan-300/40 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob animation-delay-2000"></div>
       
       <div className="relative z-10">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-3xl sm:text-4xl font-extrabold bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent mb-2">Complaint Management 📋</h1>
+          <h1 className="text-3xl sm:text-4xl font-extrabold bg-linear-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent mb-2">Complaint Management 📋</h1>
           <p className="text-gray-600 text-lg">Monitor and resolve citizen complaints efficiently</p>
         </div>
 
@@ -282,7 +282,7 @@ const Complaint = () => {
           <div className="flex items-end space-x-2">
             <button
               onClick={() => setFilters({ status: 'all', search: '', dateFrom: '', dateTo: '' })}
-              className="flex-1 px-4 py-3 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 font-semibold rounded-xl hover:from-gray-200 hover:to-gray-300 transition-all shadow-sm hover:shadow-md"
+              className="flex-1 px-4 py-3 bg-linear-to-r from-gray-100 to-gray-200 text-gray-700 font-semibold rounded-xl hover:from-gray-200 hover:to-gray-300 transition-all shadow-sm hover:shadow-md"
             >
               Reset
             </button>
@@ -294,7 +294,7 @@ const Complaint = () => {
       <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
+            <thead className="bg-linear-to-r from-emerald-600 to-teal-600 text-white">
               <tr>
                 <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">ID</th>
                 <th className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider">Title</th>
@@ -366,7 +366,7 @@ const Complaint = () => {
                           setSelectedComplaint(complaint);
                           setShowModal(true);
                         }}
-                        className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold px-4 py-2 rounded-lg hover:from-emerald-600 hover:to-teal-700 transition-all shadow-sm hover:shadow-md"
+                        className="bg-linear-to-r from-emerald-500 to-teal-600 text-white font-semibold px-4 py-2 rounded-lg hover:from-emerald-600 hover:to-teal-700 transition-all shadow-sm hover:shadow-md"
                       >
                         View
                       </button>
@@ -387,7 +387,7 @@ const Complaint = () => {
               {/* Modal Header */}
               <div className="flex justify-between items-start mb-6">
                 <div>
-                  <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">{selectedComplaint.title}</h2>
+                  <h2 className="text-2xl sm:text-3xl font-bold bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">{selectedComplaint.title}</h2>
                   <p className="text-sm text-gray-500 mt-2 font-medium">ID: {selectedComplaint.id}</p>
                 </div>
                 <button
@@ -407,13 +407,13 @@ const Complaint = () => {
                   <p className="text-gray-900 leading-relaxed">{selectedComplaint.description}</p>
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-100">
+                <div className="bg-linear-to-br from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-100">
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Category</label>
                   <p className="text-gray-900 font-medium">{selectedComplaint.category}</p>
                 </div>
 
                 {selectedComplaint.photo && (
-                  <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100">
+                  <div className="bg-linear-to-br from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100">
                     <label className="block text-sm font-semibold text-gray-700 mb-3">Complaint Image</label>
                     <img 
                       src={selectedComplaint.photo} 
@@ -447,7 +447,7 @@ const Complaint = () => {
                 </div>
 
                 {/* Assign Supervisor Section */}
-                <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-200">
+                <div className="bg-linear-to-br from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-200">
                   <label className="block text-sm font-semibold text-gray-700 mb-3">Assign Supervisor</label>
                   <select
                     value={selectedSupervisor}
@@ -486,14 +486,14 @@ const Complaint = () => {
               <div className="mt-8 flex flex-col sm:flex-row gap-3 sm:justify-end">
                 <button
                   onClick={() => setShowModal(false)}
-                  className="px-6 py-3 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 font-semibold rounded-xl hover:from-gray-200 hover:to-gray-300 transition-all shadow-sm hover:shadow-md"
+                  className="px-6 py-3 bg-linear-to-r from-gray-100 to-gray-200 text-gray-700 font-semibold rounded-xl hover:from-gray-200 hover:to-gray-300 transition-all shadow-sm hover:shadow-md"
                 >
                   Close
                 </button>
                 <button
                   onClick={handleAssignSupervisor}
                   disabled={!selectedSupervisor}
-                  className={`px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg ${
+                  className={`px-6 py-3 bg-linear-to-r from-emerald-500 to-teal-600 text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg ${
                     !selectedSupervisor ? 'opacity-50 cursor-not-allowed' : 'hover:from-emerald-600 hover:to-teal-700'
                   }`}
                 >

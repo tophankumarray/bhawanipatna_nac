@@ -17,7 +17,7 @@ const Vehicle = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [newVehicle, setNewVehicle] = useState({
     registrationNumber: '',
-    type: 'compactor',
+    type: 'cesspool',
     model: '',
     capacity: '',
     fuelType: 'diesel',
@@ -110,18 +110,18 @@ const Vehicle = () => {
     }
   };
 
-  const handleDeleteVehicle = async (vehicleId) => {
-    if (!window.confirm('Are you sure you want to delete this vehicle?')) return;
+  // const handleDeleteVehicle = async (vehicleId) => {
+  //   if (!window.confirm('Are you sure you want to delete this vehicle?')) return;
     
-    try {
-      await api.delete(`/vehicles/${vehicleId}`);
-      toast.success('Vehicle deleted successfully');
-      fetchVehicles();
-    } catch (error) {
-      console.error('Error deleting vehicle:', error);
-      toast.error('Failed to delete vehicle');
-    }
-  };
+  //   try {
+  //     await api.delete(`/vehicles/${vehicleId}`);
+  //     toast.success('Vehicle deleted successfully');
+  //     fetchVehicles();
+  //   } catch (error) {
+  //     console.error('Error deleting vehicle:', error);
+  //     toast.error('Failed to delete vehicle');
+  //   }
+  // };
 
   const handleViewDetails = (vehicle) => {
     setSelectedVehicle(vehicle);
@@ -134,7 +134,7 @@ const Vehicle = () => {
 
   const getStatusBadge = (status) => {
     const badges = {
-      running: 'bg-gradient-to-r from-emerald-500 to-teal-500',
+      running: 'bg-linear-to-r from-emerald-500 to-teal-500',
       standing: 'bg-gradient-to-r from-blue-400 to-indigo-400',
       stopped: 'bg-gradient-to-r from-orange-500 to-amber-500',
       dataNotRetrieving: 'bg-gradient-to-r from-gray-400 to-gray-500'
@@ -153,24 +153,24 @@ const Vehicle = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-linear-to-br from-emerald-50 via-white to-teal-50 p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-xl p-6 mb-6 border border-gray-100">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                 Vehicle Management
               </h1>
               <p className="text-gray-600 mt-1">Monitor and manage your fleet</p>
             </div>
-            <button
+            {/* <button
               onClick={() => setShowAddModal(true)}
-              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              className="bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
             >
               <span className="mr-2">➕</span>
               Add Vehicle
-            </button>
+            </button> */}
           </div>
         </div>
 
@@ -208,10 +208,13 @@ const Vehicle = () => {
                 onChange={(e) => setFilters({ ...filters, type: e.target.value })}
                 className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
               >
-                <option value="all">All Types</option>
-                <option value="compactor">Compactor</option>
-                <option value="tipper">Tipper</option>
-                <option value="mini-truck">Mini Truck</option>
+                      <option value="all">All Types</option>
+                      <option value="cesspool">Cesspool</option>
+                      <option value="tractor">Tractor</option>
+                      <option value="jcb">JCB</option>
+                      <option value="bucket-truck">Bucket Truck</option>
+                      <option value="ev">Electric Vehicle</option>
+                      <option value="road-sweeper-truck ">Road Sweeper Truck </option>
               </select>
             </div>
           </div>
@@ -230,7 +233,7 @@ const Vehicle = () => {
                 vehicle={vehicle}
                 onViewDetails={handleViewDetails}
                 onTrackLive={handleTrackLive}
-                onDelete={handleDeleteVehicle}
+                // onDelete={handleDeleteVehicle}
               />
             ))}
           </div>
@@ -252,7 +255,7 @@ const Vehicle = () => {
           <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                <h2 className="text-2xl font-bold bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                   Vehicle Details
                 </h2>
                 <button
@@ -346,7 +349,7 @@ const Vehicle = () => {
                   </button>
                   <button
                     onClick={() => toast.info('Edit feature coming soon!')}
-                    className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-2 rounded-xl font-semibold transition-all"
+                    className="flex-1 bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-2 rounded-xl font-semibold transition-all"
                   >
                     Edit Details
                   </button>
@@ -358,12 +361,12 @@ const Vehicle = () => {
       )}
 
       {/* Add Vehicle Modal */}
-      {showAddModal && (
+      {/* {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                <h2 className="text-2xl font-bold bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                   Add New Vehicle
                 </h2>
                 <button
@@ -395,9 +398,13 @@ const Vehicle = () => {
                       onChange={(e) => setNewVehicle({ ...newVehicle, type: e.target.value })}
                       className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                     >
-                      <option value="compactor">Compactor</option>
-                      <option value="tipper">Tipper</option>
-                      <option value="mini-truck">Mini Truck</option>
+                      <option value="cesspool">Cesspool</option>
+                      <option value="tractor">Tractor</option>
+                      <option value="jcb">JCB</option>
+                      <option value="bucket-truck">Bucket Truck</option>
+                      <option value="ev">Electric Vehicle</option>
+                      <option value="road-sweeper-truck ">Road Sweeper Truck </option>
+
                     </select>
                   </div>
                 </div>
@@ -490,7 +497,7 @@ const Vehicle = () => {
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-3 rounded-xl font-semibold transition-all"
+                    className="flex-1 bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-3 rounded-xl font-semibold transition-all"
                   >
                     Add Vehicle
                   </button>
@@ -499,7 +506,7 @@ const Vehicle = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

@@ -37,7 +37,7 @@ const AttendanceCard = ({ member, onViewDetails, onEdit }) => {
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center space-x-3">
-            <div className={`w-12 h-12 bg-gradient-to-br ${getStatusColor(member.status).badge} rounded-xl flex items-center justify-center shadow-md`}>
+            <div className={`w-12 h-12 bg-linear-to-br ${getStatusColor(member.status).badge} rounded-xl flex items-center justify-center shadow-md`}>
               <span className="text-white text-2xl">{getRoleIcon(member.role)}</span>
             </div>
             <div>
@@ -46,7 +46,7 @@ const AttendanceCard = ({ member, onViewDetails, onEdit }) => {
             </div>
           </div>
           <div className="flex flex-col items-end space-y-1">
-            <span className={`bg-gradient-to-r ${getStatusColor(member.status).badge} text-white text-xs font-bold px-3 py-1 rounded-full shadow-md capitalize`}>
+            <span className={`bg-linear-to-r ${getStatusColor(member.status).badge} text-white text-xs font-bold px-3 py-1 rounded-full shadow-md capitalize`}>
               {member.status.replace('-', ' ')}
             </span>
             <span className="text-xl">{getStatusIcon(member.status)}</span>
@@ -72,7 +72,7 @@ const AttendanceCard = ({ member, onViewDetails, onEdit }) => {
         </div>
 
         {/* Time Info */}
-        <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-3 rounded-xl mb-4">
+        <div className="bg-linear-to-r from-gray-50 to-gray-100 p-3 rounded-xl mb-4">
           <div className="grid grid-cols-3 gap-2 text-xs">
             <div>
               <p className="text-gray-600 mb-1">Check In</p>
@@ -102,15 +102,9 @@ const AttendanceCard = ({ member, onViewDetails, onEdit }) => {
         <div className="flex space-x-2">
           <button
             onClick={() => onViewDetails(member)}
-            className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-2 rounded-lg text-sm font-semibold shadow-md transition-all"
+            className="flex-1 bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-2 rounded-lg text-sm font-semibold shadow-md transition-all"
           >
             View Details
-          </button>
-          <button
-            onClick={() => onEdit(member)}
-            className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white py-2 rounded-lg text-sm font-semibold shadow-md transition-all"
-          >
-            Edit
           </button>
         </div>
       </div>

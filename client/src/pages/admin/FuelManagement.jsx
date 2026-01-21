@@ -9,6 +9,9 @@ import StatsCard from "../../components/admin/StatsCard";
 const FuelManagement = () => {
   const [fuelRecords, setFuelRecords] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState(null);
 
   const [filters, setFilters] = useState({
     vehicle: "all",
@@ -16,6 +19,18 @@ const FuelManagement = () => {
     dateFrom: "",
     dateTo: "",
     search: "",
+  });
+
+  const [formData, setFormData] = useState({
+    vehicle: "",
+    driver: "",
+    refuelDate: "",
+    fuelType: "diesel",
+    quantity: "",
+    pricePerLiter: "",
+    odometer: "",
+    efficiency: "",
+    fillingStation: "",
   });
 
   /* ================= FETCH ================= */
@@ -33,6 +48,110 @@ const FuelManagement = () => {
       setFuelRecords([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  /* ================= MODAL HANDLERS ================= */
+  const openModal = () => {
+    setEditMode(false);
+    setSelectedRecord(null);
+    setFormData({
+      vehicle: "",
+      driver: "",
+      refuelDate: "",
+      fuelType: "diesel",
+      quantity: "",
+      pricePerLiter: "",
+      odometer: "",
+      efficiency: "",
+      fillingStation: "",
+    });
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setEditMode(false);
+    setSelectedRecord(null);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const totalCost = (
+        parseFloat(formData.quantity) * parseFloat(formData.pricePerLiter)
+      ).toFixed(2);
+
+      if (editMode && selectedRecord) {
+        // Update existing record
+        const updatedRecord = {
+          ...formData,
+          quantity: parseFloat(formData.quantity),
+          pricePerLiter: parseFloat(formData.pricePerLiter),
+          odometer: parseFloat(formData.odometer),
+          efficiency: parseFloat(formData.efficiency) || 0,
+          totalCost: parseFloat(totalCost),
+          id: selectedRecord.id,
+        };
+
+        await api.patch(`/fuelRecords/${selectedRecord.id}`, updatedRecord);
+        setFuelRecords(fuelRecords.map(r => r.id === selectedRecord.id ? updatedRecord : r));
+        toast.success("Fuel record updated successfully!");
+      } else {
+        // Add new record
+        const newRecord = {
+          ...formData,
+          quantity: parseFloat(formData.quantity),
+          pricePerLiter: parseFloat(formData.pricePerLiter),
+          odometer: parseFloat(formData.odometer),
+          efficiency: parseFloat(formData.efficiency) || 0,
+          totalCost: parseFloat(totalCost),
+        };
+
+        const response = await api.post("/fuelRecords", newRecord);
+        setFuelRecords([...fuelRecords, response.data]);
+        toast.success("Fuel record added successfully!");
+      }
+
+      closeModal();
+    } catch (error) {
+      console.error("Error saving fuel record:", error);
+      toast.error(editMode ? "Failed to update fuel record" : "Failed to add fuel record");
+    }
+  };
+
+  const handleEdit = (record) => {
+    setEditMode(true);
+    setSelectedRecord(record);
+    setFormData({
+      vehicle: record.vehicle,
+      driver: record.driver,
+      refuelDate: record.refuelDate,
+      fuelType: record.fuelType,
+      quantity: record.quantity,
+      pricePerLiter: record.pricePerLiter,
+      odometer: record.odometer,
+      efficiency: record.efficiency || "",
+      fillingStation: record.fillingStation,
+    });
+    setShowModal(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this fuel record?")) {
+      try {
+        await api.delete(`/fuelRecords/${id}`);
+        setFuelRecords(fuelRecords.filter(r => r.id !== id));
+        toast.success("Fuel record deleted successfully!");
+      } catch (error) {
+        console.error("Error deleting fuel record:", error);
+        toast.error("Failed to delete fuel record");
+      }
     }
   };
 
@@ -233,6 +352,214 @@ const FuelManagement = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
+        {/* Add Fuel Modal */}
+        {showModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="bg-gradient-to-r from-emerald-500 to-teal-500 p-6 rounded-t-2xl">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-2xl font-bold text-white">
+                    {editMode ? "Edit Fuel Record" : "Add Fuel Record"}
+                  </h2>
+                  <button
+                    onClick={closeModal}
+                    className="text-white hover:text-gray-200 text-2xl font-bold transition-colors"
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+              <form onSubmit={handleSubmit} className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Vehicle */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Vehicle Number *
+                    </label>
+                    <input
+                      type="text"
+                      name="vehicle"
+                      value={formData.vehicle}
+                      onChange={handleInputChange}
+                      required
+                      placeholder="e.g., OD-01-1234"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+
+                  {/* Driver */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Driver Name *
+                    </label>
+                    <input
+                      type="text"
+                      name="driver"
+                      value={formData.driver}
+                      onChange={handleInputChange}
+                      required
+                      placeholder="Enter driver name"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+
+                  {/* Refuel Date */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Refuel Date *
+                    </label>
+                    <input
+                      type="date"
+                      name="refuelDate"
+                      value={formData.refuelDate}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+
+                  {/* Fuel Type */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Fuel Type *
+                    </label>
+                    <select
+                      name="fuelType"
+                      value={formData.fuelType}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    >
+                      <option value="diesel">Diesel</option>
+                      <option value="petrol">Petrol</option>
+                      <option value="cng">CNG</option>
+                    </select>
+                  </div>
+
+                  {/* Quantity */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Quantity (Liters) *
+                    </label>
+                    <input
+                      type="number"
+                      name="quantity"
+                      value={formData.quantity}
+                      onChange={handleInputChange}
+                      required
+                      step="0.01"
+                      min="0"
+                      placeholder="e.g., 50"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+
+                  {/* Price per Liter */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Price per Liter (₹) *
+                    </label>
+                    <input
+                      type="number"
+                      name="pricePerLiter"
+                      value={formData.pricePerLiter}
+                      onChange={handleInputChange}
+                      required
+                      step="0.01"
+                      min="0"
+                      placeholder="e.g., 95.50"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+
+                  {/* Odometer */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Odometer Reading (km) *
+                    </label>
+                    <input
+                      type="number"
+                      name="odometer"
+                      value={formData.odometer}
+                      onChange={handleInputChange}
+                      required
+                      min="0"
+                      placeholder="e.g., 12500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+
+                  {/* Efficiency */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Efficiency (km/L)
+                    </label>
+                    <input
+                      type="number"
+                      name="efficiency"
+                      value={formData.efficiency}
+                      onChange={handleInputChange}
+                      step="0.01"
+                      min="0"
+                      placeholder="e.g., 12.5"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+
+                  {/* Filling Station */}
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Filling Station *
+                    </label>
+                    <input
+                      type="text"
+                      name="fillingStation"
+                      value={formData.fillingStation}
+                      onChange={handleInputChange}
+                      required
+                      placeholder="e.g., Indian Oil - Main Road"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Total Cost Display */}
+                {formData.quantity && formData.pricePerLiter && (
+                  <div className="mt-6 p-4 bg-emerald-50 rounded-lg border-2 border-emerald-200">
+                    <p className="text-sm text-gray-600 font-semibold">
+                      Total Cost
+                    </p>
+                    <p className="text-2xl font-bold text-emerald-600">
+                      ₹
+                      {(
+                        parseFloat(formData.quantity || 0) *
+                        parseFloat(formData.pricePerLiter || 0)
+                      ).toFixed(2)}
+                    </p>
+                  </div>
+                )}
+
+                {/* Action Buttons */}
+                <div className="flex gap-3 mt-6">
+                  <button
+                    type="button"
+                    onClick={closeModal}
+                    className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg font-semibold hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg"
+                  >
+                    {editMode ? "Update Record" : "Add Fuel Record"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-6 mb-4 sm:mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -244,13 +571,22 @@ const FuelManagement = () => {
                 Track and manage vehicle fuel consumption
               </p>
             </div>
-            <button
-              onClick={downloadPDF}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg transition-all w-full sm:w-auto flex items-center justify-center gap-2"
-            >
-              <span>📄</span>
-              <span>Download PDF</span>
-            </button>
+            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+              <button
+                onClick={openModal}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg transition-all w-full sm:w-auto flex items-center justify-center gap-2"
+              >
+                <span>⛽</span>
+                <span>Add Fuel</span>
+              </button>
+              <button
+                onClick={downloadPDF}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg transition-all w-full sm:w-auto flex items-center justify-center gap-2"
+              >
+                <span>📄</span>
+                <span>Download PDF</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -506,10 +842,16 @@ const FuelManagement = () => {
                       </td>
                       <td className="px-3 sm:px-4 py-3 sm:py-4 whitespace-nowrap">
                         <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
-                          <button className="text-blue-600 hover:text-blue-800 font-semibold text-xs sm:text-sm transition-colors">
+                          <button 
+                            onClick={() => handleEdit(r)}
+                            className="text-blue-600 hover:text-blue-800 font-semibold text-xs sm:text-sm transition-colors"
+                          >
                             Edit
                           </button>
-                          <button className="text-red-600 hover:text-red-800 font-semibold text-xs sm:text-sm transition-colors">
+                          <button 
+                            onClick={() => handleDelete(r.id)}
+                            className="text-red-600 hover:text-red-800 font-semibold text-xs sm:text-sm transition-colors"
+                          >
                             Delete
                           </button>
                         </div>

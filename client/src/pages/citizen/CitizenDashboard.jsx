@@ -2,6 +2,9 @@
 import { useEffect, useState } from "react";
 import api from "../../api/api.js";
 import { FileText, CheckCircle, Clock } from "lucide-react";
+import buguda1 from "../../assets/buguda1.jpg";
+import buguda2 from "../../assets/buguda2.jpg";
+import buguda3 from "../../assets/buguda3.jpg";
 
 export default function CitizenDashboard() {
   const [stats, setStats] = useState({
@@ -10,6 +13,11 @@ export default function CitizenDashboard() {
     pending: 0,
   });
 
+  const [activeSlide, setActiveSlide] = useState(0);
+
+  /* =========================
+     LOAD DASHBOARD STATS
+     ========================= */
   useEffect(() => {
     const loadStats = async () => {
       try {
@@ -17,7 +25,6 @@ export default function CitizenDashboard() {
         const complaints = res.data || [];
 
         const total = complaints.length;
-
         const resolved = complaints.filter((c) =>
           ["resolved", "done"].includes(c.status?.toLowerCase())
         ).length;
@@ -35,6 +42,17 @@ export default function CitizenDashboard() {
     };
 
     loadStats();
+  }, []);
+
+  /* =========================
+     AUTO SLIDE CAROUSEL
+     ========================= */
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % carouselSlides.length);
+    }, 4000);
+
+    return () => clearInterval(timer);
   }, []);
 
   /* =========================
@@ -62,6 +80,24 @@ export default function CitizenDashboard() {
     },
   ];
 
+  const carouselSlides = [
+    {
+      title: "Explore Buguda",
+      
+      image:buguda1,
+    },
+    {
+      title: "Explore Buguda",
+      
+      image:buguda2,
+    },
+    {
+      title: "Explore Buguda",
+      
+      image:buguda3,
+    },
+  ];
+
   const recentActivities = [
     {
       title: "Complaint C-101 created",
@@ -86,7 +122,7 @@ export default function CitizenDashboard() {
   ];
 
   return (
-    <div className=" rounded-3xl">
+    <div className="rounded-3xl">
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-4xl font-extrabold text-green-700">
@@ -97,48 +133,111 @@ export default function CitizenDashboard() {
         </p>
       </div>
 
-      {/* STAT CARDS */}
-      <div className="flex gap-4 mb-6">
-        {statCards.map((card, index) => {
-          const Icon = card.icon;
-          return (
+      {/* =========================
+         STATS + CAROUSEL ROW
+         ========================= */}
+      <div className="grid grid-cols-1 lg:grid-cols-6 gap-6 mb-6 ">
+        {/* Stat Cards */}
+        <div className="lg:col-span-3 flex gap-2">
+          {statCards.map((card, index) => {
+            const Icon = card.icon;
+            return (
+              <div
+                key={index}
+                className={`bg-gradient-to-br ${card.gradient} h-48 w-48 rounded-2xl p-4 shadow-lg text-white flex flex-col justify-between relative`}
+              >
+                <div className="absolute top-3 right-3 bg-white/20 p-2 rounded-lg">
+                  <Icon className="w-4 h-4" />
+                </div>
+
+                <div>
+                  <p className="text-xs uppercase font-semibold opacity-90">
+                    {card.label}
+                  </p>
+                  <p className="text-3xl font-bold mt-1">{card.value}</p>
+                </div>
+
+                <button className="text-xs bg-white/20 hover:bg-white/30 px-3 py-1 rounded-md transition">
+                  View
+                </button>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Carousel */}
+        {/* <div className=" lg:col-span-3 relative overflow-hidden rounded-3xl shadow-lg h-48">
+          {carouselSlides.map((slide, index) => (
             <div
               key={index}
-              className={`bg-gradient-to-br ${card.gradient} h-48 w-48 rounded-2xl p-3 shadow-lg text-white flex flex-col justify-between relative`}
+              className={`absolute inset-0 transition-all duration-700 ${
+                index === activeSlide
+                  ? "opacity-100 translate-x-0"
+                  : "opacity-0 translate-x-full"
+              } bg-gradient-to-br ${slide.bg} p-6 text-white`}
             >
-              {/* Icon */}
-              <div className="absolute top-2 right-2 bg-white/20 p-1.5 rounded-lg">
-                <Icon className="w-4 h-4" />
-              </div>
+              <div className="flex flex-col justify-between h-full">
+                <div>
+                  <h3 className="text-xl font-bold">{slide.title}</h3>
+                  <p className="text-sm opacity-90 mt-1">
+                    {slide.subtitle}
+                  </p>
+                </div>
 
-              {/* Content */}
-              <div>
-                <p className="text-[10px] uppercase font-semibold opacity-90">
-                  {card.label}
-                </p>
-                <p className="text-2xl font-bold mt-1">{card.value}</p>
+                <div className="flex justify-between items-center">
+                  <img
+                    src={slide.image}
+                    alt=""
+                    className="w-12 h-12 bg-white rounded-xl p-2"
+                  />
+                  <span className="text-xs bg-white/20 px-3 py-1 rounded-full">
+                    Slide {index + 1}
+                  </span>
+                </div>
               </div>
-
-              <button className="text-[10px] bg-white/20 hover:bg-white/30 px-2 py-1 rounded-md transition">
-                View
-              </button>
             </div>
-          );
-        })}
+          ))}
+        </div> */}
+        <div className="lg:col-span-3 relative overflow-hidden rounded-3xl shadow-lg h-56">
+  {carouselSlides.map((slide, index) => (
+    <div
+      key={index}
+      className={`absolute inset-0 transition-opacity duration-700 ${
+        index === activeSlide ? "opacity-100" : "opacity-0"
+      }`}
+    >
+      {/* Background Image */}
+      <img
+        src={slide.image}
+        alt={slide.title}
+        className="w-full h-full object-cover object-center absolute inset-0"
+      />
+
+      {/* Dark Overlay */}
+      <div className="absolute inset-0 bg-black/40" />
+
+      {/* Text Content */}
+      <div className="absolute inset-0 p-6 flex flex-col justify-between text-white">
+        <div>
+          <h3 className="text-2xl font-bold">{slide.title}</h3>
+          <p className="text-sm mt-1">{slide.subtitle}</p>
+        </div>
+
+        
+      </div>
+    </div>
+  ))}
+</div>
+
       </div>
 
       {/* LOWER SECTION */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Activity */}
         <section className="lg:col-span-2 bg-white rounded-3xl shadow-lg p-6 border-t-4 border-emerald-400">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-bold text-gray-800">
-              Recent Activity
-            </h2>
-            <span className="text-xs bg-gray-100 px-3 py-1 rounded-full">
-              Latest
-            </span>
-          </div>
+          <h2 className="text-lg font-bold text-gray-800 mb-4">
+            Recent Activity
+          </h2>
 
           <ul className="space-y-4 text-sm">
             {recentActivities.map((activity, index) => (

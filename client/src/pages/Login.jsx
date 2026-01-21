@@ -6,7 +6,10 @@ import { useAuth } from "../context/AuthContext";
 import { useTranslation } from "react-i18next";
 import api from "../api/api";
 
-const LOGO = "https://swachhganjam.in/assets/logo-D7UUn_EU.png";
+const LOGO = "image.jpg";
+
+// if you want to download a fixed file from public folder:
+const DOWNLOAD_URL = "/SBM 2.0.pdf"; // put this file in public/
 
 const Login = () => {
   const { login } = useAuth();
@@ -22,12 +25,11 @@ const Login = () => {
   const [showNotice, setShowNotice] = useState(true);
   const [generatedOtp, setGeneratedOtp] = useState("");
 
-
   const wasteCategories = [
     { name: "PAPER", color: "bg-blue-500", icon: "📄" },
     { name: "PLASTIC", color: "bg-yellow-500", icon: "♻️" },
     { name: "GLASS", color: "bg-cyan-500", icon: "🗑️" },
-    { name: "ORGANIC", color: "bg-green-500", icon: "🌱" }
+    { name: "ORGANIC", color: "bg-green-500", icon: "🌱" },
   ];
 
   // -------- shared helpers --------
@@ -39,7 +41,7 @@ const Login = () => {
         phone: phone || null,
         username: username || null,
         time: new Date().toISOString(),
-        status
+        status,
       });
     } catch (error) {
       console.error("Failed to save login log", error);
@@ -49,22 +51,32 @@ const Login = () => {
   const ensureCitizenExists = async (phoneNumber) => {
     try {
       const { data: citizens } = await api.get("/citizens", {
-        params: { phone: phoneNumber }
+        params: { phone: phoneNumber },
       });
 
       if (!citizens || citizens.length === 0) {
         await api.post("/citizens", {
-          phone: phoneNumber
+          phone: phoneNumber,
         });
       }
     } catch (error) {
       console.error("Failed to ensure citizen exists", error);
     }
   };
-  const generateOtp = () => {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-};
 
+  const generateOtp = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  };
+
+  // simple file-download handler (from a fixed URL) [web:50]
+  const handleDownloadGuide = () => {
+    const link = document.createElement("a");
+    link.href = DOWNLOAD_URL;
+    link.download = "SBM 2.0.pdf";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   // -------- citizen login --------
 
@@ -73,15 +85,13 @@ const Login = () => {
       alert("Phone number must be 10 digits");
       return;
     }
-    // setShowOtpInput(true);
 
     const otp = generateOtp();
-  setGeneratedOtp(otp);
-  setShowOtpInput(true);
+    setGeneratedOtp(otp);
+    setShowOtpInput(true);
 
-  // DEMO PURPOSE ONLY
-  console.log("Generated OTP:", otp);
-  toast.info(`Demo OTP: ${otp}`);
+    console.log("Generated OTP:", otp);
+    toast.info(`Demo OTP: ${otp}`);
   };
 
   const handleVerifyOtp = async () => {
@@ -92,7 +102,7 @@ const Login = () => {
         role: "citizen",
         phone,
         username: null,
-        status: "success"
+        status: "success",
       });
 
       login({ role: "citizen", phone });
@@ -103,7 +113,7 @@ const Login = () => {
         role: "citizen",
         phone,
         username: null,
-        status: "failed"
+        status: "failed",
       });
       toast.error("Invalid OTP");
     }
@@ -119,7 +129,7 @@ const Login = () => {
 
     try {
       const { data: users } = await api.get("/users", {
-        params: { username, password, role }
+        params: { username, password, role },
       });
 
       if (!users || users.length === 0) {
@@ -127,7 +137,7 @@ const Login = () => {
           role,
           phone: null,
           username,
-          status: "failed"
+          status: "failed",
         });
         toast.error("Invalid username or password");
         return;
@@ -137,7 +147,7 @@ const Login = () => {
         role,
         phone: null,
         username,
-        status: "success"
+        status: "success",
       });
 
       login({ role, username });
@@ -158,13 +168,13 @@ const Login = () => {
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white max-w-md w-full rounded-2xl p-8 text-center shadow-2xl">
             <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden">
-              <img src={LOGO} alt="Ganjam Logo" className="w-full h-full object-cover" />
+              <img src={LOGO} alt="Buguda Logo" className="w-full h-full object-cover" />
             </div>
             <h2 className="text-2xl font-bold text-emerald-700 mb-3">
               Official Government Portal
             </h2>
             <p className="text-gray-600 mb-6">
-              This is an official portal of GANJAM N.A.C for Solid Waste Management.
+              This is an official portal of BUGUDA N.A.C for Solid Waste Management.
               Please ensure you're on the correct website before entering any credentials.
             </p>
             <button
@@ -177,31 +187,26 @@ const Login = () => {
         </div>
       )}
 
-      {/* Left Panel - Info Section with bg.jpg like screenshot */}
+      {/* Left Panel */}
       <div
         className="lg:w-1/2 hidden lg:flex flex-col justify-between relative overflow-hidden bg-cover bg-bottom"
         style={{
           backgroundImage: "url('/bg-green.jpg')",
           backgroundSize: "cover",
-          backgroundPosition: "center bottom"
+          backgroundPosition: "center bottom",
         }}
       >
-        {/* dark gradient overlay for readability */}
         <div className="absolute inset-0 bg-gradient-to-b from-emerald-700/70 via-emerald-700/40 to-emerald-900/80" />
 
         <div className="relative z-10 px-12 pt-10 pb-6">
           {/* Header */}
           <div className="flex items-center gap-4 mb-8">
             <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg overflow-hidden">
-              <img src={LOGO} alt="Ganjam Logo" className="w-full h-full object-cover" />
+              <img src={LOGO} alt="Buguda Logo" className="w-full h-full object-cover" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">
-                {t("berhampurNAC")}
-              </h1>
-              <p className="text-teal-100 text-sm">
-                {t("municipalServices")}
-              </p>
+              <h1 className="text-2xl font-bold text-white">{t("BUGUDA NAC")}</h1>
+              <p className="text-teal-100 text-sm">{t("municipalServices")}</p>
             </div>
           </div>
 
@@ -213,12 +218,10 @@ const Login = () => {
             <p className="text-lg text-emerald-100 font-medium mb-2">
               {t("joinMission")}
             </p>
-            <p className="text-emerald-50 max-w-xl">
-              {t("buildingFuture")}
-            </p>
+            <p className="text-emerald-50 max-w-xl">{t("buildingFuture")}</p>
           </div>
 
-          {/* Category cards like screenshot */}
+          {/* Category cards */}
           <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mt-10 max-w-3xl">
             {wasteCategories.map((category, idx) => (
               <div
@@ -241,23 +244,22 @@ const Login = () => {
         {/* Footer */}
         <div className="relative z-10 px-12 pb-6">
           <p className="text-xs text-emerald-100">
-            © 2025 GANJAM N.A.C - All Rights Reserved
+            © 2025 BUGUDA N.A.C - All Rights Reserved
           </p>
         </div>
       </div>
 
-      {/* Right Panel - Login Card like screenshot */}
+      {/* Right Panel - Login Card */}
       <div className="lg:w-1/2 flex items-center justify-center p-4 lg:p-8">
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="lg:hidden flex justify-center mb-6">
             <div className="w-20 h-20 bg-emerald-600 rounded-full flex items-center justify-center shadow-lg overflow-hidden">
-              <img src={LOGO} alt="Ganjam Logo" className="w-full h-full object-cover" />
+              <img src={LOGO} alt="Buguda Logo" className="w-full h-full object-cover" />
             </div>
           </div>
 
           <div className="bg-white rounded-3xl shadow-2xl p-8 lg:p-9 border border-gray-100 relative">
-            {/* top color strip like screenshot */}
             <div className="absolute -top-[3px] left-0 right-0 h-1 rounded-t-3xl bg-gradient-to-r from-emerald-500 via-emerald-400 to-amber-400" />
 
             {/* Language selector */}
@@ -283,7 +285,7 @@ const Login = () => {
               </div>
             </div>
 
-            {/* Role tabs like screenshot */}
+            {/* Role tabs */}
             <div className="flex justify-center gap-2 mb-8">
               <div className="inline-flex bg-gray-100 rounded-xl p-1">
                 {["citizen", "supervisor", "admin"].map((r) => (
@@ -425,6 +427,17 @@ const Login = () => {
                 >
                   {t("login")}
                 </button>
+
+                {/* Download button ONLY for supervisor/admin */}
+                {(role === "admin" || role === "supervisor") && (
+                  <button
+                    type="button"
+                    onClick={handleDownloadGuide}
+                    className="w-full mt-3 bg-amber-500 hover:bg-amber-600 text-white py-3 rounded-lg font-semibold transition-colors"
+                  >
+                    Download SWM Guide
+                  </button>
+                )}
               </div>
             )}
 
@@ -447,7 +460,7 @@ const Login = () => {
                 href="mailto:support@ganjamnac.in"
                 className="text-emerald-600 hover:underline font-medium"
               >
-                support@ganjamnac.in
+                [support@ganjamnac.in](mailto:support@ganjamnac.in)
               </a>
             </p>
           </div>

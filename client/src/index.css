@@ -69,3 +69,22 @@
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(to bottom, #6366f1, #9333ea);
 }
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+
+  100% {
+    transform: translateX(-33.333%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 15s linear infinite;
+}
+
+/* Pause on hover */
+.animate-marquee:hover {
+  animation-play-state: paused;
+}

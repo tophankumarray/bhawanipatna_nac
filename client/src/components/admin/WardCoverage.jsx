@@ -22,7 +22,7 @@ const WardCoverage = ({ data }) => {
         </div>
       </div>
 
-      <div className="space-y-3 max-h-[400px] overflow-y-auto">
+      <div className="space-y-3 max-h-100 overflow-y-auto">
         {wards.map((ward, index) => {
           const colors = getStatusColor(ward.status);
           const completion = ward.completion || 0;
@@ -40,7 +40,7 @@ const WardCoverage = ({ data }) => {
               </div>
               <div className="w-full bg-white rounded-full h-2 mb-2">
                 <div 
-                  className={`${colors.dot.replace('bg-', 'bg-gradient-to-r from-')} to-opacity-70 h-2 rounded-full transition-all duration-500`}
+                  className={`${colors.dot.replace('bg-', 'bg-linear-to-r from-')} to-opacity-70 h-2 rounded-full transition-all duration-500`}
                   style={{ width: `${completion}%` }}
                 ></div>
               </div>
