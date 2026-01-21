@@ -7,9 +7,14 @@ import {
   Minus,
   TrendingUp,
   ShoppingCart,
+  Download,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import jsonApi from "../../api/jsonApi";
+
+/* ✅ PDF */
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 /**
  * MO KHATA SYSTEM (NO REDUX)
@@ -39,6 +44,47 @@ const MoKhataDashboard = () => {
   const [transactions, setTransactions] = useState([]);
 
   const todayKey = useMemo(() => getTodayKey(), []);
+
+  /* ================= PDF DOWNLOAD ================= */
+
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF("portrait");
+
+    doc.setFontSize(16);
+    doc.text("Mo Khata Report", 14, 15);
+
+    doc.setFontSize(11);
+    doc.text(`Date: ${todayKey}`, 14, 24);
+
+    // Summary table
+    autoTable(doc, {
+      startY: 30,
+      head: [["Metric", "Value"]],
+      body: [
+        ["Current Stock", khataStock],
+        ["Today Made", todayMade],
+        ["Today Sold", todaySold],
+        ["Net Change Today", todayMade - todaySold],
+        [
+          "Sales Rate",
+          todayMade > 0 ? `${Math.round((todaySold / todayMade) * 100)}%` : "0%",
+        ],
+      ],
+      styles: { fontSize: 10 },
+    });
+
+    // Transactions table (Last 10)
+    const last10 = transactions.slice().reverse().slice(0, 10);
+
+    autoTable(doc, {
+      startY: doc.lastAutoTable.finalY + 10,
+      head: [["Type", "Amount", "Date"]],
+      body: last10.map((t) => [t.type, t.amount, t.date]),
+      styles: { fontSize: 10 },
+    });
+
+    doc.save(`mo-khata-report-${todayKey}.pdf`);
+  };
 
   /* ================= LOAD DATA ================= */
 
@@ -242,13 +288,19 @@ const MoKhataDashboard = () => {
 
               <div>
                 <h1 className="text-3xl font-bold tracking-tight">
-                  Mo Khata Management
+                  Mo Khata
                 </h1>
-                <p className="text-orange-100 text-sm mt-1">
-                  Track khata boxes inventory (json-server)
-                </p>
               </div>
             </div>
+
+            {/* ✅ PDF DOWNLOAD BUTTON */}
+            <button
+              onClick={handleDownloadPDF}
+              className="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-5 py-3 rounded-xl font-semibold shadow-md transition-all duration-200 hover:scale-105"
+            >
+              <Download size={18} />
+              Download PDF
+            </button>
           </div>
         </div>
       </header>
@@ -275,7 +327,7 @@ const MoKhataDashboard = () => {
                 Current Stock
               </p>
               <p className="text-5xl font-bold text-white mb-2">{khataStock}</p>
-              <p className="text-indigo-200 text-sm">Khata Boxes</p>
+              <p className="text-indigo-200 text-sm">Khata</p>
             </div>
           </div>
 
@@ -291,7 +343,7 @@ const MoKhataDashboard = () => {
                 Today Made
               </p>
               <p className="text-5xl font-bold text-white mb-2">{todayMade}</p>
-              <p className="text-emerald-200 text-sm">Boxes Added</p>
+              <p className="text-emerald-200 text-sm">Added</p>
             </div>
           </div>
 
@@ -307,7 +359,7 @@ const MoKhataDashboard = () => {
                 Today Sold
               </p>
               <p className="text-5xl font-bold text-white mb-2">{todaySold}</p>
-              <p className="text-red-200 text-sm">Boxes Sold</p>
+              <p className="text-red-200 text-sm">Sold</p>
             </div>
           </div>
         </div>
@@ -330,7 +382,7 @@ const MoKhataDashboard = () => {
                 {todayMade - todaySold > 0 ? "+" : ""}
                 {todayMade - todaySold}
               </p>
-              <p className="text-purple-200 text-xs mt-2">Boxes</p>
+              <p className="text-purple-200 text-xs mt-2">Khata</p>
             </div>
 
             <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6">
@@ -362,7 +414,7 @@ const MoKhataDashboard = () => {
                 <Plus className="h-6 w-6 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-gray-800">
-                Add Khata Boxes
+                Add Khata
               </h3>
             </div>
 
@@ -391,7 +443,7 @@ const MoKhataDashboard = () => {
                 <Minus className="h-6 w-6 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-gray-800">
-                Sold Khata Boxes
+                Sold Khata
               </h3>
             </div>
 
