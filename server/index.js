@@ -4,6 +4,13 @@ import dotenv from "dotenv";
 import connectDB from "./utils/db.js";
 import complaintRoutes from "./routes/complaint.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
+import trackRoutes from "./routes/trackingRoutes.js";
+import wardRoutes from "./routes/ward.routes.js";
+import supervisorRoutes from "./routes/supervisor.routes.js";
+import wasteCollectionRoutes from "./routes/wasteCollection.routes.js";
+import fuelManagementRoutes from "./routes/fuelManagement.routes.js";
+
+
 
 dotenv.config({ path: ".env" });
 
@@ -12,18 +19,12 @@ const app = express();
 // Database
 connectDB();
 
-
-
-
-
-
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 app.use("/uploads", express.static("uploads"));
-
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -35,6 +36,13 @@ app.get("/", (req, res) => {
 // Routes
 app.use("/api/complaints", complaintRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/tracking", trackRoutes);
+app.use("/api/wards", wardRoutes);
+app.use("/api/supervisors", supervisorRoutes);
+app.use("/api/waste-collections", wasteCollectionRoutes);
+app.use("/api/fuel-management", fuelManagementRoutes);
+
+
 
 
 

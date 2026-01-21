@@ -6,8 +6,8 @@ import upload from "../utils/multer.js";
 
 const router = express.Router();
 
-router.post("/", upload.single("image"), createComplaint);
-router.get("/", getAllComplaints);
+router.post("/createcomplaint", upload.single("image"), createComplaint);
+router.get("/allcomplaints", getAllComplaints);
 
 
 
