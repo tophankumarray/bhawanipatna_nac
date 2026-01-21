@@ -151,27 +151,7 @@ const Ward = () => {
     }
   };
 
-  const handleDeleteWard = async (wardId) => {
-    if (!window.confirm('Are you sure you want to delete this ward?')) return;
-    
-    try {
-      await api.delete(`/wards/${wardId}`);
-      toast.success('Ward deleted successfully');
-      fetchWards();
-    } catch (error) {
-      console.error('Error deleting ward:', error);
-      toast.error('Failed to delete ward');
-    }
-  };
 
-  const handleViewDetails = (ward) => {
-    setSelectedWard(ward);
-    setShowModal(true);
-  };
-
-  const handleViewMap = () => {
-    toast.info('Map view feature coming soon!');
-  };
 
   const filteredWards = wards.filter(ward => {
     const matchesStatus = filters.status === 'all' || ward.status === filters.status;
@@ -277,9 +257,8 @@ const Ward = () => {
               <WardCard
                 key={ward.id}
                 ward={ward}
-                onViewDetails={handleViewDetails}
-                onViewMap={handleViewMap}
-                onDelete={handleDeleteWard}
+                
+             
               />
             ))}
           </div>

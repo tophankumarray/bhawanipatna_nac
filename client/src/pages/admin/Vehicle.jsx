@@ -110,18 +110,6 @@ const Vehicle = () => {
     }
   };
 
-  // const handleDeleteVehicle = async (vehicleId) => {
-  //   if (!window.confirm('Are you sure you want to delete this vehicle?')) return;
-    
-  //   try {
-  //     await api.delete(`/vehicles/${vehicleId}`);
-  //     toast.success('Vehicle deleted successfully');
-  //     fetchVehicles();
-  //   } catch (error) {
-  //     console.error('Error deleting vehicle:', error);
-  //     toast.error('Failed to delete vehicle');
-  //   }
-  // };
 
   const handleViewDetails = (vehicle) => {
     setSelectedVehicle(vehicle);
@@ -160,7 +148,7 @@ const Vehicle = () => {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                Vehicle Management
+                Vehicle Details
               </h1>
               <p className="text-gray-600 mt-1">Monitor and manage your fleet</p>
             </div>
@@ -233,7 +221,6 @@ const Vehicle = () => {
                 vehicle={vehicle}
                 onViewDetails={handleViewDetails}
                 onTrackLive={handleTrackLive}
-                // onDelete={handleDeleteVehicle}
               />
             ))}
           </div>

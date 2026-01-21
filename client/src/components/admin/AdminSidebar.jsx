@@ -42,7 +42,7 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
         <div className="p-6 border-b border-emerald-300/30">
           <div className="flex items-center gap-4 justify-between">
             <div className="text-2xl font-bold text-white ">
-              <img className="rounded-full size-20" src="/image.jpg"/>
+              <img className="rounded-full size-16" src="/image.jpg"/>
             </div>
             <button 
               onClick={() => setIsOpen(!isOpen)}

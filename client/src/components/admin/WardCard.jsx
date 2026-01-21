@@ -116,28 +116,7 @@ const WardCard = ({ ward, onViewDetails, onViewMap, onDelete }) => {
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex space-x-2">
-          <button
-            onClick={() => onViewDetails(ward)}
-            className="flex-1 bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-2 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all"
-          >
-            View Details
-          </button>
-          <button
-            onClick={() => onViewMap(ward)}
-            className="flex-1 bg-linear-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white py-2 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all"
-          >
-            View Map
-          </button>
-          <button
-            onClick={() => onDelete(ward.id)}
-            className="bg-linear-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white px-4 py-2 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all"
-            title="Delete Ward"
-          >
-            🗑️
-          </button>
-        </div>
+       
       </div>
     </div>
   );

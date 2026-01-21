@@ -112,13 +112,6 @@ const VehicleCard = ({ vehicle, onViewDetails, onTrackLive, onDelete }) => {
           >
             Track Live
           </button>
-          {/* <button
-            onClick={() => onDelete(vehicle.id)}
-            className="bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white px-4 py-2 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all"
-            title="Delete Vehicle"
-          >
-            🗑️
-          </button> */}
         </div>
       </div>
     </div>
