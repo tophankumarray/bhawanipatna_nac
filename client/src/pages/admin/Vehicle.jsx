@@ -164,13 +164,13 @@ const Vehicle = () => {
               </h1>
               <p className="text-gray-600 mt-1">Monitor and manage your fleet</p>
             </div>
-            <button
+            {/* <button
               onClick={() => setShowAddModal(true)}
               className="bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
             >
               <span className="mr-2">➕</span>
               Add Vehicle
-            </button>
+            </button> */}
           </div>
         </div>
 
@@ -361,7 +361,7 @@ const Vehicle = () => {
       )}
 
       {/* Add Vehicle Modal */}
-      {showAddModal && (
+      {/* {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
@@ -506,7 +506,7 @@ const Vehicle = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
