@@ -20,6 +20,8 @@ import WasteCollection from "../pages/admin/WasteCollection";
 import CitizenLayout from "../layout/CitizenLayout";
 import CitizenDashboard from "../pages/citizen/CitizenDashboard";
 import CitizenPostComplaint from "../pages/citizen/CitizenPostComplaint";
+import CitizenTrackInfo from "../pages/citizen/CitizenTrackVehicle";
+import CitizenCheckpoint from "../pages/citizen/CitizenCheckpoint";
 
 /* ================= SUPERVISOR ================= */
 import SupervisorLayout from "../layout/SupervisorLayout";
@@ -75,8 +77,9 @@ export default function AppRoutes() {
         >
           <Route index element={<CitizenDashboard />} />
           <Route path="complaint" element={<CitizenPostComplaint />} />
-          <Route path="track" element={<TrackVehicle/>} />
+          <Route path="track" element={<CitizenTrackInfo/>} />
           <Route path="payments" element={<OnlineService/>} />
+          <Route path="checkpoint" element={<CitizenCheckpoint/>} />
         </Route>
 
         {/* ================= SUPERVISOR ROUTES ================= */}
