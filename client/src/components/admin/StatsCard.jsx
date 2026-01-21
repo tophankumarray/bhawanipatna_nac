@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 
 const StatsCard = ({ title, value, icon, gradient, link, showButton = true }) => {
   return (
-    <div className={`relative bg-gradient-to-br ${gradient} rounded-2xl shadow-xl p-5 sm:p-7 text-white hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 cursor-pointer group overflow-hidden`}>
+    <div className={`relative bg-linear-to-br ${gradient} rounded-2xl shadow-xl p-5 sm:p-7 text-white hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 cursor-pointer group overflow-hidden`}>
       {/* Animated gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/0 via-white/5 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+      <div className="absolute inset-0 bg-linear-to-br from-white/0 via-white/5 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
       
       {/* Decorative animated circles */}
       <div className="absolute -right-6 -top-6 w-28 h-28 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700 ease-out"></div>

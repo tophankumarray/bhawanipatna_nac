@@ -179,13 +179,13 @@ const Attendance = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-linear-to-br from-emerald-50 via-white to-teal-50 p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-xl p-6 mb-6 border border-gray-100">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                 Attendance Management
               </h1>
               <p className="text-gray-600 mt-1">Track and manage staff attendance</p>
@@ -199,7 +199,7 @@ const Attendance = () => {
               />
               <button
                 onClick={() => setShowMarkAttendanceModal(true)}
-                className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-6 py-2 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                className="bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-6 py-2 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
               >
                 <span className="mr-2">➕</span>
                 Mark Attendance
@@ -306,7 +306,7 @@ const Attendance = () => {
           <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                <h2 className="text-2xl font-bold bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                   Staff Details
                 </h2>
                 <button
@@ -347,7 +347,7 @@ const Attendance = () => {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <p className="text-sm text-gray-600 font-semibold">Status</p>
-                      <span className={`bg-gradient-to-r ${getStatusColor(selectedStaff.status).badge} text-white text-sm font-bold px-3 py-1 rounded-full inline-block mt-1 capitalize`}>
+                      <span className={`bg-linear-to-r ${getStatusColor(selectedStaff.status).badge} text-white text-sm font-bold px-3 py-1 rounded-full inline-block mt-1 capitalize`}>
                         {selectedStaff.status.replace('-', ' ')}
                       </span>
                     </div>
@@ -400,7 +400,7 @@ const Attendance = () => {
           <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                <h2 className="text-2xl font-bold bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                   Mark Attendance
                 </h2>
                 <button
@@ -487,7 +487,7 @@ const Attendance = () => {
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-3 rounded-xl font-semibold transition-all"
+                    className="flex-1 bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-3 rounded-xl font-semibold transition-all"
                   >
                     Save Attendance
                   </button>

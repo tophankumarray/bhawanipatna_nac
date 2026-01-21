@@ -14,14 +14,14 @@ const RouteCompletion = ({ data }) => {
       </div>
 
       {/* Overall Progress */}
-      <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100 mb-5">
+      <div className="bg-linear-to-br from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100 mb-5">
         <div className="flex items-center justify-between mb-3">
           <span className="text-sm font-medium text-gray-600">Overall Completion</span>
           <span className="text-2xl font-bold text-purple-600">{data?.overallCompletion || 0}%</span>
         </div>
         <div className="w-full bg-white rounded-full h-3">
           <div 
-            className="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full transition-all duration-500"
+            className="bg-linear-to-r from-purple-500 to-pink-500 h-3 rounded-full transition-all duration-500"
             style={{ width: `${data?.overallCompletion || 0}%` }}
           ></div>
         </div>
@@ -32,7 +32,7 @@ const RouteCompletion = ({ data }) => {
       </div>
 
       {/* Route List */}
-      <div className="space-y-2 max-h-[280px] overflow-y-auto">
+      <div className="space-y-2 max-h-70 overflow-y-auto">
         {routes.map((route, index) => (
           <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
             <div className="flex items-center gap-3">

@@ -37,7 +37,7 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
       {/* Sidebar */}
       <aside className={`${
         isOpen ? 'translate-x-0' : '-translate-x-full'
-      } lg:translate-x-0 w-64 bg-gradient-to-b from-emerald-400 via-emerald-500 to-teal-500 shadow-2xl h-screen fixed left-0 top-0 transition-transform duration-300 z-50 overflow-y-auto`}>
+      } lg:translate-x-0 w-64 bg-linear-to-b from-emerald-400 via-emerald-500 to-teal-500 shadow-2xl h-screen fixed left-0 top-0 transition-transform duration-300 z-50 overflow-y-auto`}>
         {/* Logo Section */}
         <div className="p-6 border-b border-emerald-300/30">
           <div className="flex items-center gap-4 justify-between">
@@ -52,9 +52,9 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-             <p className="text-xl text-white font-bold mt-1">BUGUDA NAC</p>
+            <p className="text-xl text-white font-bold mt-1">BUGUDA NAC</p>
           </div>
-         
+        
         </div>
 
         {/* Menu Items */}

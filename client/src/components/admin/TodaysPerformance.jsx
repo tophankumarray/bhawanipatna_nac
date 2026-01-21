@@ -27,7 +27,7 @@ const TodaysPerformance = ({ data }) => {
       
       <div className="space-y-6">
         {/* Resolved Complaints */}
-        <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-100">
+        <div className="bg-linear-to-br from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-100">
           <div className="flex items-start justify-between mb-3">
             <div>
               <span className="text-sm font-medium text-gray-600">Resolved Complaints</span>
@@ -95,7 +95,7 @@ const TodaysPerformance = ({ data }) => {
         </div>
         
         {/* Collection Rate */}
-        <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-100">
+        <div className="bg-linear-to-br from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-100">
           <div className="flex items-start justify-between mb-3">
             <div>
               <span className="text-sm font-medium text-gray-600">Collection Rate</span>

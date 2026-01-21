@@ -19,10 +19,10 @@ const ComplaintsStatus = ({ data }) => {
   return (
     <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 hover:shadow-xl transition-shadow duration-300 border border-gray-100">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
+        <h3 className="text-lg font-semibold bg-linear-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
           Complaints
         </h3>
-        <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-rose-500 rounded-lg flex items-center justify-center">
+        <div className="w-10 h-10 bg-linear-to-br from-pink-500 to-rose-500 rounded-lg flex items-center justify-center">
           <span className="text-white text-xl">📋</span>
         </div>
       </div>
@@ -42,7 +42,7 @@ const ComplaintsStatus = ({ data }) => {
             </div>
             <div className="relative h-3 bg-gray-100 rounded-full overflow-hidden">
               <div 
-                className={`absolute top-0 left-0 h-full bg-gradient-to-r ${stat.gradient} rounded-full transition-all duration-700 ease-out shadow-sm`}
+                className={`absolute top-0 left-0 h-full bg-linear-to-r ${stat.gradient} rounded-full transition-all duration-700 ease-out shadow-sm`}
                 style={{ width: `${maxCount > 0 ? (stat.count / maxCount) * 100 : 0}%` }}
               >
                 <div className="absolute inset-0 bg-white/20 animate-shimmer"></div>
@@ -53,10 +53,10 @@ const ComplaintsStatus = ({ data }) => {
       </div>
 
       {/* Total Summary */}
-      <div className="mb-4 p-3 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-100">
+      <div className="mb-4 p-3 bg-linear-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-100">
         <div className="flex items-center justify-between">
           <span className="text-sm font-semibold text-gray-700">Total Complaints</span>
-          <span className="text-lg font-extrabold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+          <span className="text-lg font-extrabold bg-linear-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
             {totalComplaints}
           </span>
         </div>
@@ -64,10 +64,10 @@ const ComplaintsStatus = ({ data }) => {
 
       {/* Secondary Scan Section */}
       <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200">
-        <h4 className="text-sm font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-3">Secondary Scan</h4>
+        <h4 className="text-sm font-semibold bg-linear-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-3">Secondary Scan</h4>
         <div className="grid grid-cols-2 gap-2 text-xs">
-          <div className="flex items-center p-2 bg-gradient-to-br from-orange-50 to-amber-50 rounded-lg">
-            <span className="w-2 h-2 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 mr-2"></span>
+          <div className="flex items-center p-2 bg-linear-to-br from-orange-50 to-amber-50 rounded-lg">
+            <span className="w-2 h-2 rounded-full bg-linear-to-br from-orange-500 to-amber-500 mr-2"></span>
             <span className="text-gray-700 font-medium">0 Today</span>
           </div>
           <div className="flex items-center">

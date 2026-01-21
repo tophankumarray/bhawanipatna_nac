@@ -268,7 +268,7 @@ const AdminNavbar = ({ onMenuClick }) => {
 
   // Rest of JSX remains IDENTICAL until notifications section...
   return (
-    <nav className="bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 shadow-lg fixed top-0 right-0 left-0 lg:left-64 z-40 h-16">
+    <nav className="bg-linear-to-r from-emerald-500 via-emerald-600 to-teal-600 shadow-lg fixed top-0 right-0 left-0 lg:left-64 z-40 h-16">
       <div className="flex items-center justify-between h-full px-4 lg:px-6">
         {/* Mobile Menu & Breadcrumb - UNCHANGED */}
         <div className="flex items-center space-x-3">
@@ -331,7 +331,7 @@ const AdminNavbar = ({ onMenuClick }) => {
             {/* UPDATED Notifications Panel */}
             {showNotifications && (
               <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-2xl border border-gray-200 max-h-96 overflow-y-auto z-50">
-                <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 rounded-t-xl">
+                <div className="p-4 border-b border-gray-200 bg-linear-to-r from-gray-50 to-gray-100 rounded-t-xl">
                   <div className="flex items-center justify-between">
                     <h3 className="font-bold text-lg text-gray-800">New Notifications</h3>
                     {unreadCount > 0 && (
@@ -365,7 +365,7 @@ const AdminNavbar = ({ onMenuClick }) => {
                       onClick={() => markAsRead(notification.id)}
                     >
                       <div className="flex items-start space-x-3">
-                        <div className={`w-3 h-3 rounded-full mt-2 flex-shrink-0 flex items-center justify-center shadow-sm ${
+                        <div className={`w-3 h-3 rounded-full mt-2 shrink-0 flex items-center justify-center shadow-sm ${
                           notification.priority === 'high' ? 'bg-red-500' :
                           notification.priority === 'medium' ? 'bg-yellow-500' : 'bg-emerald-500'
                         }`}>
@@ -437,7 +437,7 @@ const AdminNavbar = ({ onMenuClick }) => {
                     setShowContactModal(true);
                     setShowUserMenu(false);
                   }}
-                  className="block w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                  className=" w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.27 7.27c.883.883 2.317.883 3.2 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -449,7 +449,7 @@ const AdminNavbar = ({ onMenuClick }) => {
                     setShowPasswordModal(true);
                     setShowUserMenu(false);
                   }}
-                  className="block w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                  className=" w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -457,7 +457,7 @@ const AdminNavbar = ({ onMenuClick }) => {
                   Change Password
                 </button>
                 <hr className="my-2 border-gray-200" />
-                <Link to="/" className="block px-4 py-3 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 font-medium">
+                <Link to="/" className=" px-4 py-3 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 font-medium">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                   </svg>
@@ -472,7 +472,7 @@ const AdminNavbar = ({ onMenuClick }) => {
        {showContactModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="bg-gradient-to-r from-emerald-500 to-teal-500 p-6 rounded-t-2xl">
+            <div className="bg-linear-to-r from-emerald-500 to-teal-500 p-6 rounded-t-2xl">
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold text-white">CONTACT DETAILS</h2>
                 <button
@@ -605,7 +605,7 @@ const AdminNavbar = ({ onMenuClick }) => {
               {/* Buttons */}
               <div className="flex gap-3 justify-start">
                 <button type="submit"
-                  className="px-8 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg font-semibold hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                  className="px-8 py-2.5 bg-linear-to-r from-emerald-500 to-teal-500 text-white rounded-lg font-semibold hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                   Update
                 </button>
                 <button type="button" onClick={handleContactCancel}
@@ -623,7 +623,7 @@ const AdminNavbar = ({ onMenuClick }) => {
         {showPasswordModal && (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
     <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
-      <div className="bg-gradient-to-r from-emerald-500 to-teal-500 p-6 rounded-t-2xl">
+      <div className="bg-linear-to-r from-emerald-500 to-teal-500 p-6 rounded-t-2xl">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold text-white">CHANGE PASSWORD</h2>
           <button
@@ -728,7 +728,7 @@ const AdminNavbar = ({ onMenuClick }) => {
         <div className="flex gap-3 justify-center mt-8">
           <button
             type="submit"
-            className="px-8 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-semibold hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex-1 text-sm"
+            className="px-8 py-3 bg-linear-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-semibold hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex-1 text-sm"
           >
             Update Password
           </button>

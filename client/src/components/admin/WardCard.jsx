@@ -24,7 +24,7 @@ const WardCard = ({ ward, onViewDetails, onViewMap, onDelete }) => {
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center space-x-3">
-            <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-14 h-14 bg-linear-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center shadow-lg">
               <span className="text-white text-2xl">🏘️</span>
             </div>
             <div>
@@ -56,23 +56,22 @@ const WardCard = ({ ward, onViewDetails, onViewMap, onDelete }) => {
             <span>Collected: {ward.collectedToday} tons</span>
             <span>Target: {ward.targetDaily} tons</span>
           </div>
-        </div>
-
+        </div>linear
         {/* Details Grid */}
         <div className="grid grid-cols-2 gap-4 mb-4">
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-3 rounded-xl">
+          <div className="bg-linear-to-br from-blue-50 to-indigo-50 p-3 rounded-xl">
             <p className="text-xs text-gray-600 font-semibold mb-1">Population</p>
             <p className="text-sm font-bold text-gray-900">{ward.population.toLocaleString()}</p>
           </div>
-          <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-3 rounded-xl">
+          <div className="bg-linear-to-br from-purple-50 to-pink-50 p-3 rounded-xl">
             <p className="text-xs text-gray-600 font-semibold mb-1">Households</p>
             <p className="text-sm font-bold text-gray-900">{ward.households.toLocaleString()}</p>
           </div>
-          <div className="bg-gradient-to-br from-emerald-50 to-teal-50 p-3 rounded-xl">
+          <div className="bg-linear-to-br from-emerald-50 to-teal-50 p-3 rounded-xl">
             <p className="text-xs text-gray-600 font-semibold mb-1">Vehicles</p>
             <p className="text-sm font-bold text-gray-900">{ward.assignedVehicles.length}</p>
           </div>
-          <div className="bg-gradient-to-br from-orange-50 to-amber-50 p-3 rounded-xl">
+          <div className="bg-linear-to-br from-orange-50 to-amber-50 p-3 rounded-xl">
             <p className="text-xs text-gray-600 font-semibold mb-1">Staff</p>
             <p className="text-sm font-bold text-gray-900">{ward.assignedStaff}</p>
           </div>
@@ -103,7 +102,7 @@ const WardCard = ({ ward, onViewDetails, onViewMap, onDelete }) => {
         </div>
 
         {/* Last Collection Info */}
-        <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-3 rounded-xl mb-4">
+        <div className="bg-linear-to-r from-gray-50 to-gray-100 p-3 rounded-xl mb-4">
           <div className="flex items-center justify-between text-xs">
             <p className="text-gray-600">Last Collection:</p>
             <p className="font-semibold text-gray-900">
@@ -121,19 +120,19 @@ const WardCard = ({ ward, onViewDetails, onViewMap, onDelete }) => {
         <div className="flex space-x-2">
           <button
             onClick={() => onViewDetails(ward)}
-            className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-2 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all"
+            className="flex-1 bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-2 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all"
           >
             View Details
           </button>
           <button
             onClick={() => onViewMap(ward)}
-            className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white py-2 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all"
+            className="flex-1 bg-linear-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white py-2 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all"
           >
             View Map
           </button>
           <button
             onClick={() => onDelete(ward.id)}
-            className="bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white px-4 py-2 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all"
+            className="bg-linear-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white px-4 py-2 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all"
             title="Delete Ward"
           >
             🗑️

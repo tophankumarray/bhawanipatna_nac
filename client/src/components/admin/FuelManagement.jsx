@@ -13,7 +13,7 @@ const FuelManagement = ({ data }) => {
 
       {/* Fuel Summary Cards */}
       <div className="grid grid-cols-2 gap-4 mb-5">
-        <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-4 border border-orange-100">
+        <div className="bg-linear-to-br from-orange-50 to-amber-50 rounded-xl p-4 border border-orange-100">
           <div className="text-xs text-gray-600 font-medium mb-1">Today's Usage</div>
           <div className="text-2xl font-bold text-orange-600">{data?.todayUsage || 0}L</div>
           <div className="text-xs text-orange-600 mt-1 flex items-center gap-1">
@@ -24,7 +24,7 @@ const FuelManagement = ({ data }) => {
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-100">
+        <div className="bg-linear-to-br from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-100">
           <div className="text-xs text-gray-600 font-medium mb-1">This Month</div>
           <div className="text-2xl font-bold text-emerald-600">{data?.monthUsage || 0}L</div>
           <div className="text-xs text-emerald-600 mt-1 flex items-center gap-1">
@@ -37,7 +37,7 @@ const FuelManagement = ({ data }) => {
       </div>
 
       {/* Cost Analysis */}
-      <div className="bg-gradient-to-br from-red-50 to-pink-50 rounded-xl p-4 border border-red-100 mb-5">
+      <div className="bg-linear-to-br from-red-50 to-pink-50 rounded-xl p-4 border border-red-100 mb-5">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium text-gray-600">Total Fuel Cost</span>
           <span className="text-2xl font-bold text-red-600">₹{data?.totalCost?.toLocaleString() || 0}</span>

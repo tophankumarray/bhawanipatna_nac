@@ -155,7 +155,7 @@ const MapView = ({ vehicles = [], selectedVehicle = null }) => {
               onClick={() => setMapType(key)}
               className={`px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
                 mapType === key
-                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md'
+                  ? 'bg-linear-to-r from-emerald-500 to-teal-500 text-white shadow-md'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
@@ -242,7 +242,7 @@ const MapView = ({ vehicles = [], selectedVehicle = null }) => {
                 autoPan={true}
                 closeButton={true}
               >
-                <div className="p-2 min-w-[200px]">
+                <div className="p-2 min-w-50">
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="font-bold text-gray-900">{vehicle.registrationNumber}</h3>
                     <span className={`text-xs font-bold px-2 py-1 rounded-full ${
@@ -268,7 +268,7 @@ const MapView = ({ vehicles = [], selectedVehicle = null }) => {
                         window.location.href = `tel:${vehicle.driverPhone}`;
                       }
                     }}
-                    className="mt-3 w-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white py-2 rounded-lg text-sm font-semibold transition-all"
+                    className="mt-3 w-full bg-linear-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white py-2 rounded-lg text-sm font-semibold transition-all"
                   >
                     📞 Call Driver
                   </button>
@@ -306,7 +306,7 @@ const MapView = ({ vehicles = [], selectedVehicle = null }) => {
       </div>
 
       {/* Info Banner - Updated */}
-      <div className="mt-4 bg-gradient-to-r from-blue-50 to-emerald-50 border border-blue-200 rounded-lg p-3">
+      <div className="mt-4 bg-linear-to-r from-blue-50 to-emerald-50 border border-blue-200 rounded-lg p-3">
         <p className="text-xs text-gray-700 text-center">
           ✨ <span className="font-semibold">100% Free Maps</span> • Esri Satellite, OpenStreetMap, Google Hybrid • No API Keys Required
         </p>

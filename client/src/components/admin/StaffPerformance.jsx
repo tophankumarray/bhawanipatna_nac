@@ -13,15 +13,15 @@ const StaffPerformance = ({ data }) => {
 
       {/* Attendance Summary */}
       <div className="grid grid-cols-3 gap-3 mb-5">
-        <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-100 text-center">
+        <div className="bg-linear-to-br from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-100 text-center">
           <div className="text-3xl font-bold text-emerald-600 mb-1">{data?.present || 0}</div>
           <div className="text-xs text-gray-600 font-medium">Present</div>
         </div>
-        <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-4 border border-orange-100 text-center">
+        <div className="bg-linear-to-br from-orange-50 to-amber-50 rounded-xl p-4 border border-orange-100 text-center">
           <div className="text-3xl font-bold text-orange-600 mb-1">{data?.absent || 0}</div>
           <div className="text-xs text-gray-600 font-medium">Absent</div>
         </div>
-        <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-100 text-center">
+        <div className="bg-linear-to-br from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-100 text-center">
           <div className="text-3xl font-bold text-blue-600 mb-1">{data?.onLeave || 0}</div>
           <div className="text-xs text-gray-600 font-medium">On Leave</div>
         </div>
@@ -35,7 +35,7 @@ const StaffPerformance = ({ data }) => {
         </div>
         <div className="w-full bg-gray-100 rounded-full h-3">
           <div 
-            className="bg-gradient-to-r from-emerald-500 to-teal-500 h-3 rounded-full transition-all duration-500"
+            className="bg-linear-to-r from-emerald-500 to-teal-500 h-3 rounded-full transition-all duration-500"
             style={{ width: `${data?.attendanceRate || 0}%` }}
           ></div>
         </div>

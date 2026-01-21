@@ -323,13 +323,13 @@ const WasteCollection = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-linear-to-br from-emerald-50 via-white to-teal-50 p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-xl p-6 mb-6 border border-gray-100">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                 Waste Collection Management
               </h1>
               <p className="text-gray-600 mt-1">Track and manage daily waste collection activities</p>
@@ -337,7 +337,7 @@ const WasteCollection = () => {
             <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={() => setShowModal(true)}
-                className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                className="bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
               >
                 <span className="mr-2">➕</span>
                 Add Collection
@@ -374,7 +374,7 @@ const WasteCollection = () => {
             </div>
             <div className="relative w-full bg-gray-200 rounded-xl h-4 overflow-hidden">
               <div 
-                className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl transition-all duration-1000"
+                className="absolute inset-0 bg-linear-to-r from-emerald-500 to-teal-500 rounded-xl transition-all duration-1000"
                 style={{ width: `${Math.min((stats.totalWaste / stats.targetWaste) * 100, 100)}%` }}
               ></div>
             </div>
@@ -453,7 +453,7 @@ const WasteCollection = () => {
             <div className="overflow-x-auto rounded-xl border border-gray-200">
               <table className="w-full">
                 <thead>
-                  <tr className="bg-gradient-to-r from-emerald-500 to-teal-500">
+                  <tr className="bg-linear-to-r from-emerald-500 to-teal-500">
                     <th className="px-6 py-4 text-left text-sm font-bold text-white">ID</th>
                     <th className="px-6 py-4 text-left text-sm font-bold text-white">Ward</th>
                     <th className="px-6 py-4 text-left text-sm font-bold text-white">Vehicle</th>
@@ -523,7 +523,7 @@ const WasteCollection = () => {
               {filteredCollections.length === 0 && (
                 <div className="text-center py-20">
                   <div className="flex justify-center mb-6">
-                    <div className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
+                    <div className="w-24 h-24 bg-linear-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
                       <span className="text-6xl">🗑️</span>
                     </div>
                   </div>
@@ -531,7 +531,7 @@ const WasteCollection = () => {
                   <p className="text-gray-600 font-medium text-lg mb-6">Try adjusting your filters or add a new collection</p>
                   <button
                     onClick={() => setShowModal(true)}
-                    className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition-all transform hover:scale-105"
+                    className="bg-linear-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition-all transform hover:scale-105"
                   >
                     + Add First Collection
                   </button>
@@ -545,14 +545,14 @@ const WasteCollection = () => {
       {/* Add/Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
-          <div className="bg-gradient-to-br from-white to-emerald-50 rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border-2 border-emerald-100 transform transition-all animate-slideUp">
+          <div className="bg-linear-to-br from-white to-emerald-50 rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border-2 border-emerald-100 transform transition-all animate-slideUp">
             <div className="p-8">
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <div className="w-12 h-12 bg-linear-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
                     <span className="text-2xl">{selectedCollection ? '✏️' : '➕'}</span>
                   </div>
-                  <h2 className="text-3xl font-black bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                  <h2 className="text-3xl font-black bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                     {selectedCollection ? 'Edit Collection' : 'Add New Collection'}
                   </h2>
                 </div>
@@ -699,7 +699,7 @@ const WasteCollection = () => {
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white py-4 rounded-xl font-black text-lg transition-all shadow-lg hover:shadow-2xl transform hover:scale-105"
+                    className="flex-1 bg-linear-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white py-4 rounded-xl font-black text-lg transition-all shadow-lg hover:shadow-2xl transform hover:scale-105"
                   >
                     {selectedCollection ? '✓ Update' : '+ Add'} Collection
                   </button>
