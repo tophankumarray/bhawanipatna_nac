@@ -14,17 +14,8 @@ const Vehicle = () => {
   });
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [newVehicle, setNewVehicle] = useState({
-    registrationNumber: '',
-    type: 'cesspool',
-    model: '',
-    capacity: '',
-    fuelType: 'diesel',
-    assignedWard: '',
-    driverName: '',
-    driverPhone: ''
-  });
+
+  
 
   // Fetch vehicles from API
   useEffect(() => {
@@ -32,83 +23,56 @@ const Vehicle = () => {
   }, []);
 
   const fetchVehicles = async () => {
-    try {
-      setLoading(true);
-      const response = await api.get('/vehicles');
-      console.log('Admin vehicles API response:', response.data);
-      setVehicles(response.data);
-    } catch (error) {
-      console.error('Error fetching vehicles:', error);
-      toast.error('Failed to load vehicles');
-      setVehicles([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    setLoading(true);
 
+    const response = await api.get('/tracking/trackings');
+    const list = response.data?.data?.list || [];
 
+    const normalizedVehicles = list.map(item => ({
+      // unique key
+      id: item.imei,
 
-  const handleAddVehicle = async (e) => {
-    e.preventDefault();
-    try {
-      // Create complete vehicle object with both field name conventions
-      const completeVehicle = {
-        registrationNumber: newVehicle.registrationNumber,
-        number: newVehicle.registrationNumber, // For supervisor compatibility
-        type: newVehicle.type,
-        model: newVehicle.model,
-        capacity: newVehicle.capacity,
-        fuelType: newVehicle.fuelType,
-        assignedWard: newVehicle.assignedWard,
-        ward: newVehicle.assignedWard, // For supervisor compatibility
-        driverName: newVehicle.driverName,
-        driver: newVehicle.driverName, // For supervisor compatibility
-        driverPhone: newVehicle.driverPhone,
-        status: 'Inactive', // Default status
-        speed: 0,
-        fuelLevel: 100,
-        odometer: 0,
-        maintenanceStatus: 'good',
-        lastService: new Date().toISOString().split('T')[0],
-        nextService: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 30 days from now
-        location: {
-          lat: 20.2961,
-          lng: 85.8245
-        },
-        route: 'Zone A',
-        averageSpeed: 0
-      };
-      
-      const response = await api.post('/vehicles', completeVehicle);
-      toast.success('Vehicle added successfully');
-      setShowAddModal(false);
-      setNewVehicle({
-        registrationNumber: '',
-        type: 'compactor',
-        model: '',
-        capacity: '',
-        fuelType: 'diesel',
-        assignedWard: '',
-        driverName: '',
-        driverPhone: ''
-      });
-      fetchVehicles();
-    } catch (error) {
-      console.error('Error adding vehicle:', error);
-      toast.error('Failed to add vehicle');
-    }
-  };
+      // UI-required fields
+      registrationNumber: item.truck_number,
+      status: item.status,
+      capacity: 'N/A',
 
-  const handleUpdateStatus = async (vehicleId, newStatus) => {
-    try {
-      await api.patch(`/vehicles/${vehicleId}`, { status: newStatus });
-      toast.success('Vehicle status updated');
-      fetchVehicles();
-    } catch (error) {
-      console.error('Error updating status:', error);
-      toast.error('Failed to update status');
-    }
-  };
+      // driver info (not available from backend)
+      driverName: 'Not Assigned',
+      driverPhone: 'N/A',
+
+      // location / ward
+      assignedWard: item.address,
+
+      // telemetry
+      speed: item.speed,
+      fuelLevel: null,
+      odometer: null,
+
+      // service info (mocked for UI safety)
+      lastService: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
+      nextService: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
+
+      // extra tracking fields (future use)
+      lat: item.lat,
+      lng: item.lng,
+      signalStrength: item.signal_strength,
+      ignitionOn: item.is_ignition_on?.value,
+      lastUpdated: new Date(item.device_timestamp),
+    }));
+
+    setVehicles(normalizedVehicles);
+
+  } catch (error) {
+    console.error('Error fetching vehicles:', error);
+    toast.error('Failed to load vehicles');
+    setVehicles([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
 
   const handleViewDetails = (vehicle) => {
@@ -130,15 +94,25 @@ const Vehicle = () => {
     return badges[status] || badges.stopped;
   };
 
-  const filteredVehicles = vehicles.filter(vehicle => {
-    const matchesStatus = filters.status === 'all' || vehicle.status === filters.status;
-    const matchesType = filters.type === 'all' || vehicle.type === filters.type;
-    const matchesSearch = !filters.search || 
-                         vehicle.registrationNumber?.toLowerCase().includes(filters.search.toLowerCase()) ||
-                         vehicle.driverName?.toLowerCase().includes(filters.search.toLowerCase()) ||
-                         vehicle.assignedWard?.toLowerCase().includes(filters.search.toLowerCase());
-    return matchesStatus && matchesType && matchesSearch;
-  });
+ const filteredVehicles = vehicles.filter(vehicle => {
+  const matchesStatus =
+    filters.status === 'all' || vehicle.status === filters.status;
+
+  const matchesType =
+    filters.type === 'all' || vehicle.type === filters.type;
+
+  const matchesSearch =
+    !filters.search ||
+    vehicle.registrationNumber
+      ?.toLowerCase()
+      .includes(filters.search.toLowerCase()) ||
+    vehicle.assignedWard
+      ?.toLowerCase()
+      .includes(filters.search.toLowerCase());
+
+  return matchesStatus && matchesType && matchesSearch;
+});
+
 
   return (
     <div className="min-h-screen bg-linear-to-br from-emerald-50 via-white to-teal-50 p-4 sm:p-6 lg:p-8">

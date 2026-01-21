@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import api from '../../api/api';
+import api from '../../api/mockAPI';
 
 const AdminNavbar = ({ onMenuClick }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);

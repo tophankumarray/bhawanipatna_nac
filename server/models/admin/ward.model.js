@@ -33,7 +33,7 @@ const wardSchema = new mongoose.Schema(
       required: true,
     },
     supervisorPhone: {
-      type: String,
+      type: Number,
       required: true,
     },
   },

@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.post("/createwastecollection", createWasteCollection);
 router.get("/getwastecollection", getAllWasteCollections);
-router.put("/updatewastecollection/:id", updateWasteCollection);
+router.patch("/updatewastecollection/:id", updateWasteCollection);
 router.delete("/deletewastecollection/:id", deleteWasteCollection);
 
 

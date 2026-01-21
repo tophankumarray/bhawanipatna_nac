@@ -30,8 +30,8 @@ const VehicleCard = ({ vehicle, onViewDetails, onTrackLive, onDelete }) => {
               <span className="text-white text-2xl">🚛</span>
             </div>
             <div>
-              <h3 className="text-xl font-bold text-gray-900">{vehicle.registrationNumber}</h3>
-              <p className="text-sm text-gray-600">{vehicle.model}</p>
+              <h3 className="text-xl font-bold text-gray-900">{vehicle.registrationNumber || 'N/A'}</h3>
+              <p className="text-sm text-gray-600">{vehicle.model|| 'Unknown Model'}</p>
             </div>
           </div>
           <div className="flex flex-col items-end space-y-2">
@@ -44,14 +44,6 @@ const VehicleCard = ({ vehicle, onViewDetails, onTrackLive, onDelete }) => {
 
         {/* Details Grid */}
         <div className="grid grid-cols-2 gap-4 mb-4">
-          <div className="bg-linear-to-br from-emerald-50 to-teal-50 p-3 rounded-xl">
-            <p className="text-xs text-gray-600 font-semibold mb-1">Type</p>
-            <p className="text-sm font-bold text-gray-900 capitalize">{vehicle.type}</p>
-          </div>
-          <div className="bg-linear-to-br from-blue-50 to-indigo-50 p-3 rounded-xl">
-            <p className="text-xs text-gray-600 font-semibold mb-1">Capacity</p>
-            <p className="text-sm font-bold text-gray-900">{vehicle.capacity}</p>
-          </div>
           <div className="bg-linear-to-br from-purple-50 to-pink-50 p-3 rounded-xl">
             <p className="text-xs text-gray-600 font-semibold mb-1">Speed</p>
             <p className="text-sm font-bold text-gray-900">

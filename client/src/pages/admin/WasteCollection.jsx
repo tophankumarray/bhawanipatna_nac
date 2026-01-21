@@ -35,44 +35,40 @@ const WasteCollection = () => {
   }, []);
 
   const fetchCollections = async () => {
-    try {
-      setLoading(true);
-      const response = await api.get('/wasteCollections');
-      
-      // Map db.json structure to UI expected structure
-      const mappedData = response.data.map(w => ({
-        id: w.id,
-        ward: w.ward || w.wardName || 'N/A',
-        vehicle: w.vehicle || 'N/A',
-        driver: w.driver || 'N/A',
-        route: w.route || 'Route ' + (w.ward?.split(' ')[1] || '1'),
-        wasteType: w.wasteType || 'Mixed Waste',
-        quantity: parseFloat(w.quantity || w.wasteQuantity || 0),
-        targetQuantity: parseFloat(w.targetQuantity || w.wasteQuantity || 10),
-        collectionDate: w.collectionDate || new Date().toISOString().split('T')[0],
-        status: w.status || 'pending',
-        notes: w.notes || '',
-        startTime: w.startTime || '',
-        endTime: w.endTime || '',
-        householdsCovered: w.householdsCovered || 0,
-        routeEfficiency: w.routeEfficiency || 0
-      }));
-      
-      setCollections(mappedData);
-    } catch (error) {
-      console.warn('API not available, using mock data:', error.message);
-      setCollections([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    setLoading(true);
+    const res = await api.get('/waste-collections/getwastecollection');
+
+    const mapped = res.data.data.map(w => ({
+      _id: w._id,
+      ward: w.ward,
+      vehicle: w.vehicleNumber,
+      driver: w.driverName,
+      route: w.route,
+      wasteType: w.wasteType,
+      quantity: w.targetQuantity,
+      targetQuantity: w.targetQuantity,
+      collectionDate: w.collectionDate?.split('T')[0],
+      status: w.status,
+    }));
+
+    setCollections(mapped);
+  } catch (err) {
+    console.error(err);
+    toast.error('Failed to load waste collections');
+    setCollections([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const getStatusColor = (status) => {
     const colors = {
       completed: { bg: 'bg-emerald-500', text: 'text-emerald-600', badge: 'bg-emerald-100 text-emerald-700' },
-      'in-progress': { bg: 'bg-blue-500', text: 'text-blue-600', badge: 'bg-blue-100 text-blue-700' },
+      'inprogress': { bg: 'bg-blue-500', text: 'text-blue-600', badge: 'bg-blue-100 text-blue-700' },
       pending: { bg: 'bg-orange-500', text: 'text-orange-600', badge: 'bg-orange-100 text-orange-700' },
-      cancelled: { bg: 'bg-red-500', text: 'text-red-600', badge: 'bg-red-100 text-red-700' }
+      cancel: { bg: 'bg-red-500', text: 'text-red-600', badge: 'bg-red-100 text-red-700' }
     };
     return colors[status] || colors.pending;
   };
@@ -91,9 +87,9 @@ const WasteCollection = () => {
     const matchesStatus = filters.status === 'all' || collection.status === filters.status;
     const matchesWard = filters.ward === 'all' || collection.ward === filters.ward;
     const matchesDate = !filters.date || collection.collectionDate === filters.date;
-    const matchesSearch = collection.vehicle.toLowerCase().includes(filters.search.toLowerCase()) ||
-                         collection.driver.toLowerCase().includes(filters.search.toLowerCase()) ||
-                         collection.route.toLowerCase().includes(filters.search.toLowerCase());
+    const matchesSearch =   (collection.vehicle || '').toLowerCase().includes(filters.search.toLowerCase()) ||
+  (collection.driver || '').toLowerCase().includes(filters.search.toLowerCase()) ||
+  (collection.route || '').toLowerCase().includes(filters.search.toLowerCase());
     return matchesStatus && matchesWard && matchesDate && matchesSearch;
   });
 
@@ -102,35 +98,42 @@ const WasteCollection = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    try {
-      if (selectedCollection) {
-        // Update existing collection
-        const updatedCollection = { ...formData, id: selectedCollection.id };
-        await api.patch(`/wasteCollections/${selectedCollection.id}`, updatedCollection);
-        setCollections(collections.map(c => 
-          c.id === selectedCollection.id ? updatedCollection : c
-        ));
-        toast.success('Waste collection updated successfully!');
-      } else {
-        // Add new collection
-        const newCollection = {
-          ...formData,
-          quantity: 0,
-          completionTime: null
-        };
-        const response = await api.post('/wasteCollections', newCollection);
-        setCollections([...collections, response.data]);
-        toast.success('Waste collection added successfully!');
-      }
-      
-      handleCloseModal();
-    } catch (error) {
-      console.error('Error saving waste collection:', error);
-      toast.error('Failed to save waste collection');
-    }
+  e.preventDefault();
+
+  const payload = {
+    ward: formData.ward,
+    vehicleNumber: formData.vehicle,
+    driverName: formData.driver,
+    route: formData.route,
+    wasteType: formData.wasteType,
+    targetQuantity: Number(formData.quantity),
+    collectionDate: formData.collectionDate,
+    status: formData.status, // already matches enum
   };
+
+  try {
+    if (selectedCollection) {
+      await api.patch(
+        `/waste-collections/updatewastecollection/${selectedCollection._id}`,
+        payload
+      );
+      toast.success('Waste collection updated');
+    } else {
+      await api.post(
+        '/waste-collections/createwastecollection',
+        payload
+      );
+      toast.success('Waste collection added');
+    }
+
+    handleCloseModal();
+    fetchCollections();
+  } catch (err) {
+    console.error(err);
+    toast.error('Failed to save waste collection');
+  }
+};
+
 
   const handleEdit = (collection) => {
     setSelectedCollection(collection);
@@ -149,17 +152,19 @@ const WasteCollection = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this collection record?')) {
-      try {
-        await api.delete(`/wasteCollections/${id}`);
-        setCollections(collections.filter(c => c.id !== id));
-        toast.success('Waste collection deleted successfully!');
-      } catch (error) {
-        console.error('Error deleting waste collection:', error);
-        toast.error('Failed to delete waste collection');
-      }
-    }
-  };
+  if (!window.confirm('Delete this collection record?')) return;
+
+  try {
+    await api.delete(`/waste-collections/deletewastecollection/${id}`);
+    toast.success('Waste collection deleted');
+    fetchCollections();
+  } catch (err) {
+    console.error(err);
+    toast.error('Failed to delete waste collection');
+  }
+};
+
+
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -181,7 +186,7 @@ const WasteCollection = () => {
     return {
       total: collections.length,
       completed: collections.filter(c => c.status === 'completed').length,
-      inProgress: collections.filter(c => c.status === 'in-progress').length,
+      inProgress: collections.filter(c => c.status === 'inprogress').length,
       pending: collections.filter(c => c.status === 'pending').length,
       totalWaste: collections.reduce((sum, c) => sum + (parseFloat(c.quantity) || 0), 0).toFixed(1),
       targetWaste: collections.reduce((sum, c) => sum + (parseFloat(c.targetQuantity) || 0), 0).toFixed(1)
@@ -262,7 +267,7 @@ const WasteCollection = () => {
           ],
         ],
         body: filteredCollections.map((c) => [
-          c.id,
+          c._id,
           c.ward,
           c.vehicle,
           c.driver,
@@ -410,9 +415,9 @@ const WasteCollection = () => {
               >
                 <option value="all">All Status</option>
                 <option value="completed">✓ Completed</option>
-                <option value="in-progress">⏳ In Progress</option>
+                <option value="inprogress">⏳ In Progress</option>
                 <option value="pending">⏰ Pending</option>
-                <option value="cancelled">❌ Cancelled</option>
+                <option value="cancel">❌ Cancelled</option>
               </select>
             </div>
             <div>
@@ -466,9 +471,9 @@ const WasteCollection = () => {
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {filteredCollections.map((collection, index) => (
-                    <tr key={collection.id} className={`hover:bg-emerald-50 transition-colors ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
+                    <tr key={collection._id} className={`hover:bg-emerald-50 transition-colors ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-bold text-gray-900">{collection.id}</span>
+                        <span className="text-sm font-bold text-gray-900">{collection._id}</span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="text-sm font-semibold text-gray-900">{collection.ward}</span>
@@ -508,7 +513,7 @@ const WasteCollection = () => {
                             ✏️ Edit
                           </button>
                           <button
-                            onClick={() => handleDelete(collection.id)}
+                            onClick={() => handleDelete(collection._id)}
                             className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-bold text-xs transition-all shadow-md hover:shadow-lg transform hover:scale-105"
                           >
                             🗑️ Delete
@@ -580,9 +585,6 @@ const WasteCollection = () => {
                       <option value="Ward 3">Ward 3</option>
                       <option value="Ward 4">Ward 4</option>
                       <option value="Ward 5">Ward 5</option>
-                      <option value="Ward 6">Ward 6</option>
-                      <option value="Ward 7">Ward 7</option>
-                      <option value="Ward 8">Ward 8</option>
                     </select>
                   </div>
 
@@ -671,9 +673,9 @@ const WasteCollection = () => {
                       required
                     >
                       <option value="pending">Pending</option>
-                      <option value="in-progress">In Progress</option>
+                      <option value="inprogress">In Progress</option>
                       <option value="completed">Completed</option>
-                      <option value="cancelled">Cancelled</option>
+                      <option value="cancel">Cancelled</option>
                     </select>
                   </div>
                 </div>

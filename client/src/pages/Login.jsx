@@ -1,10 +1,11 @@
+// @ts-nocheck
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Phone, User, Lock, Globe } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useTranslation } from "react-i18next";
-import api from "../api/api";
+import api from "../api/mockAPI";
 
 const LOGO = "image.jpg";
 

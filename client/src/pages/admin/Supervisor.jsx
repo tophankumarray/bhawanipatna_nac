@@ -23,18 +23,20 @@ const SupervisorManagement = () => {
     fetchSupervisors();
   }, []);
 
-  const fetchSupervisors = async () => {
-    try {
-      setLoading(true);
-      const response = await api.get('/supervisors');
-      setSupervisors(response.data);
-    } catch (error) {
-      console.warn('API not available:', error.message);
-      setSupervisors([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+const fetchSupervisors = async () => {
+  try {
+    setLoading(true);
+    const res = await api.get('/supervisors/getallsupervisors');
+    setSupervisors(res.data.data);
+  } catch (err) {
+    console.error(err);
+    toast.error('Failed to load supervisors');
+    setSupervisors([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const generatePassword = () => {
     const length = 12;
@@ -48,129 +50,61 @@ const SupervisorManagement = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!formData.name || !formData.username || !formData.email || !formData.mobile || !formData.password) {
-      toast.error('All fields are required');
-      return;
-    }
+  e.preventDefault();
 
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      toast.error('Please enter a valid email address');
-      return;
-    }
-
-    // Mobile validation
-    if (formData.mobile.length !== 10) {
-      toast.error('Mobile number must be 10 digits');
-      return;
-    }
-
-    try {
-      if (selectedSupervisor) {
-        // Update existing supervisor
-        const updatedSupervisor = { ...formData, id: selectedSupervisor.id, createdAt: selectedSupervisor.createdAt };
-        await api.patch(`/supervisors/${selectedSupervisor.id}`, updatedSupervisor);
-        
-        // Update user credentials
-        try {
-          const usersResponse = await api.get('/users');
-          const existingUser = usersResponse.data.find(u => u.username === selectedSupervisor.username);
-          if (existingUser) {
-            await api.patch(`/users/${existingUser.id}`, {
-              username: formData.username,
-              password: formData.password,
-              name: formData.name,
-              role: 'supervisor'
-            });
-          }
-        } catch (err) {
-          console.warn('Could not update user credentials:', err);
-        }
-        
-        setSupervisors(supervisors.map(s => 
-          s.id === selectedSupervisor.id ? updatedSupervisor : s
-        ));
-        toast.success('Supervisor updated successfully!');
-      } else {
-        // Check for duplicate username
-        if (supervisors.some(s => s.username === formData.username)) {
-          toast.error('Username already exists');
-          return;
-        }
-
-        // Add new supervisor
-        const newSupervisor = {
-          ...formData,
-          createdAt: new Date().toISOString()
-        };
-        const response = await api.post('/supervisors', newSupervisor);
-        
-        // Add user credentials for login
-        try {
-          const newUser = {
-            role: 'supervisor',
-            username: formData.username,
-            password: formData.password,
-            name: formData.name
-          };
-          await api.post('/users', newUser);
-        } catch (err) {
-          console.warn('Could not create user credentials:', err);
-        }
-        
-        setSupervisors([...supervisors, response.data]);
-        toast.success('Supervisor created successfully with login credentials!');
-      }
-
-      handleCloseModal();
-    } catch (error) {
-      console.error('Error saving supervisor:', error);
-      toast.error('Failed to save supervisor');
-    }
+  const payload = {
+    supervisorName: formData.name,
+    username: formData.username,
+    email: formData.email,
+    phoneNumber: formData.mobile,
+    password: formData.password,
+    status: formData.status
   };
+
+  try {
+    if (selectedSupervisor) {
+      await api.patch(`/supervisors/${selectedSupervisor._id}`, payload);
+      toast.success('Supervisor updated');
+    } else {
+      await api.post('/supervisors/createsupervisor', payload);
+      toast.success('Supervisor created');
+    }
+
+    handleCloseModal();
+    fetchSupervisors();
+  } catch (err) {
+    console.error(err);
+    toast.error('Failed to save supervisor');
+  }
+};
+
 
   const handleEdit = (supervisor) => {
-    setSelectedSupervisor(supervisor);
-    setFormData({
-      name: supervisor.name,
-      username: supervisor.username,
-      email: supervisor.email,
-      mobile: supervisor.mobile,
-      password: supervisor.password,
-      status: supervisor.status
-    });
-    setShowModal(true);
-  };
+  setSelectedSupervisor(supervisor);
+  setFormData({
+    name: supervisor.supervisorName,
+    username: supervisor.username,
+    email: supervisor.email,
+    mobile: supervisor.phoneNumber,
+    password: '',
+    status: supervisor.status
+  });
+  setShowModal(true);
+};
+
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this supervisor?')) {
-      try {
-        const supervisorToDelete = supervisors.find(s => s.id === id);
-        
-        await api.delete(`/supervisors/${id}`);
-        
-        // Also delete user credentials
-        try {
-          const usersResponse = await api.get('/users');
-          const userToDelete = usersResponse.data.find(u => u.username === supervisorToDelete?.username);
-          if (userToDelete) {
-            await api.delete(`/users/${userToDelete.id}`);
-          }
-        } catch (err) {
-          console.warn('Could not delete user credentials:', err);
-        }
-        
-        setSupervisors(supervisors.filter(s => s.id !== id));
-        toast.success('Supervisor deleted successfully!');
-      } catch (error) {
-        console.error('Error deleting supervisor:', error);
-        toast.error('Failed to delete supervisor');
-      }
-    }
-  };
+  if (!window.confirm('Delete this supervisor?')) return;
+
+  try {
+    await api.delete(`/supervisors/${id}`);
+    toast.success('Supervisor deleted');
+    fetchSupervisors();
+  } catch (err) {
+    toast.error('Failed to delete supervisor');
+  }
+};
+
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -264,13 +198,13 @@ const SupervisorManagement = () => {
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {supervisors.map((supervisor) => (
-                    <tr key={supervisor.id} className="hover:bg-emerald-50 transition-colors">
+                    <tr key={supervisor._id} className="hover:bg-emerald-50 transition-colors">
                       <td className="px-4 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center text-white font-semibold">
-                            {supervisor.name.charAt(0).toUpperCase()}
+                          <div className="w-10 h-10 bg-linear-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center text-white font-semibold">
+                            {supervisor.supervisorName.charAt(0)}
                           </div>
-                          <span className="ml-3 text-sm font-bold text-gray-900">{supervisor.name}</span>
+                          <span className="ml-3 text-sm font-bold text-gray-900"> {supervisor.supervisorName}</span>
                         </div>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
@@ -280,7 +214,7 @@ const SupervisorManagement = () => {
                         <span className="text-sm text-gray-600">{supervisor.email}</span>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
-                        <span className="text-sm text-gray-900">{supervisor.mobile}</span>
+                        <span className="text-sm text-gray-900">{supervisor.phoneNumber}</span>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
                         <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
@@ -300,7 +234,7 @@ const SupervisorManagement = () => {
                             Edit
                           </button>
                           <button
-                            onClick={() => handleDelete(supervisor.id)}
+                            onClick={() => handleDelete(supervisor._id)}
                             className="text-red-600 hover:text-red-800 font-semibold text-sm"
                           >
                             Delete

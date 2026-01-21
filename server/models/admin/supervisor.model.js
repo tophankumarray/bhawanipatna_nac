@@ -19,14 +19,11 @@ const supervisorSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
     },
+   
     phoneNumber: {
       type: String,
       required: true,
-    },
-    password: {
-      type: String,
-      required: true,
-      minlength: 6,
+      minlength: 10,
     },
     status: {
       type: String,
