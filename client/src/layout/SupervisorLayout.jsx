@@ -22,7 +22,7 @@ const SupervisorLayout = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
 
-  const LOGO = "https://swachhganjam.in/assets/logo-D7UUn_EU.png";
+  const LOGO = "image.jpg";
 
   const links = [
     { name: "Dashboard", path: "/supervisor/dashboard", icon: <LayoutDashboard size={18} /> },
