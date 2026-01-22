@@ -461,7 +461,7 @@ const Login = () => {
                 href="mailto:support@ganjamnac.in"
                 className="text-emerald-600 hover:underline font-medium"
               >
-                [support@ganjamnac.in](mailto:support@ganjamnac.in)
+                [support@bugudanac.in](mailto:support@bugudanac.in)
               </a>
             </p>
           </div>
