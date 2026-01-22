@@ -22,78 +22,42 @@ const Complaint = () => {
   // Fetch complaints from API
   useEffect(() => {
     fetchComplaints();
-    fetchSupervisors();
   }, [filters]);
 
-  const fetchSupervisors = async () => {
-    try {
-      const [supervisorsRes, wardsRes] = await Promise.all([
-        api.get('/supervisors'),
-        api.get('/wards')
-      ]);
-      
-      const supervisorsList = supervisorsRes.data || [];
-      const wardsList = wardsRes.data || [];
-      
-      // Combine supervisors from supervisors table and wards
-      const allSupervisors = [...supervisorsList];
-      
-      // Add supervisors from wards that don't exist in supervisors table
-      wardsList.forEach(ward => {
-        if (ward.supervisor || ward.supervisorName) {
-          const supervisorName = ward.supervisor || ward.supervisorName;
-          const supervisorPhone = ward.supervisorPhone || '';
-          
-          // Check if this supervisor already exists
-          const exists = allSupervisors.some(s => 
-            s.name === supervisorName || s.mobile === supervisorPhone
-          );
-          
-          if (!exists && supervisorName && supervisorName.trim() !== '') {
-            allSupervisors.push({
-              id: ward.id + '_sup',
-              name: supervisorName,
-              mobile: supervisorPhone,
-              source: 'ward'
-            });
-          }
-        }
-      });
-      
-      setSupervisors(allSupervisors);
-    } catch (error) {
-      console.warn('Error fetching supervisors:', error.message);
-      setSupervisors([]);
-    }
-  };
+ 
+ const fetchComplaints = async () => {
+  try {
+    setLoading(true);
 
-  const fetchComplaints = async () => {
-    try {
-      setLoading(true);
-      const response = await api.get('/complaints');
-      const data = response.data;
-      
-      // Apply filters
-      let filteredData = data;
-      if (filters.status !== 'all') {
-        filteredData = filteredData.filter(c => c.status === filters.status);
-      }
-      if (filters.search) {
-        filteredData = filteredData.filter(c => 
-          c.citizenName?.toLowerCase().includes(filters.search.toLowerCase()) ||
-          c.location?.toLowerCase().includes(filters.search.toLowerCase()) ||
-          c.description?.toLowerCase().includes(filters.search.toLowerCase())
-        );
-      }
-      
-      setComplaints(filteredData);
-    } catch (error) {
-      console.warn('API not available:', error.message);
-      setComplaints([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const response = await api.get('/complaints/allcomplaints');
+    const list = response.data?.data || [];
+
+    // 🔥 NORMALIZE BACKEND DATA
+    const normalizedComplaints = list.map(item => ({
+      id: item._id,
+      title: item.category?.[0] || 'Complaint',
+      citizenName: item.fullName,
+      citizenPhone: item.phoneNumber,
+      location: `${item.area}, Ward ${item.wardNumber}`,
+      category: item.category?.join(', '),
+      description: item.description,
+      photo: item.image,
+      status: item.status.toLowerCase(), // Pending → pending
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+    }));
+
+    setComplaints(normalizedComplaints);
+
+  } catch (error) {
+    console.error('Error fetching complaints:', error);
+    toast.error('Failed to load complaints');
+    setComplaints([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleStatusChange = async (complaintId, newStatus) => {
     try {
@@ -109,40 +73,9 @@ const Complaint = () => {
     }
   };
 
-  const handleAssignSupervisor = async () => {
-    if (!selectedSupervisor) {
-      toast.error('Please select a supervisor');
-      return;
-    }
 
-    try {
-      const supervisor = supervisors.find(s => s.id === selectedSupervisor);
-      const assignedToText = `${supervisor.name} (Supervisor)`;
-      
-      await api.patch(`/complaints/${selectedComplaint.id}`, {
-        assignedTo: assignedToText,
-        status: 'in-progress'
-      });
 
-      setComplaints(complaints.map(c =>
-        c.id === selectedComplaint.id
-          ? { ...c, assignedTo: assignedToText, status: 'in-progress' }
-          : c
-      ));
 
-      setSelectedComplaint({
-        ...selectedComplaint,
-        assignedTo: assignedToText,
-        status: 'in-progress'
-      });
-
-      toast.success('Supervisor assigned successfully');
-      setSelectedSupervisor('');
-    } catch (error) {
-      console.error('Error assigning supervisor:', error);
-      toast.error('Failed to assign supervisor');
-    }
-  };
 
   const getStatusColor = (status) => {
     const colors = {
@@ -164,20 +97,27 @@ const Complaint = () => {
     return colors[priority] || 'text-gray-600';
   };
 
-  const filteredComplaints = complaints.filter(complaint => {
-    const matchesStatus = filters.status === 'all' || complaint.status === filters.status;
-    const matchesSearch = complaint.title?.toLowerCase().includes(filters.search.toLowerCase()) ||
-                          complaint.id?.toLowerCase().includes(filters.search.toLowerCase()) ||
-                          complaint.location?.toLowerCase().includes(filters.search.toLowerCase());
-    return matchesStatus && matchesSearch;
-  });
+  const filteredComplaints = complaints.filter(c => {
+  const matchesStatus =
+    filters.status === 'all' || c.status === filters.status;
 
-  const stats = {
-    total: complaints.length,
-    open: complaints.filter(c => c.status === 'open').length,
-    pending: complaints.filter(c => c.status === 'pending').length,
-    closed: complaints.filter(c => c.status === 'closed').length
-  };
+  const matchesSearch =
+    !filters.search ||
+    c.title?.toLowerCase().includes(filters.search.toLowerCase()) ||
+    c.location?.toLowerCase().includes(filters.search.toLowerCase()) ||
+    c.citizenName?.toLowerCase().includes(filters.search.toLowerCase());
+
+  return matchesStatus && matchesSearch;
+});
+
+
+ const stats = {
+  total: complaints.length,
+  open: complaints.filter(c => c.status === 'open').length,
+  pending: complaints.filter(c => c.status === 'pending').length,
+  closed: complaints.filter(c => c.status === 'closed').length
+};
+
 
   const statsCards = [
     {
@@ -441,27 +381,8 @@ const Complaint = () => {
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Assigned To</label>
-                  <p className="text-gray-900">{selectedComplaint.assignedTo || 'Not assigned yet'}</p>
-                </div>
-
                 {/* Assign Supervisor Section */}
-                <div className="bg-linear-to-br from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-200">
-                  <label className="block text-sm font-semibold text-gray-700 mb-3">Assign Supervisor</label>
-                  <select
-                    value={selectedSupervisor}
-                    onChange={(e) => setSelectedSupervisor(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-emerald-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all bg-white"
-                  >
-                    <option value="">Select Supervisor</option>
-                    {supervisors.map((supervisor) => (
-                      <option key={supervisor.id} value={supervisor.id}>
-                        {supervisor.name} - {supervisor.mobile}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+              
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -490,15 +411,7 @@ const Complaint = () => {
                 >
                   Close
                 </button>
-                <button
-                  onClick={handleAssignSupervisor}
-                  disabled={!selectedSupervisor}
-                  className={`px-6 py-3 bg-linear-to-r from-emerald-500 to-teal-600 text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg ${
-                    !selectedSupervisor ? 'opacity-50 cursor-not-allowed' : 'hover:from-emerald-600 hover:to-teal-700'
-                  }`}
-                >
-                  Assign Supervisor
-                </button>
+                
               </div>
             </div>
           </div>

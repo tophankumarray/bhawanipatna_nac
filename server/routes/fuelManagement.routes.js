@@ -8,8 +8,8 @@ const router = express.Router();
 
 
 router.post("/fuel-management", createFuelEntry);
-router.get("get-all-fuel-management", getAllFuelEntries);
-router.put("/fuel-management/:id", updateFuelEntry);
+router.get("/get-all-fuel-management", getAllFuelEntries);
+router.patch("/fuel-management/:id", updateFuelEntry);
 router.delete("/fuel-management/:id", deleteFuelEntry);
 
 

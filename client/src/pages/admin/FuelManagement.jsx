@@ -39,17 +39,33 @@ const FuelManagement = () => {
   }, []);
 
   const fetchFuelRecords = async () => {
-    try {
-      setLoading(true);
-      const res = await api.get("/fuelRecords");
-      setFuelRecords(res.data);
-    } catch (err) {
-      console.warn("API error", err);
-      setFuelRecords([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    setLoading(true);
+    const res = await api.get("/fuel-management/get-all-fuel-management");
+
+    const mapped = res.data.data.map(item => ({
+      _id: item._id,
+      vehicle: item.vehicleNumber,
+      driver: item.driverName,
+      refuelDate: item.date.split("T")[0],
+      fuelType: item.fuelType.toLowerCase(),
+      quantity: item.quantityLiters,
+      pricePerLiter: item.pricePerLiter,
+      odometer: item.odometerReading,
+      efficiency: item.efficiency,
+      fillingStation: item.fillingStation,
+      totalCost: (item.quantityLiters * item.pricePerLiter).toFixed(2),
+    }));
+
+    setFuelRecords(mapped);
+  } catch (err) {
+    console.warn("API error", err);
+    setFuelRecords([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   /* ================= MODAL HANDLERS ================= */
   const openModal = () => {
@@ -88,34 +104,94 @@ const FuelManagement = () => {
       ).toFixed(2);
 
       if (editMode && selectedRecord) {
-        // Update existing record
-        const updatedRecord = {
-          ...formData,
-          quantity: parseFloat(formData.quantity),
-          pricePerLiter: parseFloat(formData.pricePerLiter),
-          odometer: parseFloat(formData.odometer),
-          efficiency: parseFloat(formData.efficiency) || 0,
-          totalCost: parseFloat(totalCost),
-          id: selectedRecord.id,
-        };
+      
+ const response = await api.patch(
+  `/fuel-management/fuel-management/${selectedRecord._id}`,
+  {
+    vehicleNumber: formData.vehicle,
+    driverName: formData.driver,
+    date: formData.refuelDate,
+    fuelType:
+  formData.fuelType === "diesel"
+    ? "Diesel"
+    : formData.fuelType === "petrol"
+    ? "Petrol"
+    : "CNG",
 
-        await api.patch(`/fuelRecords/${selectedRecord.id}`, updatedRecord);
-        setFuelRecords(fuelRecords.map(r => r.id === selectedRecord.id ? updatedRecord : r));
-        toast.success("Fuel record updated successfully!");
+    quantityLiters: Number(formData.quantity),
+    pricePerLiter: Number(formData.pricePerLiter),
+    odometerReading: Number(formData.odometer),
+    efficiency: Number(formData.efficiency) || 0,
+    fillingStation: formData.fillingStation,
+  }
+);
+
+const item = response.data.data;
+
+const mappedUpdated = {
+  _id: item._id,
+  vehicle: item.vehicleNumber,
+  driver: item.driverName,
+  refuelDate: item.date.split("T")[0],
+  fuelType: item.fuelType.toLowerCase(),
+  quantity: item.quantityLiters,
+  pricePerLiter: item.pricePerLiter,
+  odometer: item.odometerReading,
+  efficiency: item.efficiency,
+  fillingStation: item.fillingStation,
+  totalCost: (item.quantityLiters * item.pricePerLiter).toFixed(2),
+};
+
+setFuelRecords(prev =>
+  prev.map(r =>
+    r._id === mappedUpdated._id ? mappedUpdated : r
+  )
+);
+
+
+toast.success("Fuel record updated successfully!");
+
       } else {
-        // Add new record
-        const newRecord = {
-          ...formData,
-          quantity: parseFloat(formData.quantity),
-          pricePerLiter: parseFloat(formData.pricePerLiter),
-          odometer: parseFloat(formData.odometer),
-          efficiency: parseFloat(formData.efficiency) || 0,
-          totalCost: parseFloat(totalCost),
-        };
+        
 
-        const response = await api.post("/fuelRecords", newRecord);
-        setFuelRecords([...fuelRecords, response.data]);
-        toast.success("Fuel record added successfully!");
+       const response = await api.post("/fuel-management/fuel-management", {
+  vehicleNumber: formData.vehicle,
+  driverName: formData.driver,
+  date: formData.refuelDate,
+  fuelType:
+  formData.fuelType === "diesel"
+    ? "Diesel"
+    : formData.fuelType === "petrol"
+    ? "Petrol"
+    : "CNG",
+
+  quantityLiters: Number(formData.quantity),
+  pricePerLiter: Number(formData.pricePerLiter),
+  odometerReading: Number(formData.odometer),
+  efficiency: Number(formData.efficiency) || 0,
+  fillingStation: formData.fillingStation,
+});
+
+const item = response.data.data;
+
+const mappedRecord = {
+  _id: item._id,
+  vehicle: item.vehicleNumber,
+  driver: item.driverName,
+  refuelDate: item.date.split("T")[0],
+  fuelType: item.fuelType.toLowerCase(),
+  quantity: item.quantityLiters,
+  pricePerLiter: item.pricePerLiter,
+  odometer: item.odometerReading,
+  efficiency: item.efficiency,
+  fillingStation: item.fillingStation,
+  totalCost: (item.quantityLiters * item.pricePerLiter).toFixed(2),
+};
+
+setFuelRecords(prev => [...prev, mappedRecord]);
+
+toast.success("Fuel record added successfully!");
+
       }
 
       closeModal();
@@ -145,8 +221,8 @@ const FuelManagement = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this fuel record?")) {
       try {
-        await api.delete(`/fuelRecords/${id}`);
-        setFuelRecords(fuelRecords.filter(r => r.id !== id));
+        await api.delete(`/fuel-management/fuel-management/${id}`);
+        setFuelRecords(fuelRecords.filter(r => r._id !== id));
         toast.success("Fuel record deleted successfully!");
       } catch (error) {
         console.error("Error deleting fuel record:", error);
@@ -287,7 +363,7 @@ const FuelManagement = () => {
           ],
         ],
         body: filteredRecords.map((r) => [
-          r.id,
+          r._id,
           r.vehicle,
           r.driver,
           r.refuelDate,
@@ -774,12 +850,12 @@ const FuelManagement = () => {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {filteredRecords.map((r) => (
                     <tr
-                      key={r.id}
+                      key={r._id}
                       className="hover:bg-emerald-50 transition-colors"
                     >
                       <td className="px-3 sm:px-4 py-3 sm:py-4 whitespace-nowrap">
                         <span className="text-xs sm:text-sm font-bold text-gray-900">
-                          {r.id}
+                          {r._id}
                         </span>
                       </td>
                       <td className="px-3 sm:px-4 py-3 sm:py-4 whitespace-nowrap">
@@ -849,7 +925,7 @@ const FuelManagement = () => {
                             Edit
                           </button>
                           <button 
-                            onClick={() => handleDelete(r.id)}
+                            onClick={() => handleDelete(r._id)}
                             className="text-red-600 hover:text-red-800 font-semibold text-xs sm:text-sm transition-colors"
                           >
                             Delete
