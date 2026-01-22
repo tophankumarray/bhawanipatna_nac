@@ -230,53 +230,74 @@ const MapView = ({ vehicles = [], selectedVehicle = null }) => {
         })}
         
         {/* Vehicle Markers */}
-        {filteredVehicles.map((vehicle) => {
-          const isSelected = selectedVehicle && selectedVehicle.id === vehicle.id;
-          return (
-            <Marker
-              key={vehicle.id}
-              position={[vehicle.location.lat, vehicle.location.lng]}
-              icon={createVehicleIcon(vehicle)}
-            >
-              <Popup
-                autoPan={true}
-                closeButton={true}
-              >
-                <div className="p-2 min-w-50">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-bold text-gray-900">{vehicle.registrationNumber}</h3>
-                    <span className={`text-xs font-bold px-2 py-1 rounded-full ${
-                      vehicle.status === 'running' ? 'bg-emerald-500 text-white' :
-                      vehicle.status === 'standing' ? 'bg-blue-500 text-white' :
-                      vehicle.status === 'stopped' ? 'bg-orange-500 text-white' :
-                      'bg-gray-500 text-white'
-                    }`}>
-                      {vehicle.status}
-                    </span>
-                  </div>
-                  <div className="space-y-1 text-sm">
-                    <p className="text-gray-700"><span className="font-semibold">👤 Driver:</span> {vehicle.driverName}</p>
-                    <p className="text-gray-700"><span className="font-semibold">📍 Ward:</span> {vehicle.assignedWard}</p>
-                    <p className="text-gray-700"><span className="font-semibold">⚡ Speed:</span> {vehicle.speed !== null ? `${vehicle.speed} km/h` : 'N/A'}</p>
-                    <p className="text-gray-700"><span className="font-semibold">⛽ Fuel:</span> {vehicle.fuelLevel !== null ? `${vehicle.fuelLevel}%` : 'N/A'}</p>
-                    <p className="text-gray-700"><span className="font-semibold">📊 Progress:</span> {vehicle.routeProgress}%</p>
-                    <p className="text-gray-700"><span className="font-semibold">🗺️ Location:</span> {vehicle.location.lat.toFixed(4)}, {vehicle.location.lng.toFixed(4)}</p>
-                  </div>
-                  <button
-                    onClick={() => {
-                      if (vehicle.driverPhone) {
-                        window.location.href = `tel:${vehicle.driverPhone}`;
-                      }
-                    }}
-                    className="mt-3 w-full bg-linear-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white py-2 rounded-lg text-sm font-semibold transition-all"
-                  >
-                    📞 Call Driver
-                  </button>
-                </div>
-              </Popup>
-            </Marker>
-          );
-        })}
+        {filteredVehicles.map((vehicle) => (
+  <Marker
+    key={vehicle.id}
+    position={[vehicle.location.lat, vehicle.location.lng]}
+    icon={createVehicleIcon(vehicle)}
+  >
+    <Popup autoPan closeButton>
+      <div className="p-2 min-w-[220px]">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="font-bold text-gray-900">
+            {vehicle.registrationNumber}
+          </h3>
+
+          <span
+            className={`text-xs font-bold px-2 py-1 rounded-full ${
+              vehicle.status === 'running'
+                ? 'bg-emerald-500 text-white'
+                : vehicle.status === 'standing'
+                ? 'bg-blue-500 text-white'
+                : vehicle.status === 'stopped'
+                ? 'bg-orange-500 text-white'
+                : 'bg-gray-500 text-white'
+            }`}
+          >
+            {vehicle.status}
+          </span>
+        </div>
+
+        {/* Details */}
+        <div className="space-y-1 text-sm">
+          <p className="text-gray-700">
+            <span className="font-semibold">📍 Ward:</span>{' '}
+            {vehicle.assignedWard}
+          </p>
+
+          <p className="text-gray-700">
+            <span className="font-semibold">⚡ Speed:</span>{' '}
+            {vehicle.speed != null ? `${vehicle.speed} km/h` : 'N/A'}
+          </p>
+
+          <p className="text-gray-700">
+            <span className="font-semibold">📶 Signal:</span>{' '}
+            {vehicle.signalStrength ?? 'N/A'}
+          </p>
+
+          <p className="text-gray-700">
+            <span className="font-semibold">🔑 Ignition:</span>{' '}
+            {vehicle.ignitionOn ? 'ON' : 'OFF'}
+          </p>
+          <p className="text-gray-700">
+            <span className="font-semibold">🗺️ Location:</span>{' '}
+            {vehicle.location.lat.toFixed(4)}, {vehicle.location.lng.toFixed(4)}
+          </p>
+        </div>
+
+        {/* Footer */}
+        <div className="mt-2 border-t pt-2">
+          <p className="text-xs text-gray-500">
+            Last update:{' '}
+            {new Date(vehicle.lastUpdated).toLocaleString()}
+          </p>
+        </div>
+      </div>
+    </Popup>
+  </Marker>
+))}
+
       </MapContainer>
       
       {/* Map Legend */}
