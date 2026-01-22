@@ -14,6 +14,13 @@ const Vehicle = () => {
   });
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const ALLOWED_VEHICLES = [
+  "OD33AR9619",
+  "OD33AR9647",
+  "OD07AV6580",
+  "OD07AB8906",
+  "OD07AB8905",
+];
 
   
 
@@ -30,7 +37,6 @@ const Vehicle = () => {
     const list = response.data?.data?.list || [];
 
     const normalizedVehicles = list.map(item => ({
-      // unique key
       id: item.imei,
       registrationNumber: item.truck_number,
       status: item.status,
@@ -43,7 +49,12 @@ const Vehicle = () => {
       lastUpdated: new Date(item.device_timestamp),
     }));
 
-    setVehicles(normalizedVehicles);
+    // ✅ SHOW ONLY REQUIRED VEHICLES
+    const filteredByAllowed = normalizedVehicles.filter(v =>
+      ALLOWED_VEHICLES.includes(v.registrationNumber)
+    );
+
+    setVehicles(filteredByAllowed);
 
   } catch (error) {
     console.error('Error fetching vehicles:', error);
@@ -53,6 +64,7 @@ const Vehicle = () => {
     setLoading(false);
   }
 };
+
 
 
 
