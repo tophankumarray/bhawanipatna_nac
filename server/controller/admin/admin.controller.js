@@ -26,8 +26,8 @@ export const adminLogin = async (req, res) => {
 export const adminLogout = async (req, res) => {
     try {
         console.log("req-->",req)
-       res.clearCookie("jwt-NAC-GANJAM")
-    console.log("Logout Cantrol called !!")
+        res.clearCookie("jwt-NAC-BUGUDA")
+        console.log("Logout control called !!")
         return res.status(200).json({
             message: "Logged out successfully.",
         });

@@ -1,0 +1,15 @@
+{
+    "cSpell.words": [
+        "allcomplaints",
+        "createcomplaint",
+        "createsupervisor",
+        "createward",
+        "createwastecollection",
+        "deletewastecollection",
+        "getallsupervisors",
+        "getallwards",
+        "getwastecollection",
+        "loginsupervisor",
+        "updatewastecollection"
+    ]
+}

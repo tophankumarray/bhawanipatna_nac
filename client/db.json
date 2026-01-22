@@ -1093,251 +1093,35 @@
   "moKhataSummary": [
     {
       "id": "1",
-      "khataStock": 7175884
+      "khataStock": 100
     }
   ],
   "moKhataDaily": [
     {
       "id": "1",
-      "date": "2026-01-16",
-      "todayMade": 36,
-      "todaySold": 35
-    },
-    {
-      "id": "1",
-      "date": "2026-01-16",
-      "todayMade": 0,
-      "todaySold": 0
-    },
-    {
-      "id": "3",
-      "date": "2026-01-19",
-      "todayMade": 0,
-      "todaySold": 0
-    },
-    {
-      "id": "3",
-      "date": "2026-01-19",
-      "todayMade": 0,
-      "todaySold": 0
-    },
-    {
-      "id": 5,
-      "date": "2026-01-20",
-      "todayMade": 0,
-      "todaySold": 0
-    },
-    {
-      "id": 5,
-      "date": "2026-01-20",
-      "todayMade": 0,
-      "todaySold": 0
+      "date": "2026-01-22",
+      "todayMade": 2100,
+      "todaySold": 2000
     }
   ],
   "moKhataTransactions": [
     {
-      "id": "a5ed",
+      "id": "1769061815018",
       "type": "MAKE",
-      "amount": 1,
-      "date": "1/16/2026, 3:03:06 PM"
+      "amount": 100,
+      "date": "1/22/2026, 11:33:35 AM"
     },
     {
-      "id": "d948",
-      "type": "SELL",
-      "amount": 1,
-      "date": "1/16/2026, 3:03:13 PM"
-    },
-    {
-      "id": "6922",
+      "id": "1769061883145",
       "type": "MAKE",
-      "amount": 12,
-      "date": "1/16/2026, 3:03:17 PM"
+      "amount": 2000,
+      "date": "1/22/2026, 11:34:43 AM"
     },
     {
-      "id": "dafa",
-      "type": "MAKE",
-      "amount": 23,
-      "date": "1/16/2026, 3:03:30 PM"
-    },
-    {
-      "id": "db3e",
+      "id": "1769061888607",
       "type": "SELL",
-      "amount": 34,
-      "date": "1/16/2026, 3:03:39 PM"
-    },
-    {
-      "id": "8f6e",
-      "type": "MAKE",
-      "amount": 12,
-      "date": "1/20/2026, 10:18:19 AM"
-    },
-    {
-      "id": "496c",
-      "type": "MAKE",
-      "amount": 12,
-      "date": "1/20/2026, 10:18:23 AM"
-    },
-    {
-      "id": "e62a",
-      "type": "SELL",
-      "amount": 12,
-      "date": "1/20/2026, 10:18:38 AM"
-    },
-    {
-      "id": "3cf3",
-      "type": "MAKE",
-      "amount": 12,
-      "date": "1/20/2026, 10:18:42 AM"
-    },
-    {
-      "id": "4267",
-      "type": "SELL",
-      "amount": 23,
-      "date": "1/20/2026, 10:18:48 AM"
-    },
-    {
-      "id": "9650",
-      "type": "MAKE",
-      "amount": 12,
-      "date": "1/20/2026, 10:52:10 AM"
-    },
-    {
-      "id": "ca10",
-      "type": "MAKE",
-      "amount": 234,
-      "date": "1/20/2026, 10:52:17 AM"
-    },
-    {
-      "id": "319c",
-      "type": "SELL",
-      "amount": 64,
-      "date": "1/20/2026, 10:52:24 AM"
-    },
-    {
-      "id": "3153",
-      "type": "MAKE",
-      "amount": 245,
-      "date": "1/20/2026, 10:52:49 AM"
-    },
-    {
-      "id": "4c8f",
-      "type": "SELL",
-      "amount": 32,
-      "date": "1/20/2026, 10:52:54 AM"
-    },
-    {
-      "id": "107f",
-      "type": "MAKE",
-      "amount": 7,
-      "date": "1/20/2026, 11:01:42 AM"
-    },
-    {
-      "id": "4bcd",
-      "type": "MAKE",
-      "amount": 12,
-      "date": "1/20/2026, 11:02:11 AM"
-    },
-    {
-      "id": "1e33",
-      "type": "MAKE",
-      "amount": 12,
-      "date": "1/20/2026, 11:03:44 AM"
-    },
-    {
-      "id": "ab35",
-      "type": "MAKE",
-      "amount": 12345678,
-      "date": "1/20/2026, 12:28:01 PM"
-    },
-    {
-      "id": "48b0",
-      "type": "SELL",
-      "amount": 98765,
-      "date": "1/20/2026, 12:28:09 PM"
-    },
-    {
-      "id": "75db",
-      "type": "SELL",
-      "amount": 87654,
-      "date": "1/20/2026, 12:28:15 PM"
-    },
-    {
-      "id": "d856",
-      "type": "MAKE",
-      "amount": 9876,
-      "date": "1/20/2026, 12:28:42 PM"
-    },
-    {
-      "id": "374a",
-      "type": "MAKE",
-      "amount": 1234,
-      "date": "1/20/2026, 12:28:51 PM"
-    },
-    {
-      "id": "6a64",
-      "type": "MAKE",
-      "amount": 98765,
-      "date": "1/20/2026, 12:29:03 PM"
-    },
-    {
-      "id": "61eb",
-      "type": "SELL",
-      "amount": 2345678,
-      "date": "1/20/2026, 12:29:09 PM"
-    },
-    {
-      "id": "7e92",
-      "type": "MAKE",
-      "amount": 1234,
-      "date": "1/20/2026, 12:29:55 PM"
-    },
-    {
-      "id": "5bc9",
-      "type": "SELL",
-      "amount": 123,
-      "date": "1/20/2026, 12:30:02 PM"
-    },
-    {
-      "id": "3658",
-      "type": "SELL",
-      "amount": 1234565,
-      "date": "1/20/2026, 12:30:16 PM"
-    },
-    {
-      "id": "810b",
-      "type": "SELL",
-      "amount": 1234,
-      "date": "1/20/2026, 12:30:21 PM"
-    },
-    {
-      "id": "5b98",
-      "type": "SELL",
-      "amount": 12345,
-      "date": "1/20/2026, 12:30:26 PM"
-    },
-    {
-      "id": "09cc",
-      "type": "SELL",
-      "amount": 23124,
-      "date": "1/20/2026, 12:30:29 PM"
-    },
-    {
-      "id": "0ea4",
-      "type": "SELL",
-      "amount": 132311,
-      "date": "1/20/2026, 12:30:32 PM"
-    },
-    {
-      "id": "80f0",
-      "type": "SELL",
-      "amount": 2312,
-      "date": "1/20/2026, 12:30:36 PM"
-    },
-    {
-      "id": "3379",
-      "type": "SELL",
-      "amount": 1343244,
-      "date": "1/20/2026, 12:30:42 PM"
+      "amount": 2000,
+      "date": "1/22/2026, 11:34:48 AM"
     }
   ]
 }
