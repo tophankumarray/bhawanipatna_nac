@@ -9,6 +9,9 @@ import wardRoutes from "./routes/ward.routes.js";
 import supervisorRoutes from "./routes/supervisor.routes.js";
 import wasteCollectionRoutes from "./routes/wasteCollection.routes.js";
 import fuelManagementRoutes from "./routes/fuelManagement.routes.js";
+import machineryDefectRoutes from "./routes/machineryDefect.routes.js";
+import mccRoutes from "./routes/mcc.routes.js";
+import mrfRoutes from "./routes/mrf.routes.js";
 
 
 
@@ -41,7 +44,9 @@ app.use("/api/wards", wardRoutes);
 app.use("/api/supervisors", supervisorRoutes);
 app.use("/api/waste-collections", wasteCollectionRoutes);
 app.use("/api/fuel-management", fuelManagementRoutes);
-
+app.use("/api/machinery-defects", machineryDefectRoutes);
+app.use("/api/mcc", mccRoutes);
+app.use("/api/mrf", mrfRoutes);
 
 
 

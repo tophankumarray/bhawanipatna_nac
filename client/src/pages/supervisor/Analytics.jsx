@@ -16,17 +16,23 @@ import { Truck, CheckCircle, AlertCircle, Percent } from "lucide-react";
 
 /* ================= CONFIG ================= */
 
+// ✅ Your db.json vehicle statuses are: running, standing, stopped
+const VEHICLE_STATUSES = ["running", "standing", "stopped"];
+
+// Complaint statuses remain same (based on your complaints db)
+const COMPLAINT_STATUSES = ["Pending", "In Progress", "Resolved"];
+
 const COLORS = {
-  Active: "#22c55e",
-  Inactive: "#ef4444",
-  Maintenance: "#facc15",
+  // ✅ vehicle
+  running: "#22c55e",
+  standing: "#facc15",
+  stopped: "#ef4444",
+
+  // ✅ complaint
   Pending: "#ef4444",
   "In Progress": "#facc15",
   Resolved: "#22c55e",
 };
-
-const VEHICLE_STATUSES = ["Active", "Inactive", "Maintenance"];
-const COMPLAINT_STATUSES = ["Pending", "In Progress", "Resolved"];
 
 const KPI_CONFIG = [
   {
@@ -36,8 +42,8 @@ const KPI_CONFIG = [
     variant: "blue",
   },
   {
-    title: "Active Vehicles",
-    key: "activeVehicles",
+    title: "Running Vehicles",
+    key: "runningVehicles",
     icon: <CheckCircle size={18} />,
     variant: "green",
   },
@@ -72,15 +78,19 @@ const Analytics = () => {
           api.get("/complaints"),
         ]);
 
-        /* -------- VEHICLE STATUS -------- */
+        // ✅ DEBUG (optional)
+        console.log("Vehicles:", vehiclesRes.data);
+        console.log("Complaints:", complaintsRes.data);
+
+        /* -------- VEHICLE STATUS COUNT -------- */
         const vehicleStatusCount = VEHICLE_STATUSES.reduce((acc, s) => {
           acc[s] = 0;
           return acc;
         }, {});
 
-        vehiclesRes.data.forEach((v) => {
-          vehicleStatusCount[v.status] =
-            (vehicleStatusCount[v.status] || 0) + 1;
+        (vehiclesRes.data || []).forEach((v) => {
+          const st = (v.status || "").toLowerCase().trim(); // safety
+          vehicleStatusCount[st] = (vehicleStatusCount[st] || 0) + 1;
         });
 
         setVehicleData(
@@ -90,15 +100,15 @@ const Analytics = () => {
           }))
         );
 
-        /* -------- COMPLAINT STATUS -------- */
+        /* -------- COMPLAINT STATUS COUNT -------- */
         const complaintStatusCount = COMPLAINT_STATUSES.reduce((acc, s) => {
           acc[s] = 0;
           return acc;
         }, {});
 
-        complaintsRes.data.forEach((c) => {
-          complaintStatusCount[c.status] =
-            (complaintStatusCount[c.status] || 0) + 1;
+        (complaintsRes.data || []).forEach((c) => {
+          const st = (c.status || "").trim();
+          complaintStatusCount[st] = (complaintStatusCount[st] || 0) + 1;
         });
 
         setComplaintData(
@@ -110,20 +120,26 @@ const Analytics = () => {
 
         /* -------- WARD PERFORMANCE (SIMULATED %) -------- */
         const wardMap = {};
-        vehiclesRes.data.forEach((v) => {
-          if (!wardMap[v.ward]) {
-            wardMap[v.ward] = 70 + Math.floor(Math.random() * 25);
+
+        (vehiclesRes.data || []).forEach((v) => {
+          const ward = String(v.ward || v.assignedWard || "Unknown").trim();
+
+          if (!wardMap[ward]) {
+            wardMap[ward] = 70 + Math.floor(Math.random() * 25);
           }
         });
 
         setWardPerformance(
           Object.keys(wardMap).map((w) => ({
-            ward: w,
+            ward: `Ward ${w}`,
             percent: wardMap[w],
           }))
         );
       } catch (err) {
-        console.error("Failed to load analytics");
+        console.log("Analytics Error:", err);
+        console.log("Message:", err.message);
+        console.log("Status:", err?.response?.status);
+        console.log("Data:", err?.response?.data);
       }
     };
 
@@ -132,12 +148,12 @@ const Analytics = () => {
 
   /* ================= KPI VALUES ================= */
 
-  const totalVehicles = vehicleData.reduce((s, v) => s + v.value, 0);
+  const totalVehicles = vehicleData.reduce((s, v) => s + (v.value || 0), 0);
 
-  const activeVehicles =
-    vehicleData.find((v) => v.name === "Active")?.value || 0;
+  const runningVehicles =
+    vehicleData.find((v) => v.name === "running")?.value || 0;
 
-  const totalComplaints = complaintData.reduce((s, c) => s + c.count, 0);
+  const totalComplaints = complaintData.reduce((s, c) => s + (c.count || 0), 0);
 
   const resolved =
     complaintData.find((c) => c.name === "Resolved")?.count || 0;
@@ -148,7 +164,7 @@ const Analytics = () => {
 
   const KPI_VALUES = {
     totalVehicles,
-    activeVehicles,
+    runningVehicles,
     totalComplaints,
     resolutionRate,
   };
@@ -200,7 +216,7 @@ const Analytics = () => {
                   }
                 >
                   {vehicleData.map((v) => (
-                    <Cell key={v.name} fill={COLORS[v.name]} />
+                    <Cell key={v.name} fill={COLORS[v.name] || "#94a3b8"} />
                   ))}
                 </Pie>
                 <Tooltip />
@@ -223,7 +239,7 @@ const Analytics = () => {
                 <Tooltip />
                 <Bar dataKey="count" radius={[8, 8, 0, 0]}>
                   {complaintData.map((c) => (
-                    <Cell key={c.name} fill={COLORS[c.name]} />
+                    <Cell key={c.name} fill={COLORS[c.name] || "#94a3b8"} />
                   ))}
                 </Bar>
               </BarChart>
@@ -238,23 +254,27 @@ const Analytics = () => {
           Ward-wise Collection Performance
         </h3>
 
-        <div className="space-y-4">
-          {wardPerformance.map((w) => (
-            <div key={w.ward}>
-              <div className="flex justify-between text-sm mb-1">
-                <span className="font-semibold text-gray-700">{w.ward}</span>
-                <span className="font-bold text-gray-900">{w.percent}%</span>
-              </div>
+        {wardPerformance.length === 0 ? (
+          <p className="text-gray-500 text-sm">No ward data available.</p>
+        ) : (
+          <div className="space-y-4">
+            {wardPerformance.map((w) => (
+              <div key={w.ward}>
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="font-semibold text-gray-700">{w.ward}</span>
+                  <span className="font-bold text-gray-900">{w.percent}%</span>
+                </div>
 
-              <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                <div
-                  className="h-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full"
-                  style={{ width: `${w.percent}%` }}
-                />
+                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className="h-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full"
+                    style={{ width: `${w.percent}%` }}
+                  />
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* FOOT NOTE */}

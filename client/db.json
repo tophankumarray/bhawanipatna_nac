@@ -1110,53 +1110,35 @@
   "moKhataSummary": [
     {
       "id": "1",
-      "khataStock": 1
+      "khataStock": 100
     }
   ],
   "moKhataDaily": [
     {
       "id": "1",
-      "date": "2026-01-16",
-      "todayMade": 36,
-      "todaySold": 35
-    },
-    {
-      "id": "1",
-      "date": "2026-01-16",
-      "todayMade": 0,
-      "todaySold": 0
+      "date": "2026-01-22",
+      "todayMade": 2100,
+      "todaySold": 2000
     }
   ],
   "moKhataTransactions": [
     {
-      "id": "a5ed",
+      "id": "1769061815018",
       "type": "MAKE",
-      "amount": 1,
-      "date": "1/16/2026, 3:03:06 PM"
+      "amount": 100,
+      "date": "1/22/2026, 11:33:35 AM"
     },
     {
-      "id": "d948",
+      "id": "1769061883145",
+      "type": "MAKE",
+      "amount": 2000,
+      "date": "1/22/2026, 11:34:43 AM"
+    },
+    {
+      "id": "1769061888607",
       "type": "SELL",
-      "amount": 1,
-      "date": "1/16/2026, 3:03:13 PM"
-    },
-    {
-      "id": "6922",
-      "type": "MAKE",
-      "amount": 12,
-      "date": "1/16/2026, 3:03:17 PM"
-    },
-    {
-      "id": "dafa",
-      "type": "MAKE",
-      "amount": 23,
-      "date": "1/16/2026, 3:03:30 PM"
-    },
-    {
-      "id": "db3e",
-      "type": "SELL",
-      "amount": 34,
-      "date": "1/16/2026, 3:03:39 PM"
+      "amount": 2000,
+      "date": "1/22/2026, 11:34:48 AM"
     }
   ]
 }

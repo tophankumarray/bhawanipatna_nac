@@ -12,18 +12,11 @@ import {
 import { useNavigate } from "react-router-dom";
 import jsonApi from "../../api/jsonApi";
 
-/* ✅ PDF */
+/* PDF */
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
-/**
- * MO KHATA SYSTEM (NO REDUX)
- * - Stock = total khata available
- * - Today Made = added today
- * - Today Sold = sold today
- * - Data stored in json-server (db.json)
- */
-
+/* TODAY KEY */
 const getTodayKey = () => {
   const d = new Date();
   return d.toISOString().slice(0, 10); // yyyy-mm-dd
@@ -46,7 +39,6 @@ const MoKhataDashboard = () => {
   const todayKey = useMemo(() => getTodayKey(), []);
 
   /* ================= PDF DOWNLOAD ================= */
-
   const handleDownloadPDF = () => {
     const doc = new jsPDF("portrait");
 
@@ -56,7 +48,6 @@ const MoKhataDashboard = () => {
     doc.setFontSize(11);
     doc.text(`Date: ${todayKey}`, 14, 24);
 
-    // Summary table
     autoTable(doc, {
       startY: 30,
       head: [["Metric", "Value"]],
@@ -73,7 +64,6 @@ const MoKhataDashboard = () => {
       styles: { fontSize: 10 },
     });
 
-    // Transactions table (Last 10)
     const last10 = transactions.slice().reverse().slice(0, 10);
 
     autoTable(doc, {
@@ -86,65 +76,9 @@ const MoKhataDashboard = () => {
     doc.save(`mo-khata-report-${todayKey}.pdf`);
   };
 
-  /* ================= LOAD DATA ================= */
-
-  const loadMoKhata = async () => {
-    try {
-      setLoading(true);
-
-      // 1) summary
-      const summaryRes = await jsonApi.get("/moKhataSummary");
-      const summary = summaryRes.data?.[0];
-
-      if (summary) {
-        setKhataStock(Number(summary.khataStock || 0));
-      } else {
-        const created = await jsonApi.post("/moKhataSummary", {
-          id: 1,
-          khataStock: 0,
-        });
-        setKhataStock(Number(created.data.khataStock || 0));
-      }
-
-      // 2) today report
-      const todayRes = await jsonApi.get(`/moKhataDaily?date=${todayKey}`);
-      const todayData = todayRes.data?.[0];
-
-      if (todayData) {
-        setTodayMade(Number(todayData.todayMade || 0));
-        setTodaySold(Number(todayData.todaySold || 0));
-      } else {
-        const allDays = await jsonApi.get("/moKhataDaily");
-        const nextId = (allDays.data?.length || 0) + 1;
-
-        await jsonApi.post("/moKhataDaily", {
-          id: nextId,
-          date: todayKey,
-          todayMade: 0,
-          todaySold: 0,
-        });
-
-        setTodayMade(0);
-        setTodaySold(0);
-      }
-
-      // 3) history
-      const txRes = await jsonApi.get("/moKhataTransactions");
-      setTransactions(txRes.data || []);
-    } catch (err) {
-      console.error("MoKhata load error:", err?.response?.data || err.message);
-      alert("MoKhata Load Failed! Check json-server running.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadMoKhata();
-  }, []);
-
   /* ================= HELPERS ================= */
 
+  // Summary always exists
   const ensureSummaryExists = async () => {
     const res = await jsonApi.get("/moKhataSummary");
 
@@ -159,8 +93,21 @@ const MoKhataDashboard = () => {
     return res.data[0];
   };
 
+  // Today record always exists (and remove duplicate same date)
   const ensureTodayExists = async () => {
     const res = await jsonApi.get(`/moKhataDaily?date=${todayKey}`);
+
+    // ✅ if duplicates exist, keep first and delete rest
+    if (res.data && res.data.length > 1) {
+      const keep = res.data[0];
+      const extra = res.data.slice(1);
+
+      for (let d of extra) {
+        await jsonApi.delete(`/moKhataDaily/${d.id}`);
+      }
+
+      return keep;
+    }
 
     if (!res.data || res.data.length === 0) {
       const allDays = await jsonApi.get("/moKhataDaily");
@@ -178,6 +125,36 @@ const MoKhataDashboard = () => {
 
     return res.data[0];
   };
+
+  /* ================= LOAD DATA ================= */
+
+  const loadMoKhata = async () => {
+    try {
+      setLoading(true);
+
+      // 1) Summary
+      const summary = await ensureSummaryExists();
+      setKhataStock(Number(summary.khataStock || 0));
+
+      // 2) Today
+      const todayData = await ensureTodayExists();
+      setTodayMade(Number(todayData.todayMade || 0));
+      setTodaySold(Number(todayData.todaySold || 0));
+
+      // 3) Transactions
+      const txRes = await jsonApi.get("/moKhataTransactions");
+      setTransactions(txRes.data || []);
+    } catch (err) {
+      console.error("MoKhata load error:", err?.response?.data || err.message);
+      alert("MoKhata Load Failed! Check json-server running on port 3000.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadMoKhata();
+  }, []);
 
   /* ================= ADD KHATA ================= */
 
@@ -205,8 +182,9 @@ const MoKhataDashboard = () => {
         todayMade: Number(todayData.todayMade || 0) + amount,
       });
 
-      // transaction
+      // transaction (safe id)
       await jsonApi.post("/moKhataTransactions", {
+        id: Date.now().toString(),
         type: "MAKE",
         amount,
         date: new Date().toLocaleString(),
@@ -216,7 +194,7 @@ const MoKhataDashboard = () => {
       await loadMoKhata();
     } catch (err) {
       console.error("Add khata error:", err?.response?.data || err.message);
-      alert("Failed to add khata! (Check json-server + db.json)");
+      alert("Add Khata Failed! Check db.json keys & json-server.");
     } finally {
       setLoading(false);
     }
@@ -253,8 +231,9 @@ const MoKhataDashboard = () => {
         todaySold: Number(todayData.todaySold || 0) + amount,
       });
 
-      // transaction
+      // transaction (safe id)
       await jsonApi.post("/moKhataTransactions", {
+        id: Date.now().toString(),
         type: "SELL",
         amount,
         date: new Date().toLocaleString(),
@@ -264,7 +243,7 @@ const MoKhataDashboard = () => {
       await loadMoKhata();
     } catch (err) {
       console.error("Sell khata error:", err?.response?.data || err.message);
-      alert("Failed to sell khata!");
+      alert("Sell Khata Failed!");
     } finally {
       setLoading(false);
     }
@@ -287,13 +266,11 @@ const MoKhataDashboard = () => {
               </button>
 
               <div>
-                <h1 className="text-3xl font-bold tracking-tight">
-                  Mo Khata
-                </h1>
+                <h1 className="text-3xl font-bold tracking-tight">Mo Khata</h1>
               </div>
             </div>
 
-            {/* ✅ PDF DOWNLOAD BUTTON */}
+            {/* PDF */}
             <button
               onClick={handleDownloadPDF}
               className="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-5 py-3 rounded-xl font-semibold shadow-md transition-all duration-200 hover:scale-105"
@@ -413,9 +390,7 @@ const MoKhataDashboard = () => {
               <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-3 rounded-xl">
                 <Plus className="h-6 w-6 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-800">
-                Add Khata
-              </h3>
+              <h3 className="text-2xl font-bold text-gray-800">Add Khata</h3>
             </div>
 
             <input
@@ -442,9 +417,7 @@ const MoKhataDashboard = () => {
               <div className="bg-gradient-to-r from-orange-500 to-red-600 p-3 rounded-xl">
                 <Minus className="h-6 w-6 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-800">
-                Sold Khata
-              </h3>
+              <h3 className="text-2xl font-bold text-gray-800">Sold Khata</h3>
             </div>
 
             <input
