@@ -69,7 +69,7 @@ const VehicleCard = ({ vehicle, onViewDetails, onTrackLive, onDelete }) => {
         {/* Ward & Ignition */}
         <div className="border-t border-gray-200 pt-4 mb-4 space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">📍 Ward</span>
+            <span className="text-sm text-gray-600">📍 Address</span>
             <span className="text-sm font-semibold text-gray-900">
               {vehicle.assignedWard || 'N/A'}
             </span>

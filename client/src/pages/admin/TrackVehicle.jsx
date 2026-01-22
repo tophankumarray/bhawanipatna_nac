@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import api from '../../api/mockAPI';
+import api from '../../api/api';
 import MapView from '../../components/admin/MapView';
 import StatsCard from '../../components/admin/StatsCard';
 
@@ -25,54 +25,67 @@ const TrackVehicle = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const fetchVehicleLocations = async () => {
-    try {
-      setLoading(true);
-      const response = await api.get('/vehicles');
-      
-      // Map db.json structure to UI expected structure
-      const mappedData = response.data.map(v => {
-        // Determine status based on speed and data availability
+  const ALLOWED_VEHICLES = [
+  "OD33AR9619",
+  "OD33AR9647",
+  "OD07AV6580",
+  "OD07AB8906",
+  "OD07AB8905",
+];
+
+const fetchVehicleLocations = async () => {
+  try {
+    setLoading(true);
+
+    const response = await api.get('/tracking/trackings');
+    const list = response.data?.data?.list || [];
+
+    const normalizedVehicles = list
+      .filter(item => ALLOWED_VEHICLES.includes(item.truck_number))
+      .map(item => {
         let status = 'stopped';
-        if (!v.location || v.speed === null || v.speed === undefined) {
+
+        if (item.lat == null || item.lng == null) {
           status = 'dataNotRetrieving';
-        } else if (v.speed > 0) {
+        } else if (item.speed > 0) {
           status = 'running';
-        } else if (v.fuelLevel > 0 && v.speed === 0) {
+        } else if (item.speed === 0) {
           status = 'standing';
         }
-        
-        // Override with db.json status if it matches our expected values
-        if (['running', 'standing', 'stopped', 'dataNotRetrieving'].includes(v.status?.toLowerCase())) {
-          status = v.status.toLowerCase();
-        }
-        
+
         return {
-          id: v.id,
-          registrationNumber: v.registrationNumber || v.number || 'N/A',
-          type: v.type || 'compactor',
-          status: status,
-          location: v.location || null,
-          speed: v.speed !== undefined ? v.speed : null,
-          assignedWard: v.assignedWard || v.ward || 'N/A',
-          driverName: v.driverName || v.driver || 'N/A',
-          driverPhone: v.driverPhone || '+91 98765 43210',
-          fuelLevel: v.fuelLevel !== undefined ? v.fuelLevel : null,
-          lastUpdated: v.lastUpdated || new Date().toISOString(),
-          routeProgress: v.routeProgress || Math.floor(Math.random() * 100), // Generate if not available
-          wasteCollected: v.wasteCollected || (Math.random() * 10).toFixed(1),
-          targetWaste: v.targetWaste || 8.5
+          id: item.imei,
+          registrationNumber: item.truck_number,
+          status,
+          assignedWard: item.address || 'N/A',
+          speed: item.speed ?? null,
+
+          // map-friendly structure
+          location: {
+            lat: Number(item.lat),
+            lng: Number(item.lng),
+          },
+
+          signalStrength: item.signal_strength ?? null,
+          ignitionOn: item.is_ignition_on?.value ?? false,
+          lastUpdated: new Date(item.device_timestamp),
+
+          // UI-only fields (safe defaults)
+          type: 'compactor',
+          routeProgress: Math.floor(Math.random() * 100),
         };
       });
 
-      setVehicles(mappedData);
-    } catch (error) {
-      console.error('Error fetching vehicle locations:', error);
-      toast.error('Failed to fetch vehicle locations');
-    } finally {
-      setLoading(false);
-    }
-  };
+    setVehicles(normalizedVehicles);
+  } catch (error) {
+    console.error('Error fetching vehicle locations:', error);
+    toast.error('Failed to fetch vehicle locations');
+    setVehicles([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const getStatusColor = (status) => {
     const colors = {
@@ -218,114 +231,116 @@ const TrackVehicle = () => {
         {/* Map View */}
         <MapView vehicles={filteredVehicles} selectedVehicle={selectedVehicle} />
 
-        {/* Vehicle List */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Vehicle List</h2>
-          
-          {loading ? (
-            <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-emerald-500"></div>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {filteredVehicles.map((vehicle) => (
-                <div
-                  key={vehicle.id}
-                  className="bg-linear-to-r from-gray-50 to-white hover:from-emerald-50 hover:to-teal-50 border border-gray-200 rounded-xl p-4 transition-all duration-300 cursor-pointer"
-                  onClick={() => {
-                    setSelectedVehicle(vehicle);
-                    // Scroll to map smoothly
-                    setTimeout(() => {
-                      document.querySelector('.max-w-7xl > div:nth-child(4)')?.scrollIntoView({ 
-                        behavior: 'smooth', 
-                        block: 'start' 
-                      });
-                    }, 100);
-                  }}
-                >
-                  <div className="flex items-center justify-between">
-                    {/* Left Section */}
-                    <div 
-                      className="flex items-center space-x-4"
-                    >
-                      <div className={`w-12 h-12 ${getStatusColor(vehicle.status).bg} rounded-xl flex items-center justify-center shadow-md`}>
-                        <span className="text-white text-2xl">{getVehicleIcon(vehicle.type)}</span>
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-bold text-gray-900">{vehicle.registrationNumber}</h3>
-                        <div className="flex items-center space-x-3 mt-1">
-                          <span className="text-sm text-gray-600">👤 {vehicle.driverName}</span>
-                          <span className={`text-xs font-semibold px-2 py-1 rounded-full ${getStatusColor(vehicle.status).bg} text-white`}>
-                            {vehicle.status.replace(/([A-Z])/g, ' $1').trim()}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+      {/* Vehicle List */}
+<div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+  <h2 className="text-xl font-bold text-gray-900 mb-4">Vehicle List</h2>
 
-                    {/* Middle Section */}
-                    <div className="hidden md:flex items-center space-x-6">
-                      <div className="text-center">
-                        <p className="text-xs text-gray-600">Speed</p>
-                        <p className="text-lg font-bold text-gray-900">
-                          {vehicle.speed !== null ? `${vehicle.speed} km/h` : 'N/A'}
-                        </p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-xs text-gray-600">Fuel</p>
-                        <p className="text-lg font-bold text-gray-900">
-                          {vehicle.fuelLevel !== null ? `${vehicle.fuelLevel}%` : 'N/A'}
-                        </p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-xs text-gray-600">Progress</p>
-                        <p className="text-lg font-bold text-emerald-600">
-                          {vehicle.routeProgress}%
-                        </p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-xs text-gray-600">Ward</p>
-                        <p className="text-sm font-bold text-gray-900">{vehicle.assignedWard}</p>
-                      </div>
-                    </div>
+  {loading ? (
+    <div className="flex justify-center items-center h-64">
+      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-emerald-500"></div>
+    </div>
+  ) : (
+    <div className="space-y-3">
+      {filteredVehicles.map((vehicle) => (
+        <div
+          key={vehicle.id}
+          className="bg-gradient-to-r from-gray-50 to-white hover:from-emerald-50 hover:to-teal-50 border border-gray-200 rounded-xl p-4 transition-all duration-300 cursor-pointer"
+          onClick={() => {
+            setSelectedVehicle(vehicle);
+            setTimeout(() => {
+              document
+                .querySelector('.max-w-7xl > div:nth-child(4)')
+                ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+          }}
+        >
+          <div className="flex items-center justify-between">
+            {/* LEFT */}
+            <div className="flex items-center space-x-4">
+              <div
+                className={`w-12 h-12 ${getStatusColor(vehicle.status).bg} rounded-xl flex items-center justify-center shadow-md`}
+              >
+                <span className="text-white text-2xl">🚛</span>
+              </div>
 
-                    {/* Right Section */}
-                    <div className="flex flex-col items-end space-y-2">
-                      <div className="text-right">
-                        <p className="text-xs text-gray-500">Last Update</p>
-                        <p className="text-sm font-semibold text-gray-700">
-                          {getTimeSinceUpdate(vehicle.lastUpdated)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">
+                  {vehicle.registrationNumber}
+                </h3>
 
-                  {/* Mobile Progress Bar */}
-                  <div className="mt-3 md:hidden">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs text-gray-600">Route Progress</span>
-                      <span className="text-xs font-bold text-emerald-600">{vehicle.routeProgress}%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div 
-                        className="bg-linear-to-r from-emerald-500 to-teal-500 h-2 rounded-full transition-all"
-                        style={{ width: `${vehicle.routeProgress}%` }}
-                      ></div>
-                    </div>
-                  </div>
+                <div className="flex items-center space-x-3 mt-1">
+                  <span
+                    className={`text-xs font-semibold px-2 py-1 rounded-full ${getStatusColor(vehicle.status).bg} text-white`}
+                  >
+                    {vehicle.status}
+                  </span>
+
+                  {vehicle.ignitionOn && (
+                    <span className="text-xs font-semibold text-emerald-600">
+                      🔑 Ignition ON
+                    </span>
+                  )}
                 </div>
-              ))}
+              </div>
             </div>
-          )}
 
-          {/* No Results */}
-          {!loading && filteredVehicles.length === 0 && (
-            <div className="text-center py-12">
-              <div className="text-6xl mb-4">🚛</div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">No Vehicles Found</h3>
-              <p className="text-gray-600">Try adjusting your filters</p>
+            {/* MIDDLE (Desktop) */}
+            <div className="hidden md:flex items-center space-x-6">
+              <div className="text-center">
+                <p className="text-xs text-gray-600">Speed</p>
+                <p className="text-lg font-bold text-gray-900">
+                  {vehicle.speed != null ? `${vehicle.speed} km/h` : 'N/A'}
+                </p>
+              </div>
+
+              <div className="text-center">
+                <p className="text-xs text-gray-600">Route</p>
+                <p className="text-sm font-bold text-gray-900">
+                  {vehicle.assignedWard}
+                </p>
+              </div>
             </div>
-          )}
+
+            {/* RIGHT */}
+            <div className="text-right">
+              <p className="text-xs text-gray-500">Last Update</p>
+              <p className="text-sm font-semibold text-gray-700">
+                {getTimeSinceUpdate(vehicle.lastUpdated)}
+              </p>
+            </div>
+          </div>
+
+          {/* MOBILE PROGRESS */}
+          <div className="mt-3 md:hidden">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs text-gray-600">Route Progress</span>
+              <span className="text-xs font-bold text-emerald-600">
+                {vehicle.routeProgress}%
+              </span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div
+                className="bg-gradient-to-r from-emerald-500 to-teal-500 h-2 rounded-full transition-all"
+                style={{ width: `${vehicle.routeProgress}%` }}
+              />
+            </div>
+          </div>
         </div>
+      ))}
+    </div>
+  )}
+
+  {!loading && filteredVehicles.length === 0 && (
+    <div className="text-center py-12">
+      <div className="text-6xl mb-4">🚛</div>
+      <h3 className="text-xl font-bold text-gray-900 mb-2">
+        No Vehicles Found
+      </h3>
+      <p className="text-gray-600">Try adjusting your filters</p>
+    </div>
+  )}
+</div>
+
       </div>
 
     </div>
