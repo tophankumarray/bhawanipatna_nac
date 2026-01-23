@@ -1,13 +1,9 @@
 // @ts-nocheck
-// api/api.js
 import axios from "axios";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:5900/api",
   timeout: 10000,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 // ✅ Request interceptor (Auth)
@@ -17,12 +13,18 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    // ✅ IMPORTANT: if FormData, don't force JSON
+    if (config.data instanceof FormData) {
+      delete config.headers["Content-Type"];
+    }
+
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// ✅ Response interceptor (Global error handling)
+// ✅ Response interceptor
 api.interceptors.response.use(
   (response) => response,
   (error) => {
