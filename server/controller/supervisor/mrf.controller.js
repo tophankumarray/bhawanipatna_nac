@@ -1,14 +1,31 @@
-import MrfRecord from "../../models/supervisor/mccRecord.js";
+import MrfRecord from "../../models/supervisor/mrfRecord.js";
 
 export const createMrfRecord = async (req, res) => {
   try {
-    const { supervisorName, contactNumber, cubeNumber } = req.body;
+    const { supervisorName, cubeNumber } = req.body;
+    const contactNumber = req.body.contactNumber || req.body.phoneNo;
+
+    if (!supervisorName || !contactNumber || !cubeNumber) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Image is required",
+      });
+    }
 
     const record = await MrfRecord.create({
       supervisorName,
       contactNumber,
-      cubeNumber,
-      image: req.file?.path,
+      cubeNumber: Number(cubeNumber),
+      image: req.file.path,
+      status: req.body.status || "Stored",
+      dateSubmitted: req.body.dateSubmitted || new Date().toISOString(),
     });
 
     res.status(201).json({
@@ -17,6 +34,7 @@ export const createMrfRecord = async (req, res) => {
       data: record,
     });
   } catch (error) {
+    console.log("CREATE MRF ERROR:", error);
     res.status(500).json({
       success: false,
       message: "Failed to create MRF record",

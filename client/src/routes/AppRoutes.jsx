@@ -1,7 +1,7 @@
 // src/routes/AppRoutes.jsx
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-import Login from "../pages/Login";
+// import Login from "../pages/Login";
 import ProtectedRoute from "./ProtectedRoute";
 
 /* ================= ADMIN ================= */
@@ -23,19 +23,20 @@ import CitizenPostComplaint from "../pages/citizen/CitizenPostComplaint";
 import CitizenTrackInfo from "../pages/citizen/CitizenTrackVehicle";
 import CitizenCheckpoint from "../pages/citizen/CitizenCheckpoint";
 
-/* ================= SUPERVISOR ================= */
-import SupervisorLayout from "../layout/SupervisorLayout";
 import OnlineService from "../pages/citizen/OnlineService";
-import Analytics from "../pages/supervisor/Analytics";
-import Attendance from "../pages/supervisor/Attendance";
-import Complaints from "../pages/supervisor/Complaints";
-import QueueFulfillment from "../pages/supervisor/QueueFulfillment";
-import SupervisorDashboard from "../pages/supervisor/SupervisorDashboard";
-import Vehicles from "../pages/supervisor/Vehicles";
-import Wards from "../pages/supervisor/Wards";
-import WealthCenter from "../pages/supervisor/WealthCenter";
-import MachineryDefect from "../pages/supervisor/MachineryDefect";
-import MoKhataDashboard from "../pages/supervisor/MoKhataDashboard";
+
+/* ================= SUPERVISOR ================= */
+
+import SupervisorLayout from "../layout/supervisor/SupervisorLayout";
+import SupervisorDashboard from "../pages/supervisor/dashboard/SupervisorDashboard";
+import Vehicles from "../pages/supervisor/vehicles/Vehicles";
+import Complaints from "../pages/supervisor/complaints/Complaints";
+import Attendance from "../pages/supervisor/attendance/Attendance";
+import Analytics from "../pages/supervisor/analytics/Analytics";
+import WealthCenter from "../pages/supervisor/wealthcenter/WealthCenter";
+import MoKhataDashboard from "../pages/supervisor/mokhata/MoKhataDashboard";
+import MachineryDefect from "../pages/supervisor/machineryDefect/MachineryDefect";
+import Login from "../pages/auth/login/Login";
 
 export default function AppRoutes() {
   return (
@@ -87,19 +88,18 @@ export default function AppRoutes() {
           path="/supervisor"
           element={
             <ProtectedRoute allowedRoles={["supervisor"]}>
-              <SupervisorLayout />
+              {/* <SupervisorLayout /> */}
+              <SupervisorLayout/>
             </ProtectedRoute>
           }
         >
           <Route index element={<SupervisorDashboard />} />
           <Route path="dashboard" element={<SupervisorDashboard />} />
           <Route path="vehicles" element={<Vehicles />} />
-          <Route path="wards" element={<Wards />} />
           <Route path="complaints" element={<Complaints />} />
           <Route path="attendance" element={<Attendance />} />
           <Route path="analytics" element={<Analytics />} />
           <Route path="live-tracking" element={<TrackVehicle />} />
-          {/* <Route path="queue-fulfillment" element={<QueueFulfillment />} /> */}
           <Route path="/supervisor/wealthcenter" element={<WealthCenter/>}/>
           <Route path="/supervisor/machinery-defect" element={<MachineryDefect />} />
           <Route path="/supervisor/mokhata" element={<MoKhataDashboard />} />

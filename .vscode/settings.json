@@ -12,5 +12,6 @@
         "getwastecollection",
         "loginsupervisor",
         "updatewastecollection"
-    ]
+    ],
+    "postman.settings.dotenv-detection-notification-visibility": false
 }
