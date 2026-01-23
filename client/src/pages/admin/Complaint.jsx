@@ -42,7 +42,9 @@ const Complaint = () => {
       category: item.category?.join(', '),
       description: item.description,
       photo: item.image,
-      status: item.status.toLowerCase(), // Pending → pending
+      status: item.status
+  ?.toLowerCase()
+  .replace(" ", "-"), 
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
     }));
@@ -59,34 +61,49 @@ const Complaint = () => {
 };
 
 
-  const handleStatusChange = async (complaintId, newStatus) => {
-    try {
-      await api.patch(`/complaints/${complaintId}`, { status: newStatus });
-      
-      setComplaints(complaints.map(c => 
-        c.id === complaintId ? { ...c, status: newStatus } : c
-      ));
-      toast.success('Complaint status updated successfully');
-    } catch (error) {
-      console.error('Error updating status:', error);
-      toast.error('Failed to update complaint status');
-    }
-  };
-
-
-
-
-
-  const getStatusColor = (status) => {
-    const colors = {
-      open: 'bg-red-100 text-red-800',
-      pending: 'bg-yellow-100 text-yellow-800',
-      'in-progress': 'bg-blue-100 text-blue-800',
-      closed: 'bg-green-100 text-green-800',
-      rejected: 'bg-gray-100 text-gray-800'
+const handleStatusChange = async (complaintId, newStatus) => {
+  try {
+    // Map frontend → backend enum
+    const backendStatusMap = {
+      pending: "Pending",
+      "in-progress": "In Progress",
+      resolved: "Resolved",
     };
-    return colors[status] || 'bg-gray-100 text-gray-800';
+
+    const backendStatus = backendStatusMap[newStatus];
+
+    await api.put(
+      `/complaints/update-complaint-status/${complaintId}`,
+      { status: backendStatus }
+    );
+
+    // ✅ Update frontend state with NORMALIZED value
+    setComplaints(prev =>
+      prev.map(c =>
+        c.id === complaintId
+          ? { ...c, status: newStatus }
+          : c
+      )
+    );
+
+    toast.success("Complaint status updated successfully");
+  } catch (error) {
+    console.error("Error updating status:", error.response?.data || error);
+    toast.error("Failed to update complaint status");
+  }
+};
+
+
+
+ const getStatusColor = (status) => {
+  const colors = {
+    pending: 'bg-yellow-100 text-yellow-800',
+    'in-progress': 'bg-blue-100 text-blue-800',
+    resolved: 'bg-green-100 text-green-800',
   };
+  return colors[status] || 'bg-gray-100 text-gray-800';
+};
+
 
   const getPriorityColor = (priority) => {
     const colors = {
@@ -113,38 +130,39 @@ const Complaint = () => {
 
  const stats = {
   total: complaints.length,
-  open: complaints.filter(c => c.status === 'open').length,
-  pending: complaints.filter(c => c.status === 'pending').length,
-  closed: complaints.filter(c => c.status === 'closed').length
+  pending: complaints.filter(c => c.status === "pending").length,
+  inProgress: complaints.filter(c => c.status === "in-progress").length,
+  resolved: complaints.filter(c => c.status === "resolved").length,
 };
 
 
+
   const statsCards = [
-    {
-      title: "Total Complaints",
-      value: stats.total,
-      icon: "📋",
-      gradient: "from-blue-500 to-cyan-600"
-    },
-    {
-      title: "Open",
-      value: stats.open,
-      icon: "⚠️",
-      gradient: "from-rose-500 to-pink-600"
-    },
-    {
-      title: "Pending",
-      value: stats.pending,
-      icon: "⏰",
-      gradient: "from-amber-500 to-orange-600"
-    },
-    {
-      title: "Closed",
-      value: stats.closed,
-      icon: "✅",
-      gradient: "from-emerald-500 to-teal-600"
-    }
-  ];
+  {
+    title: "Total Complaints",
+    value: stats.total,
+    icon: "📋",
+    gradient: "from-blue-500 to-cyan-600",
+  },
+  {
+    title: "Pending",
+    value: stats.pending,
+    icon: "⏰",
+    gradient: "from-amber-500 to-orange-600",
+  },
+  {
+    title: "In Progress",
+    value: stats.inProgress,
+    icon: "🚧",
+    gradient: "from-blue-500 to-indigo-600",
+  },
+  {
+    title: "Resolved",
+    value: stats.resolved,
+    icon: "✅",
+    gradient: "from-emerald-500 to-teal-600",
+  },
+];
 
   if (loading) {
     return (
@@ -210,11 +228,10 @@ const Complaint = () => {
               onChange={(e) => setFilters({ ...filters, status: e.target.value })}
             >
               <option value="all">All Status</option>
-              <option value="open">Open</option>
               <option value="pending">Pending</option>
               <option value="in-progress">In Progress</option>
-              <option value="closed">Closed</option>
-              <option value="rejected">Rejected</option>
+              <option value="resolved">Resolved</option>
+
             </select>
           </div>
 
@@ -290,11 +307,9 @@ const Complaint = () => {
                         onChange={(e) => handleStatusChange(complaint.id, e.target.value)}
                         className={`text-xs font-semibold px-3 py-1 rounded-full border-0 ${getStatusColor(complaint.status)}`}
                       >
-                        <option value="open">Open</option>
-                        <option value="pending">Pending</option>
-                        <option value="in-progress">In Progress</option>
-                        <option value="closed">Closed</option>
-                        <option value="rejected">Rejected</option>
+                         <option value="pending">Pending</option>
+                          <option value="in-progress">In Progress</option>
+                          <option value="resolved">Resolved</option>
                       </select>
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 hidden xl:table-cell">

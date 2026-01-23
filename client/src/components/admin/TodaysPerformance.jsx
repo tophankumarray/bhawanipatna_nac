@@ -1,11 +1,21 @@
 // @ts-nocheck
 const TodaysPerformance = ({ data }) => {
   // Mock 7-day trend data (in real app, this would come from API)
-  const complaintsTrend = data?.complaintsTrend || [72, 68, 75, 81, 78, 85, 87];
-  const collectionTrend = data?.collectionTrend || [88, 90, 89, 92, 91, 93, 94];
+  // Use default values if data is missing or empty
+  const complaintsTrend = (data?.complaintsTrend && data.complaintsTrend.length > 0) 
+    ? data.complaintsTrend 
+    : [72, 68, 75, 81, 78, 85, 87];
+  const collectionTrend = (data?.collectionTrend && data.collectionTrend.length > 0) 
+    ? data.collectionTrend 
+    : [88, 90, 89, 92, 91, 93, 94];
   
   // Function to generate SVG path for line chart
   const generatePath = (dataPoints, maxValue = 100, height = 60, width = 200) => {
+    // Safety check: return empty path if no data
+    if (!dataPoints || dataPoints.length === 0) {
+      return 'M 0,60';
+    }
+    
     const points = dataPoints.map((value, index) => {
       const x = (index / (dataPoints.length - 1)) * width;
       const y = height - (value / maxValue) * height;

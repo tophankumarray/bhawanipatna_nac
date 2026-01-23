@@ -1,24 +1,36 @@
 // @ts-nocheck
 const VehicleCard = ({ vehicle, onViewDetails, onTrackLive, onDelete }) => {
-  const getStatusBadge = (status, ignitionOn) => {
-    if (!status) return 'bg-gradient-to-r from-gray-400 to-gray-500';
+  const getVehicleStatus = (vehicle) => {
+  if (vehicle.lat == null || vehicle.lng == null) {
+    return 'dataNotRetrieving';
+  } else if (vehicle.speed > 0) {
+    return 'running';
+  } else if (vehicle.speed === 0) {
+    return 'standing';
+  }
+  return 'stopped';
+};
 
-    if (ignitionOn) {
-      return 'bg-gradient-to-r from-emerald-500 to-teal-500'; // running
-    }
-
-    if (status === 'stopped') {
-      return 'bg-gradient-to-r from-orange-500 to-amber-500';
-    }
-
-    return 'bg-gradient-to-r from-gray-400 to-gray-500';
+const getStatusText = (vehicle) => {
+  const map = {
+    dataNotRetrieving: 'Data Not Retrieving',
+    running: 'Running',
+    standing: 'Standing',
+    stopped: 'Stopped',
   };
+  return map[getVehicleStatus(vehicle)] || 'Unknown';
+};
 
-  const getStatusText = (status, ignitionOn) => {
-    if (ignitionOn) return 'Running';
-    if (status) return status.replace(/([A-Z])/g, ' $1').trim();
-    return 'Unknown';
+const getStatusBadge = (vehicle) => {
+  const map = {
+    dataNotRetrieving: 'bg-gradient-to-r from-gray-400 to-gray-500',
+    running: 'bg-gradient-to-r from-emerald-500 to-teal-500',
+    standing: 'bg-gradient-to-r from-blue-500 to-indigo-500',
+    stopped: 'bg-gradient-to-r from-orange-500 to-amber-500',
   };
+  return map[getVehicleStatus(vehicle)];
+};
+
 
   return (
     <div className="bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden">
@@ -40,11 +52,12 @@ const VehicleCard = ({ vehicle, onViewDetails, onTrackLive, onDelete }) => {
           </div>
 
           <span
-            className={`${getStatusBadge(vehicle.status, vehicle.ignitionOn)}
+            className={`${getStatusBadge(vehicle)}
               text-white text-xs font-bold px-3 py-1 rounded-full shadow-md`}
           >
-            {getStatusText(vehicle.status, vehicle.ignitionOn)}
+            {getStatusText(vehicle)}
           </span>
+
         </div>
 
         {/* Details Grid */}
