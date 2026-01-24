@@ -7,36 +7,36 @@ import ProtectedRoute from "./ProtectedRoute";
 /* ================= ADMIN ================= */
 import AdminLayout from "../layout/AdminLayout";
 import AdminAttendance from "../pages/admin/Attendance";
-import Complaint from "../pages/admin/Complaint";
-import AdminDashboard from "../pages/admin/Dashboard";
-import FuelManagement from "../pages/admin/FuelManagement";
-import SupervisorManagement from "../pages/admin/Supervisor";
-import TrackVehicle from "../pages/admin/TrackVehicle";
-import Vehicle from "../pages/admin/Vehicle";
-import Ward from "../pages/admin/Ward";
+import Complaint from "../pages/admin/complaints";
+import AdminDashboard from "../pages/admin/dashboard";
+import FuelManagement from "../pages/admin/fuel-management";
+import SupervisorManagement from "../pages/admin/Supervisors";
+import TrackVehicle from "../pages/admin/track-vehicles";
+import Vehicle from "../pages/admin/vehicles";
+import Ward from "../pages/admin/wards";
 import WasteCollection from "../pages/admin/WasteCollection";
 
 /* ================= CITIZEN ================= */
 import CitizenLayout from "../layout/CitizenLayout";
+import CitizenCheckpoint from "../pages/citizen/CitizenCheckpoint";
 import CitizenDashboard from "../pages/citizen/CitizenDashboard";
 import CitizenPostComplaint from "../pages/citizen/CitizenPostComplaint";
 import CitizenTrackInfo from "../pages/citizen/CitizenTrackVehicle";
-import CitizenCheckpoint from "../pages/citizen/CitizenCheckpoint";
 
 import OnlineService from "../pages/citizen/OnlineService";
 
 /* ================= SUPERVISOR ================= */
 
 import SupervisorLayout from "../layout/supervisor/SupervisorLayout";
-import SupervisorDashboard from "../pages/supervisor/dashboard/SupervisorDashboard";
-import Vehicles from "../pages/supervisor/vehicles/Vehicles";
-import Complaints from "../pages/supervisor/complaints/Complaints";
-import Attendance from "../pages/supervisor/attendance/Attendance";
-import Analytics from "../pages/supervisor/analytics/Analytics";
-import WealthCenter from "../pages/supervisor/wealthcenter/WealthCenter";
-import MoKhataDashboard from "../pages/supervisor/mokhata/MoKhataDashboard";
-import MachineryDefect from "../pages/supervisor/machineryDefect/MachineryDefect";
 import Login from "../pages/auth/login/Login";
+import Analytics from "../pages/supervisor/analytics/Analytics";
+import Attendance from "../pages/supervisor/attendance/Attendance";
+import Complaints from "../pages/supervisor/complaints/Complaints";
+import SupervisorDashboard from "../pages/supervisor/dashboard/SupervisorDashboard";
+import MachineryDefect from "../pages/supervisor/machineryDefect/MachineryDefect";
+import MoKhataDashboard from "../pages/supervisor/mokhata/MoKhataDashboard";
+import Vehicles from "../pages/supervisor/vehicles/Vehicles";
+import WealthCenter from "../pages/supervisor/wealthcenter/WealthCenter";
 
 export default function AppRoutes() {
   return (
