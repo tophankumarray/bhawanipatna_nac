@@ -95,7 +95,7 @@ const SupervisorModal = ({
                   }
                 }}
                 className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md font-medium"
-                placeholder="+91 98765 43210"
+                placeholder="9876543210"
                 required
               />
             </div>
@@ -105,7 +105,7 @@ const SupervisorModal = ({
                 New Password
               </label>
               <div className="relative">
-                <input
+            <input
                   type="text"
                   value={formData.password}
                   onChange={(e) =>
@@ -116,8 +116,9 @@ const SupervisorModal = ({
                   }
                   className="w-full px-4 py-3 pr-32 rounded-xl border-2 border-gray-200 focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md font-mono"
                   placeholder="Enter your password or click generate"
-                  required
+                  required={!selectedSupervisor}
                 />
+
                 <button
                   type="button"
                   onClick={generatePassword}

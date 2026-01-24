@@ -1,25 +1,26 @@
 // @ts-nocheck
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useTranslation } from "react-i18next";
 
-import NoticePopup from "./components/NoticePopup";
-import LeftPanel from "./components/LeftPanel";
-import RoleTabs from "./components/RoleTabs";
-import LanguageSelector from "./components/LanguageSelector";
 import CitizenLoginForm from "./components/CitizenLoginForm";
-import StaffLoginForm from "./components/StaffLoginForm";
+import LanguageSelector from "./components/LanguageSelector";
+import LeftPanel from "./components/LeftPanel";
 import LoginFooterHelp from "./components/LoginFooterHelp";
+import NoticePopup from "./components/NoticePopup";
+import RoleTabs from "./components/RoleTabs";
+import StaffLoginForm from "./components/StaffLoginForm";
 
+import { adminLogin, supervisorLogin } from "../../../api/admin/auth.api";
+import api from "../../../api/mockAPI";
+import { useAuth } from "../../../context/AuthContext";
 import {
   DOWNLOAD_URL,
-  generateOtp,
   downloadFileFromPublic,
+  generateOtp,
   LOGO,
 } from "./utils/loginHelpers";
-import { useAuth } from "../../../context/AuthContext";
-import api from "../../../api/mockAPI";
 
 const Login = () => {
   const { login } = useAuth();
@@ -119,34 +120,80 @@ const Login = () => {
     }
 
     try {
-      const { data: users } = await api.get("/users", {
-        params: { username, password, role },
-      });
+      let response;
 
-      if (!users || users.length === 0) {
+      // Call appropriate API based on role
+      if (role === "admin") {
+        response = await adminLogin(username, password);
+      } else if (role === "supervisor") {
+        response = await supervisorLogin(username, password);
+      } else {
+        // For other roles (driver, etc.), use mock API
+        const { data: users } = await api.get("/users", {
+          params: { username, password, role },
+        });
+
+        if (!users || users.length === 0) {
+          await saveLoginLog({
+            role,
+            phone: null,
+            username,
+            status: "failed",
+          });
+          toast.error("Invalid username or password ❌");
+          return;
+        }
+
         await saveLoginLog({
           role,
           phone: null,
           username,
-          status: "failed",
+          status: "success",
         });
-        toast.error("Invalid username or password ❌");
+
+        login({ role, username });
+        toast.success("Login successful!");
+        navigate(`/${role}`);
         return;
       }
 
+      // Handle admin and supervisor login response
+      if (response.success || response.message?.includes("successful")) {
+        await saveLoginLog({
+          role,
+          phone: null,
+          username,
+          status: "success",
+        });
+
+        // Store user data based on role
+        const userData = {
+          role,
+          username,
+          ...(response.data && { ...response.data }),
+        };
+
+        // Store token if provided
+        const token = response.token || null;
+        login(userData, token);
+        
+        toast.success(response.message || "Login successful!");
+        navigate(`/${role}`);
+      } else {
+        throw new Error(response.message || "Login failed");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      
       await saveLoginLog({
         role,
         phone: null,
         username,
-        status: "success",
+        status: "failed",
       });
 
-      login({ role, username });
-      toast.success("Login successful!");
-      navigate(`/${role}`);
-    } catch (error) {
-      console.error(error);
-      toast.error("Server error ❌");
+      const errorMessage = error.message || error.error || "Invalid username or password ❌";
+      toast.error(errorMessage);
     }
   };
 

@@ -1,12 +1,13 @@
 // @ts-nocheck
 export const buildSupervisorPayload = (formData) => ({
-  supervisorName: formData.name,
-  username: formData.username,
-  email: formData.email,
-  phoneNumber: formData.mobile,
+  supervisorName: formData.name.trim(),
+  username: formData.username.trim().toLowerCase(),
+  email: formData.email.trim().toLowerCase(),
+  phoneNumber: formData.mobile.trim(),
   password: formData.password,
   status: formData.status,
 });
+
 
 export const generateRandomPassword = () => {
   const charset =

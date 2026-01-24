@@ -1,5 +1,6 @@
-import mongoose from "mongoose";
+// @ts-nocheck
 import bcrypt from "bcryptjs";
+import mongoose from "mongoose";
 
 const supervisorSchema = new mongoose.Schema(
   {
@@ -15,8 +16,11 @@ const supervisorSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true, 
+      required: function () {
+        return this.isNew; // 🔥 required only when creating
+      },
     },
+
     email: {
       type: String,
       required: true,
@@ -41,6 +45,7 @@ const supervisorSchema = new mongoose.Schema(
 /* ✅ FIXED password hash middleware */
 supervisorSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
+
   this.password = await bcrypt.hash(this.password, 10);
 });
 
