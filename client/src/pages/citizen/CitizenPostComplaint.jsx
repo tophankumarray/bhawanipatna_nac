@@ -11,15 +11,16 @@ export default function ComplaintsPage() {
   const [complaints, setComplaints] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [complaintFormData, setComplaintFormData] = useState({
-    citizenName: "",
-    phoneNumber: "",
-    wardNumber: "",
-    area: "",
-    category: "",
-    description: "",
-    photo: null,
-  });
+const [complaintFormData, setComplaintFormData] = useState({
+  fullName: "",
+  phoneNumber: "",
+  wardNumber: "",
+  area: "",
+  category: "",
+  description: "",
+  photo: null,
+});
+
 
   const webcamRef = useRef(null);
 
@@ -59,8 +60,8 @@ export default function ComplaintsPage() {
   useEffect(() => {
     const loadComplaints = async () => {
       try {
-        const res = await api.get("/complaints");
-        setComplaints(res.data);
+        const res = await api.get("/complaints/allcomplaints");
+        setComplaints(res.data.data || []);
       } catch (err) {
         console.error("Error loading complaints", err);
       }
@@ -81,33 +82,31 @@ export default function ComplaintsPage() {
     setIsSubmitting(true);
 
     try {
-      const now = new Date().toISOString();
+      
 
-      // Map to db.json complaint shape
-      const payload = {
-        title: complaintFormData.category || "Citizen Complaint",
-        citizenName: complaintFormData.citizenName,
-        citizenPhone: complaintFormData.phoneNumber,
-        ward: `Ward ${complaintFormData.wardNumber}`,
-        location: complaintFormData.area,
-        category: complaintFormData.category,
-        description: complaintFormData.description,
-        status: "pending",
-        priority: "medium",
-        createdAt: now,
-        updatedAt: now,
-        assignedTo: "Not assigned",
-        resolvedDate: null,
-        notes: "",
-        photo: complaintFormData.photo, // base64 from webcam
-      };
+      const formData = new FormData();
 
-      const res = await api.post("/complaints", payload, {
-        headers: { "Content-Type": "application/json" },
-      }); // [web:53][web:50]
+      formData.append("fullName", complaintFormData.fullName);
+      formData.append("phoneNumber", complaintFormData.phoneNumber);
+      formData.append("wardNumber", complaintFormData.wardNumber);
+      formData.append("area", complaintFormData.area);
+      formData.append("category", complaintFormData.category);
+      formData.append("description", complaintFormData.description);
 
-      // res.data is the saved complaint with generated id
-      setComplaints((prev) => [res.data, ...prev]);
+
+      // convert base64 → file
+        if (complaintFormData.photo) {
+        const blob = await fetch(complaintFormData.photo).then(res => res.blob());
+        const file = new File([blob], "complaint.jpg", { type: "image/jpeg" });
+        formData.append("image", file);
+      }
+
+      const res = await api.post(
+        "/complaints/createcomplaint",
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+      setComplaints(prev => [res.data.data, ...prev]);
       resetForm();
       setShowComplaintForm(false);
     } catch (err) {
@@ -118,9 +117,10 @@ export default function ComplaintsPage() {
     }
   };
 
+
   const resetForm = () => {
     setComplaintFormData({
-      citizenName: "",
+      fullName: "",
       phoneNumber: "",
       wardNumber: "",
       area: "",
@@ -133,19 +133,16 @@ export default function ComplaintsPage() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setComplaintFormData((prev) => ({ ...prev, [name]: value }));
+    setComplaintFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "Started":
-      case "pending":
+      case "Pending":
         return "bg-yellow-100 text-yellow-800 border-yellow-300";
       case "In Progress":
-      case "in-progress":
         return "bg-orange-100 text-orange-800 border-orange-300";
-      case "Done":
-      case "resolved":
+      case "Resolved":
         return "bg-green-100 text-green-800 border-green-300";
       default:
         return "bg-gray-100 text-gray-800";
@@ -155,8 +152,7 @@ export default function ComplaintsPage() {
   const getDaysOpen = (dateSubmittedISO) => {
     const submitted = new Date(dateSubmittedISO);
     const now = new Date();
-    const diffTime = Math.max(0, now - submitted);
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return Math.ceil(Math.max(0, now - submitted) / (1000 * 60 * 60 * 24));
   };
 
   return (
@@ -210,23 +206,22 @@ export default function ComplaintsPage() {
 
                   return (
                     <div
-                      key={complaint.id}
+                      key={complaint._id}
                       className="bg-gradient-to-r from-white to-gray-50 border border-gray-200 rounded-2xl p-7 shadow-md hover:shadow-xl transition-shadow duration-300"
                     >
                       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
                         <div className="flex-1">
                           <h4 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-                            {complaint.citizenName}
-                            {complaint.id && (
+                            {complaint.fullName}
+                            {complaint._id && (
                               <span className="text-sm px-3 py-1 bg-gray-100 text-gray-600 rounded-full select-none">
-                                #{String(complaint.id).slice(-6)}
+                                #{String(complaint._id).slice(-6)}
                               </span>
                             )}
                           </h4>
-                          <p className="text-md text-gray-700 mt-1 font-medium">
-                            {complaint.citizenPhone || complaint.phoneNumber} |{" "}
-                            {complaint.location || complaint.area},{" "}
-                            {complaint.ward || `Ward ${complaint.wardNumber}`}
+                         <p className="text-md text-gray-700 mt-1 font-medium">
+                            {complaint.phoneNumber} |{" "}
+                            {complaint.area}, Ward {complaint.wardNumber}
                           </p>
                           <p className="text-md text-gray-700 mt-1 font-medium">
                             {complaint.category} |{" "}
@@ -252,14 +247,14 @@ export default function ComplaintsPage() {
                             </strong>
                           </div>
                         </div>
-                        {complaint.photo && (
+                      {complaint.image && (
                           <img
-                            src={complaint.photo}
-                            alt="Complaint Evidence"
-                            className="w-44 h-36 object-cover rounded-xl border border-gray-300 shadow-sm"
-                            loading="lazy"
+                            src={`http://localhost:5900/${complaint.image}`}
+                            alt="Complaint"
+                            className="w-44 h-36 object-cover rounded-xl"
                           />
                         )}
+
                       </div>
                     </div>
                   );
@@ -271,196 +266,198 @@ export default function ComplaintsPage() {
       </main>
 
       {/* Modal complaint form */}
-      {showComplaintForm && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-6">
-          <div className="bg-white rounded-3xl shadow-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-gradient-to-r from-green-600 to-emerald-700 text-white p-8 flex items-center justify-between rounded-t-3xl shadow-md">
-              <h3 className="text-3xl font-bold">Post a New Complaint</h3>
-              <button
-                onClick={() => {
-                  setShowComplaintForm(false);
-                  resetForm();
-                }}
-                className="bg-white/20 hover:bg-white/30 rounded-full p-3 transition-all duration-200"
-                aria-label="Close complaint form"
-              >
-                <X className="h-7 w-7" />
-              </button>
-            </div>
+{showComplaintForm && (
+  <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-6">
+    <div className="bg-white rounded-3xl shadow-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="sticky top-0 bg-gradient-to-r from-green-600 to-emerald-700 text-white p-8 flex items-center justify-between rounded-t-3xl shadow-md">
+        <h3 className="text-3xl font-bold">Post a New Complaint</h3>
+        <button
+          onClick={() => {
+            setShowComplaintForm(false);
+            resetForm();
+          }}
+          className="bg-white/20 hover:bg-white/30 rounded-full p-3 transition-all duration-200"
+          aria-label="Close complaint form"
+        >
+          <X className="h-7 w-7" />
+        </button>
+      </div>
 
-            <form onSubmit={handleSubmitComplaint} className="p-8 space-y-7">
-              {/* Full Name */}
-              <div>
-                <label className="block text-md font-semibold text-gray-800 mb-2">
-                  Full Name *
-                </label>
-                <input
-                  type="text"
-                  name="citizenName"
-                  value={complaintFormData.citizenName}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full rounded-xl border border-gray-300 px-5 py-4 focus:outline-none focus:ring-3 focus:ring-green-500 transition"
-                  placeholder="Enter your name"
-                />
-              </div>
+      <form onSubmit={handleSubmitComplaint} className="p-8 space-y-7">
+        {/* Full Name */}
+        <div>
+          <label className="block text-md font-semibold text-gray-800 mb-2">
+            Full Name *
+          </label>
+          <input
+            type="text"
+            name="fullName"                      // ✅ FIXED
+            value={complaintFormData.fullName} // ✅ FIXED
+            onChange={handleInputChange}
+            required
+            className="w-full rounded-xl border border-gray-300 px-5 py-4 focus:outline-none focus:ring-3 focus:ring-green-500 transition"
+            placeholder="Enter your name"
+          />
+        </div>
 
-              {/* Phone */}
-              <div>
-                <label className="block text-md font-semibold text-gray-800 mb-2">
-                  Phone Number *
-                </label>
-                <input
-                  type="text"
-                  name="phoneNumber"
-                  value={complaintFormData.phoneNumber}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full rounded-xl border border-gray-300 px-5 py-4 focus:outline-none focus:ring-3 focus:ring-green-500 transition"
-                  placeholder="Enter phone number"
-                />
-              </div>
+        {/* Phone */}
+        <div>
+          <label className="block text-md font-semibold text-gray-800 mb-2">
+            Phone Number *
+          </label>
+          <input
+            type="text"
+            name="phoneNumber"
+            value={complaintFormData.phoneNumber}
+            onChange={handleInputChange}
+            required
+            className="w-full rounded-xl border border-gray-300 px-5 py-4 focus:outline-none focus:ring-3 focus:ring-green-500 transition"
+            placeholder="Enter phone number"
+          />
+        </div>
 
-              {/* Ward + Area */}
-              <div className="grid md:grid-cols-2 gap-8">
-                <div>
-                  <label className="block text-md font-semibold text-gray-800 mb-2">
-                    Ward Number *
-                  </label>
-                  <input
-                    type="text"
-                    name="wardNumber"
-                    value={complaintFormData.wardNumber}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full rounded-xl border border-gray-300 px-5 py-4 focus:outline-none focus:ring-3 focus:ring-green-500 transition"
-                    placeholder="Enter ward number"
-                  />
-                </div>
-                <div>
-                  <label className="block text-md font-semibold text-gray-800 mb-2">
-                    Area *
-                  </label>
-                  <input
-                    type="text"
-                    name="area"
-                    value={complaintFormData.area}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full rounded-xl border border-gray-300 px-5 py-4 focus:outline-none focus:ring-3 focus:ring-green-500 transition"
-                    placeholder="Enter area/locality"
-                  />
-                </div>
-              </div>
+        {/* Ward + Area */}
+        <div className="grid md:grid-cols-2 gap-8">
+          <div>
+            <label className="block text-md font-semibold text-gray-800 mb-2">
+              Ward Number *
+            </label>
+            <input
+              type="text"
+              name="wardNumber"
+              value={complaintFormData.wardNumber}
+              onChange={handleInputChange}
+              required
+              className="w-full rounded-xl border border-gray-300 px-5 py-4 focus:outline-none focus:ring-3 focus:ring-green-500 transition"
+              placeholder="Enter ward number"
+            />
+          </div>
 
-              {/* Category */}
-              <div>
-                <label className="block text-md font-semibold text-gray-800 mb-2">
-                  Category *
-                </label>
-                <select
-                  name="category"
-                  value={complaintFormData.category}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full rounded-xl border border-gray-300 px-5 py-4 focus:outline-none focus:ring-3 focus:ring-green-500 transition"
-                >
-                  <option value="">Select category</option>
-                  {CATEGORIES.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Description */}
-              <div>
-                <label className="block text-md font-semibold text-gray-800 mb-2">
-                  Description *
-                </label>
-                <textarea
-                  name="description"
-                  value={complaintFormData.description}
-                  onChange={handleInputChange}
-                  required
-                  rows={4}
-                  className="w-full rounded-xl border border-gray-300 px-5 py-4 resize-none focus:outline-none focus:ring-3 focus:ring-green-500 transition"
-                  placeholder="Describe the issue in detail..."
-                />
-              </div>
-
-              {/* Camera / Capture area */}
-              <div className="border-2 border-dashed border-gray-300 rounded-2xl p-6 text-center shadow-inner bg-gray-50">
-                {!capturedPhoto ? (
-                  <>
-                    <Webcam
-                      audio={false}
-                      ref={webcamRef}
-                      screenshotFormat="image/jpeg"
-                      videoConstraints={videoConstraints}
-                      className="rounded-2xl mx-auto mb-6 shadow-lg"
-                      mirrored
-                    />
-                    <button
-                      type="button"
-                      onClick={capturePhoto}
-                      className="px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-700 text-white rounded-2xl font-semibold shadow-lg hover:from-green-700 hover:to-emerald-800 transition-transform duration-300 transform hover:scale-105 flex items-center justify-center gap-3 mx-auto"
-                    >
-                      <Camera className="h-6 w-6" />
-                      Capture Photo
-                    </button>
-                  </>
-                ) : (
-                  <div>
-                    <img
-                      src={capturedPhoto}
-                      alt="Captured"
-                      className="max-h-64 rounded-2xl mx-auto mb-4 shadow-md border border-gray-300 object-contain"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setCapturedPhoto(null);
-                        setComplaintFormData((prev) => ({
-                          ...prev,
-                          photo: null,
-                        }));
-                      }}
-                      className="px-5 py-2 flex items-center justify-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl mx-auto transition-transform duration-300 hover:scale-110 shadow-sm"
-                    >
-                      <RotateCcw className="h-5 w-5" />
-                      Retake
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Buttons */}
-              <div className="flex justify-end gap-6 pt-6">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowComplaintForm(false);
-                    resetForm();
-                  }}
-                  className="px-8 py-4 border border-gray-300 text-gray-700 rounded-2xl hover:bg-gray-100 font-semibold transition-colors duration-300 shadow-sm"
-                  disabled={isSubmitting}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-700 text-white rounded-2xl font-semibold shadow-lg hover:from-green-700 hover:to-emerald-800 transition-transform duration-300 hover:scale-105 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? "Submitting..." : "Submit Complaint"}
-                </button>
-              </div>
-            </form>
+          <div>
+            <label className="block text-md font-semibold text-gray-800 mb-2">
+              Area *
+            </label>
+            <input
+              type="text"
+              name="area"
+              value={complaintFormData.area}
+              onChange={handleInputChange}
+              required
+              className="w-full rounded-xl border border-gray-300 px-5 py-4 focus:outline-none focus:ring-3 focus:ring-green-500 transition"
+              placeholder="Enter area/locality"
+            />
           </div>
         </div>
-      )}
+
+        {/* Category */}
+        <div>
+          <label className="block text-md font-semibold text-gray-800 mb-2">
+            Category *
+          </label>
+          <select
+            name="category"
+            value={complaintFormData.category}
+            onChange={handleInputChange}
+            required
+            className="w-full rounded-xl border border-gray-300 px-5 py-4 focus:outline-none focus:ring-3 focus:ring-green-500 transition"
+          >
+            <option value="">Select category</option>
+            {CATEGORIES.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Description */}
+        <div>
+          <label className="block text-md font-semibold text-gray-800 mb-2">
+            Description *
+          </label>
+          <textarea
+            name="description"
+            value={complaintFormData.description}
+            onChange={handleInputChange}
+            required
+            rows={4}
+            className="w-full rounded-xl border border-gray-300 px-5 py-4 resize-none focus:outline-none focus:ring-3 focus:ring-green-500 transition"
+            placeholder="Describe the issue in detail..."
+          />
+        </div>
+
+        {/* Camera / Capture area */}
+        <div className="border-2 border-dashed border-gray-300 rounded-2xl p-6 text-center shadow-inner bg-gray-50">
+          {!capturedPhoto ? (
+            <>
+              <Webcam
+                audio={false}
+                ref={webcamRef}
+                screenshotFormat="image/jpeg"
+                videoConstraints={videoConstraints}
+                className="rounded-2xl mx-auto mb-6 shadow-lg"
+                mirrored
+              />
+              <button
+                type="button"
+                onClick={capturePhoto}
+                className="px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-700 text-white rounded-2xl font-semibold shadow-lg hover:from-green-700 hover:to-emerald-800 transition-transform duration-300 transform hover:scale-105 flex items-center justify-center gap-3 mx-auto"
+              >
+                <Camera className="h-6 w-6" />
+                Capture Photo
+              </button>
+            </>
+          ) : (
+            <div>
+              <img
+                src={capturedPhoto}
+                alt="Captured"
+                className="max-h-64 rounded-2xl mx-auto mb-4 shadow-md border border-gray-300 object-contain"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  setCapturedPhoto(null);
+                  setComplaintFormData((prev) => ({
+                    ...prev,
+                    photo: null,
+                  }));
+                }}
+                className="px-5 py-2 flex items-center justify-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl mx-auto transition-transform duration-300 hover:scale-110 shadow-sm"
+              >
+                <RotateCcw className="h-5 w-5" />
+                Retake
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Buttons */}
+        <div className="flex justify-end gap-6 pt-6">
+          <button
+            type="button"
+            onClick={() => {
+              setShowComplaintForm(false);
+              resetForm();
+            }}
+            className="px-8 py-4 border border-gray-300 text-gray-700 rounded-2xl hover:bg-gray-100 font-semibold transition-colors duration-300 shadow-sm"
+            disabled={isSubmitting}
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-700 text-white rounded-2xl font-semibold shadow-lg hover:from-green-700 hover:to-emerald-800 transition-transform duration-300 hover:scale-105 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Submitting..." : "Submit Complaint"}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
+
 
       <footer className="bg-white border-t border-gray-300 mt-12 py-8">
         <div className="container mx-auto px-6 text-center text-sm text-gray-600 select-none">

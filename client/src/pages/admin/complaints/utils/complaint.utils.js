@@ -1,4 +1,5 @@
 // @ts-nocheck
+
 export const normalizeComplaints = (list = []) =>
   list.map(item => ({
     id: item._id,
@@ -8,7 +9,10 @@ export const normalizeComplaints = (list = []) =>
     location: `${item.area}, Ward ${item.wardNumber}`,
     category: item.category?.join(", "),
     description: item.description,
-    photo: item.image,
+    photo: item.image
+      ? `http://localhost:5900/${item.image}`
+      : null,
+
     status: item.status?.toLowerCase().replace(" ", "-"),
     createdAt: item.createdAt,
     updatedAt: item.updatedAt,
