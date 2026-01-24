@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import path from "path";
 import dotenv from "dotenv";
 import connectDB from "./utils/db.js";
 import complaintRoutes from "./routes/complaint.routes.js";
@@ -30,7 +29,6 @@ app.use(cors());
 
 app.use("/uploads", express.static("uploads"));
 
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.get("/", (req, res) => {
   res.status(200).json({
     message: "Backend running successfully",
