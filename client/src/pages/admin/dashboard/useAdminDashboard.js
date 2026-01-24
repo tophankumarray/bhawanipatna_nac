@@ -16,6 +16,53 @@ import {
   safeNumber,
 } from "./utils/helpers";
 
+const buildRecentActivities = ({
+  complaints = [],
+  wasteCollections = [],
+  fuelRecords = [],
+}) => {
+  const activities = [];
+
+  // Complaints
+  complaints.forEach((c) => {
+    activities.push({
+      message: `Complaint raised in Ward ${c.wardNumber} (${c.category})`,
+      type:
+        c.status === "Resolved"
+          ? "success"
+          : c.status === "Pending"
+          ? "warning"
+          : "info",
+      timestamp: new Date(c.createdAt).toLocaleString("en-IN"),
+      rawDate: c.createdAt,
+    });
+  });
+
+  // Waste collection
+  wasteCollections.forEach((w) => {
+    activities.push({
+      message: `Waste collected in Ward ${w.wardNumber || w.ward}`,
+      type: "success",
+      timestamp: new Date(w.createdAt).toLocaleString("en-IN"),
+      rawDate: w.createdAt,
+    });
+  });
+
+  // Fuel management
+  fuelRecords.forEach((f) => {
+    activities.push({
+      message: `Fuel issued to vehicle ${f.vehicleNumber || f.registrationNumber}`,
+      type: "warning",
+      timestamp: new Date(f.createdAt).toLocaleString("en-IN"),
+      rawDate: f.createdAt,
+    });
+  });
+
+  return activities
+    .sort((a, b) => new Date(b.rawDate) - new Date(a.rawDate))
+    .slice(0, 10);
+};
+
 const useAdminDashboard = () => {
   const [dashboardData, setDashboardData] = useState({
     stats: {
@@ -104,6 +151,13 @@ const useAdminDashboard = () => {
       const fuelRecords = fuelRes?.data?.data || [];
 
 
+      
+      /* ---------------- RECENT ACTIVITY ---------------- */
+      const recentActivities = buildRecentActivities({
+        complaints,
+        wasteCollections,
+        fuelRecords,
+      });
       /* ---------------- WARD COVERAGE (WARD MODEL BASED) ---------------- */
       const wardCoverageData = wards.map((ward) => {
         const wastePerHousehold =
@@ -265,6 +319,7 @@ const useAdminDashboard = () => {
               ? Math.round(totalFuelCost / totalFuelQty)
               : 0,
         },
+        recentActivities,
 
         vehicleLocations: activeVehicles
           .map((v) => {
