@@ -1,3 +1,4 @@
+// @ts-nocheck
 export const LOGO = "image.jpg";
 export const DOWNLOAD_URL = "/SBM 2.0.pdf";
 

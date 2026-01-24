@@ -2,7 +2,7 @@
 const VehicleFilters = ({ filters, setFilters }) => {
   return (
     <div className="bg-white rounded-2xl shadow-xl p-6 mb-6 border border-gray-100">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">Search</label>
               <input
@@ -27,7 +27,7 @@ const VehicleFilters = ({ filters, setFilters }) => {
                 <option value="dataNotRetrieving">Data Not Retrieving</option>
               </select>
             </div>
-            <div>
+            {/* <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">Vehicle Type</label>
               <select
                 value={filters.type}
@@ -42,7 +42,7 @@ const VehicleFilters = ({ filters, setFilters }) => {
                       <option value="ev">Electric Vehicle</option>
                       <option value="road-sweeper-truck ">Road Sweeper Truck </option>
               </select>
-            </div>
+            </div> */}
           </div>
         </div>
   );

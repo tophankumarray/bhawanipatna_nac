@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from "react";
 import { User, Lock } from "lucide-react";
 import { useTranslation } from "react-i18next";

@@ -103,51 +103,46 @@ const useAdminDashboard = () => {
       const wasteCollections = wasteRes?.data?.data || [];
       const fuelRecords = fuelRes?.data?.data || [];
 
-      /* ---------------- WARD COVERAGE (WASTE-BASED) ---------------- */
+
+      /* ---------------- WARD COVERAGE (WARD MODEL BASED) ---------------- */
       const wardCoverageData = wards.map((ward) => {
-        const wardWaste = wasteCollections.filter((w) => {
-          const wasteWardId =
-            w?.wardId?._id ||
-            w?.ward?._id ||
-            w?.wardId ||
-            w?.ward;
+        const wastePerHousehold =
+          ward.household > 0
+            ? ward.wasteGenerationPerDay / ward.household
+            : 0;
 
-          return String(wasteWardId) === String(ward._id);
-        });
+        let capacityFactor = 1;
+        if (ward.collectionFrequency === "Alternate Day") capacityFactor = 0.7;
+        if (ward.collectionFrequency === "Weekly") capacityFactor = 0.4;
 
-        const target = wardWaste.reduce(
-          (s, w) => s + Number(w.targetQuantity || 0),
-          0
+        // Estimated coverage %
+        const estimatedCoverage = Math.round(
+          Math.min(wastePerHousehold * capacityFactor * 50, 100)
         );
 
-        const collected = wardWaste.reduce(
-          (s, w) =>
-            s +
-            Number(
-              w.collectedQuantity ??
-              w.quantityCollected ??
-              w.actualQuantity ??
-              0
-            ),
-          0
-        );
-
-        const coverage =
-          target > 0 ? Math.round((collected / target) * 100) : 0;
+        let status = "critical";
+        if (
+          ward.collectionFrequency === "Daily" &&
+          wastePerHousehold <= 2
+        ) {
+          status = "good";
+        } else if (
+          ward.collectionFrequency === "Alternate Day" ||
+          wastePerHousehold <= 3
+        ) {
+          status = "warning";
+        }
 
         return {
           wardId: ward._id,
           wardName: ward.wardName,
-          coverage,
-          status:
-            coverage >= 80
-              ? "good"
-              : coverage >= 50
-              ? "warning"
-              : "critical",
+          coverage: estimatedCoverage,
+          status, // good | warning | critical
+          wastePerDay: ward.wasteGenerationPerDay,
+          households: ward.household,
+          frequency: ward.collectionFrequency,
         };
       });
-
 
       /* ---------------- TOTAL WASTE ---------------- */
       const totalWaste =
@@ -271,16 +266,33 @@ const useAdminDashboard = () => {
               : 0,
         },
 
-        vehicleLocations: activeVehicles.map((v) => ({
-          id: v._id || v.id,
-          registrationNumber: v.registrationNumber || v.truck_number,
-          status: getVehicleStatus(v),
-          lat: v.lat ?? v.latitude,
-          lng: v.lng ?? v.longitude,
-          speed: safeNumber(v.speed),
-          assignedWard: v.address,
-        })),
-      });
+        vehicleLocations: activeVehicles
+          .map((v) => {
+            const lat = Number(v.lat ?? v.latitude);
+            const lng = Number(v.lng ?? v.longitude);
+
+            if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+
+            return {
+              id: v._id || v.id,
+              registrationNumber: v.registrationNumber || v.truck_number,
+              status: getVehicleStatus(v),
+              speed: safeNumber(v.speed),
+              assignedWard: v.address,
+              signalStrength: v.signal_strength,
+              ignitionOn: v.is_ignition_on?.value,
+              lastUpdated: v.updatedAt || v.device_timestamp,
+
+              // ✅ THIS IS THE KEY FIX
+              location: {
+                lat,
+                lng,
+              },
+            };
+          })
+          .filter(Boolean),
+
+              });
 
       if (showToast) toast.success("Dashboard refreshed!");
     } catch (e) {

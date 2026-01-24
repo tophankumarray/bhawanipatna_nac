@@ -1,7 +1,7 @@
 // @ts-nocheck
 const TrackVehicleFilters = ({ filters, setFilters, wards }) => (
   <div className="bg-white rounded-2xl shadow-xl p-6 mb-6 border border-gray-100">
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <input
         placeholder="Vehicle number, Driver..."
         value={filters.search}
@@ -21,7 +21,7 @@ const TrackVehicleFilters = ({ filters, setFilters, wards }) => (
         <option value="dataNotRetrieving">Offline</option>
       </select>
 
-      <select
+      {/* <select
         value={filters.ward}
         onChange={e => setFilters({ ...filters, ward: e.target.value })}
         className="w-full px-4 py-2 rounded-xl border"
@@ -30,7 +30,7 @@ const TrackVehicleFilters = ({ filters, setFilters, wards }) => (
         {wards.map(w => (
           <option key={w} value={w}>{w}</option>
         ))}
-      </select>
+      </select> */}
     </div>
   </div>
 );

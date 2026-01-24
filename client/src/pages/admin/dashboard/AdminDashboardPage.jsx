@@ -16,6 +16,8 @@ import TodaysPerformance from "../../../components/admin/TodaysPerformance";
 import VehiclesStatus from "../../../components/admin/VehiclesStatus";
 import WardCoverage from "../../../components/admin/WardCoverage";
 import ComplaintsStatus from "../complaints/components/ComplaintsStatus";
+import SwachhtamMarquee from "./components/SwachhtamMarquee";
+
 
 const AdminDashboardPage = () => {
   const {
@@ -37,6 +39,9 @@ const AdminDashboardPage = () => {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-linear-to-br from-lime-200/20 to-green-200/20 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
 
       <div className="relative z-10">
+        {/* Swachhtam Portal Alert */}
+        <SwachhtamMarquee />
+
         {/* Header */}
         <HeaderSection
           onRefresh={() => fetchDashboardData(false, true)}
@@ -67,13 +72,44 @@ const AdminDashboardPage = () => {
 
         {/* Map */}
         <div className="mb-6 sm:mb-8">
-          <MapView vehicles={dashboardData.vehicleLocations} />
+          {Array.isArray(dashboardData.vehicleLocations) &&
+          dashboardData.vehicleLocations.filter(
+            (v) =>
+              v.location &&
+              typeof v.location.lat === "number" &&
+              typeof v.location.lng === "number" &&
+              !Number.isNaN(v.location.lat) &&
+              !Number.isNaN(v.location.lng)
+          ).length > 0 ? (
+            <MapView
+              vehicles={dashboardData.vehicleLocations.filter(
+                (v) =>
+                  v.location &&
+                  typeof v.location.lat === "number" &&
+                  typeof v.location.lng === "number" &&
+                  !Number.isNaN(v.location.lat) &&
+                  !Number.isNaN(v.location.lng)
+              )}
+            />
+          ) : (
+            <div className="bg-white rounded-xl shadow-lg p-6 text-center">
+              <div className="text-4xl mb-2">🗺️</div>
+              <h3 className="text-lg font-bold text-gray-800">
+                Live Vehicle Tracking
+              </h3>
+              <p className="text-sm text-gray-600 mt-1">
+                Waiting for vehicle GPS data…
+              </p>
+            </div>
+          )}
         </div>
+
+
 
         {/* Fuel & Recent Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
           <div className="lg:col-span-2">
-            <FuelManagement data={dashboardData.fuelManagement} />
+            <FuelManagement />
           </div>
           <RecentActivity activities={dashboardData.recentActivities} />
         </div>

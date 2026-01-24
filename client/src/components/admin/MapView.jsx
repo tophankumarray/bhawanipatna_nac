@@ -51,7 +51,6 @@ const MapView = ({ vehicles = [], selectedVehicle = null }) => {
   const [autoCenter, setAutoCenter] = useState(true);
   const [showTrails, setShowTrails] = useState(false);
   const vehicleTrails = useRef({});
-
   // Store vehicle trails for path visualization
   useEffect(() => {
     vehicles.forEach(vehicle => {
