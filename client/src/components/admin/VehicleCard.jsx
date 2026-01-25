@@ -1,4 +1,6 @@
 // @ts-nocheck
+import { Link } from 'react-router-dom';
+
 const VehicleCard = ({ vehicle, onViewDetails, onTrackLive, onDelete }) => {
   const getVehicleStatus = (vehicle) => {
   if (vehicle.lat == null || vehicle.lng == null) {
@@ -118,12 +120,12 @@ const getStatusBadge = (vehicle) => {
             View Details
           </button>
 
-          <button
-            onClick={() => onTrackLive(vehicle)}
-            className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white py-2 rounded-xl font-semibold shadow-md transition-all"
+          <Link
+            to="/admin/track-vehicles"
+            className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white py-2 rounded-xl font-semibold shadow-md transition-all text-center"
           >
             Track Live
-          </button>
+          </Link>
         </div>
       </div>
     </div>

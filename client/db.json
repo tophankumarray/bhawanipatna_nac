@@ -174,6 +174,10 @@
     {
       "id": "1c21",
       "phone": "7585858785"
+    },
+    {
+      "id": "7eca",
+      "phone": "1234565432"
     }
   ],
   "vehicles": [
@@ -1112,7 +1116,7 @@
   "moKhataSummary": [
     {
       "id": "1",
-      "khataStock": 160494315
+      "khataStock": 160384438
     }
   ],
   "moKhataDaily": [
@@ -1121,6 +1125,12 @@
       "date": "2026-01-22",
       "todayMade": 135805811,
       "todaySold": 98768685
+    },
+    {
+      "id": "2",
+      "date": "2026-01-24",
+      "todayMade": 13579,
+      "todaySold": 123456
     }
   ],
   "moKhataTransactions": [
@@ -1255,6 +1265,24 @@
       "type": "MAKE",
       "amount": 123456789,
       "date": "1/22/2026, 11:36:42 PM"
+    },
+    {
+      "id": "1769282025184",
+      "type": "MAKE",
+      "amount": 1234,
+      "date": "1/25/2026, 12:43:45 AM"
+    },
+    {
+      "id": "1769282039289",
+      "type": "SELL",
+      "amount": 123456,
+      "date": "1/25/2026, 12:43:59 AM"
+    },
+    {
+      "id": "1769282047176",
+      "type": "MAKE",
+      "amount": 12345,
+      "date": "1/25/2026, 12:44:07 AM"
     }
   ]
 }

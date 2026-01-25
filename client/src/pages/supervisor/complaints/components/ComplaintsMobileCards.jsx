@@ -9,14 +9,14 @@ const ComplaintsMobileCards = ({ data, loading, onPreview, onRoute, isSLABreache
         return (
           <div
             key={c.id}
-            className={`bg-white rounded-xl shadow p-4 border space-y-3 ${
-              breached ? "border-red-300 bg-red-50" : "border-gray-200"
+            className={`rounded-2xl shadow-sm border p-4 space-y-3 transition ${
+              breached ? "border-red-300 bg-red-50" : "border-gray-200 bg-white"
             }`}
           >
             <div className="flex justify-between items-start gap-3">
               <div>
                 <p className="text-xs text-gray-500">Complaint ID</p>
-                <h3 className="font-semibold text-gray-800">
+                <h3 className="font-bold text-gray-900">
                   #{String(c.id).slice(-6)}
                 </h3>
               </div>
@@ -34,12 +34,12 @@ const ComplaintsMobileCards = ({ data, loading, onPreview, onRoute, isSLABreache
               <img
                 src={c.image}
                 onClick={() => onPreview(c.image)}
-                className="w-20 h-20 rounded-lg object-cover border cursor-pointer"
+                className="w-20 h-20 rounded-xl object-cover border cursor-pointer hover:scale-105 transition"
                 alt="complaint"
               />
 
               <div className="flex-1 space-y-1">
-                <p className="text-sm font-medium text-gray-800">{c.type}</p>
+                <p className="text-sm font-semibold text-gray-900">{c.type}</p>
                 <p className="text-xs text-gray-500">Ward: {c.ward}</p>
 
                 <p className={`text-xs ${PRIORITY_COLOR[c.priority?.toLowerCase()]}`}>
@@ -48,21 +48,21 @@ const ComplaintsMobileCards = ({ data, loading, onPreview, onRoute, isSLABreache
 
                 <p className="text-xs text-gray-500">
                   Vehicle:{" "}
-                  <span className="font-medium text-gray-700">{c.vehicle}</span>
+                  <span className="font-semibold text-gray-700">{c.vehicle}</span>
                 </p>
               </div>
             </div>
 
             <div className="flex justify-between items-center text-xs">
               {breached ? (
-                <span className="text-red-600 font-semibold">SLA Breached</span>
+                <span className="text-red-600 font-bold">SLA Breached ⚠</span>
               ) : (
-                <span className="text-green-600 font-medium">On Time</span>
+                <span className="text-green-600 font-bold">On Time ✅</span>
               )}
 
               <button
                 onClick={() => onRoute(c.location)}
-                className="text-green-600 font-medium hover:underline"
+                className="px-3 py-2 rounded-lg bg-green-50 text-green-700 font-semibold hover:bg-green-100 transition"
               >
                 View Route
               </button>
@@ -72,7 +72,9 @@ const ComplaintsMobileCards = ({ data, loading, onPreview, onRoute, isSLABreache
       })}
 
       {!loading && data.length === 0 && (
-        <div className="p-6 text-center text-gray-500">No complaints found.</div>
+        <div className="p-6 text-center text-gray-500 font-medium">
+          No complaints found.
+        </div>
       )}
     </div>
   );

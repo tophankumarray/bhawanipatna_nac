@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useEffect, useMemo, useState } from "react";
-import jsonApi from "../../../api/jsonApi";
+import api from "../../../api/api"; // ✅ backend axios (5900)
 import { toast } from "react-toastify";
 
 /* PDF */
@@ -50,13 +50,15 @@ const MoKhataDashboard = () => {
         ["Net Change Today", todayMade - todaySold],
         [
           "Sales Rate",
-          todayMade > 0 ? `${Math.round((todaySold / todayMade) * 100)}%` : "0%",
+          todayMade > 0
+            ? `${Math.round((todaySold / todayMade) * 100)}%`
+            : "0%",
         ],
       ],
       styles: { fontSize: 10 },
     });
 
-    const last10 = transactions.slice().reverse().slice(0, 10);
+    const last10 = transactions.slice(0, 10); // already sorted latest first
 
     autoTable(doc, {
       startY: doc.lastAutoTable.finalY + 10,
@@ -68,71 +70,24 @@ const MoKhataDashboard = () => {
     doc.save(`mo-khata-report-${todayKey}.pdf`);
   };
 
-  /* ================= HELPERS ================= */
-
-  const ensureSummaryExists = async () => {
-    const res = await jsonApi.get("/moKhataSummary");
-
-    if (!res.data || res.data.length === 0) {
-      const created = await jsonApi.post("/moKhataSummary", {
-        id: 1,
-        khataStock: 0,
-      });
-      return created.data;
-    }
-
-    return res.data[0];
-  };
-
-  const ensureTodayExists = async () => {
-    const res = await jsonApi.get(`/moKhataDaily?date=${todayKey}`);
-
-    if (res.data && res.data.length > 1) {
-      const keep = res.data[0];
-      const extra = res.data.slice(1);
-
-      for (let d of extra) {
-        await jsonApi.delete(`/moKhataDaily/${d.id}`);
-      }
-
-      return keep;
-    }
-
-    if (!res.data || res.data.length === 0) {
-      const allDays = await jsonApi.get("/moKhataDaily");
-      const nextId = (allDays.data?.length || 0) + 1;
-
-      const created = await jsonApi.post("/moKhataDaily", {
-        id: nextId,
-        date: todayKey,
-        todayMade: 0,
-        todaySold: 0,
-      });
-
-      return created.data;
-    }
-
-    return res.data[0];
-  };
-
-  /* ================= LOAD DATA ================= */
-
+  /* ================= LOAD DATA (Backend) ================= */
   const loadMoKhata = async () => {
     try {
       setLoading(true);
 
-      const summary = await ensureSummaryExists();
-      setKhataStock(Number(summary.khataStock || 0));
+      const res = await api.get(`/mokhata/dashboard?date=${todayKey}`);
 
-      const todayData = await ensureTodayExists();
-      setTodayMade(Number(todayData.todayMade || 0));
-      setTodaySold(Number(todayData.todaySold || 0));
+      const summary = res?.data?.data?.summary;
+      const todayData = res?.data?.data?.today;
+      const tx = res?.data?.data?.transactions || [];
 
-      const txRes = await jsonApi.get("/moKhataTransactions");
-      setTransactions(txRes.data || []);
+      setKhataStock(Number(summary?.khataStock || 0));
+      setTodayMade(Number(todayData?.todayMade || 0));
+      setTodaySold(Number(todayData?.todaySold || 0));
+      setTransactions(Array.isArray(tx) ? tx : []);
     } catch (err) {
       console.error("MoKhata load error:", err?.response?.data || err.message);
-      toast.error("MoKhata Load Failed! Check json-server running on port 3000.");
+      toast.error("MoKhata Load Failed! Check backend running on port 5900.");
     } finally {
       setLoading(false);
     }
@@ -142,8 +97,7 @@ const MoKhataDashboard = () => {
     loadMoKhata();
   }, []);
 
-  /* ================= ADD KHATA ================= */
-
+  /* ================= ADD KHATA (Backend) ================= */
   const handleAddKhata = async () => {
     const amount = parseInt(addAmountInput, 10);
 
@@ -155,22 +109,9 @@ const MoKhataDashboard = () => {
     try {
       setLoading(true);
 
-      const summary = await ensureSummaryExists();
-      const todayData = await ensureTodayExists();
-
-      await jsonApi.patch(`/moKhataSummary/${summary.id}`, {
-        khataStock: Number(summary.khataStock || 0) + amount,
-      });
-
-      await jsonApi.patch(`/moKhataDaily/${todayData.id}`, {
-        todayMade: Number(todayData.todayMade || 0) + amount,
-      });
-
-      await jsonApi.post("/moKhataTransactions", {
-        id: Date.now().toString(),
-        type: "MAKE",
+      await api.post("/mokhata/add", {
+        date: todayKey,
         amount,
-        date: new Date().toLocaleString(),
       });
 
       toast.success(`Added ${amount} khata successfully ✅`);
@@ -178,14 +119,13 @@ const MoKhataDashboard = () => {
       await loadMoKhata();
     } catch (err) {
       console.error("Add khata error:", err?.response?.data || err.message);
-      toast.error("Add Khata Failed! Check db.json keys & json-server.");
+      toast.error(err?.response?.data?.message || "Add Khata Failed!");
     } finally {
       setLoading(false);
     }
   };
 
-  /* ================= SELL KHATA ================= */
-
+  /* ================= SELL KHATA (Backend) ================= */
   const handleSoldKhata = async () => {
     const amount = parseInt(soldAmountInput, 10);
 
@@ -202,22 +142,9 @@ const MoKhataDashboard = () => {
     try {
       setLoading(true);
 
-      const summary = await ensureSummaryExists();
-      const todayData = await ensureTodayExists();
-
-      await jsonApi.patch(`/moKhataSummary/${summary.id}`, {
-        khataStock: Number(summary.khataStock || 0) - amount,
-      });
-
-      await jsonApi.patch(`/moKhataDaily/${todayData.id}`, {
-        todaySold: Number(todayData.todaySold || 0) + amount,
-      });
-
-      await jsonApi.post("/moKhataTransactions", {
-        id: Date.now().toString(),
-        type: "SELL",
+      await api.post("/mokhata/sell", {
+        date: todayKey,
         amount,
-        date: new Date().toLocaleString(),
       });
 
       toast.success(`Sold ${amount} khata successfully ✅`);
@@ -225,7 +152,7 @@ const MoKhataDashboard = () => {
       await loadMoKhata();
     } catch (err) {
       console.error("Sell khata error:", err?.response?.data || err.message);
-      toast.error("Sell Khata Failed!");
+      toast.error(err?.response?.data?.message || "Sell Khata Failed!");
     } finally {
       setLoading(false);
     }
@@ -233,7 +160,10 @@ const MoKhataDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-200 to-green-300">
-      <MoKhataHeader onBack={() => window.history.back()} onDownloadPDF={handleDownloadPDF} />
+      <MoKhataHeader
+        onBack={() => window.history.back()}
+        onDownloadPDF={handleDownloadPDF}
+      />
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         {loading && (
@@ -242,9 +172,17 @@ const MoKhataDashboard = () => {
           </div>
         )}
 
-        <MoKhataStats khataStock={khataStock} todayMade={todayMade} todaySold={todaySold} />
+        <MoKhataStats
+          khataStock={khataStock}
+          todayMade={todayMade}
+          todaySold={todaySold}
+        />
 
-        <MoKhataSummary todayMade={todayMade} todaySold={todaySold} khataStock={khataStock} />
+        <MoKhataSummary
+          todayMade={todayMade}
+          todaySold={todaySold}
+          khataStock={khataStock}
+        />
 
         <MoKhataActions
           addAmountInput={addAmountInput}

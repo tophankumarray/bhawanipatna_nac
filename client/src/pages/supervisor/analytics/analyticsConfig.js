@@ -1,16 +1,17 @@
 import { Truck, CheckCircle, AlertCircle, Percent } from "lucide-react";
 
 export const VEHICLE_STATUSES = ["running", "standing", "stopped"];
-export const COMPLAINT_STATUSES = ["Pending", "In Progress", "Resolved"];
+export const COMPLAINT_STATUSES = ["pending", "in-progress", "resolved"];
+
 
 export const COLORS = {
   running: "#22c55e",
   standing: "#facc15",
   stopped: "#ef4444",
 
-  Pending: "#ef4444",
-  "In Progress": "#facc15",
-  Resolved: "#22c55e",
+  pending: "#ef4444",
+  "in-progress": "#facc15",
+  resolved: "#22c55e",
 };
 
 export const KPI_CONFIG = [

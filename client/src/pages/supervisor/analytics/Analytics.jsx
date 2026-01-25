@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useEffect, useState } from "react";
-import api from "../../../api/mockAPI";
+import api from "../../../api/api";
 
 import AnalyticsHeader from "./components/AnalyticsHeader";
 import KpiGrid from "./components/KpiGrid";
@@ -13,38 +13,97 @@ import {
   buildVehicleStatusData,
   buildWardPerformance,
 } from "./utils/buildAnalyticsData";
+import { ALLOWED_VEHICLES } from "../vehicles/vehiclesConfig";
 
 const Analytics = () => {
   const [vehicleData, setVehicleData] = useState([]);
   const [complaintData, setComplaintData] = useState([]);
   const [wardPerformance, setWardPerformance] = useState([]);
 
+  // ✅ detect vehicle status from tracking item
+  const getVehicleStatus = (item) => {
+    const raw =
+      item?.status ||
+      item?.truck_status ||
+      item?.vehicle_status ||
+      item?.device_status ||
+      item?.state ||
+      "";
+
+    const st = String(raw).toLowerCase().trim();
+
+    // direct matching
+    if (st.includes("run")) return "running";
+    if (st.includes("stand")) return "standing";
+    if (st.includes("stop")) return "stopped";
+
+    // fallback using ignition
+    const ignition = item?.is_ignition_on?.value;
+    if (ignition === true) return "running";
+
+    return "stopped";
+  };
+
   useEffect(() => {
     const loadAnalytics = async () => {
       try {
-        const [vehiclesRes, complaintsRes] = await Promise.all([
-          api.get("/vehicles"),
-          api.get("/complaints"),
+        const [trackingRes, complaintsRes] = await Promise.all([
+          api.get("/tracking/trackings"),
+          api.get("/complaints/allcomplaints"),
         ]);
 
-        const vehicles = vehiclesRes.data || [];
-        const complaints = complaintsRes.data || [];
+        const trackingList = trackingRes?.data?.data?.list || [];
 
-        setVehicleData(buildVehicleStatusData(vehicles));
-        setComplaintData(buildComplaintStatusData(complaints));
-        setWardPerformance(buildWardPerformance(vehicles));
+        const complaints =
+          complaintsRes?.data?.data || complaintsRes?.data || [];
+
+        // ✅ Safety check
+        const safeTrackingList = Array.isArray(trackingList) ? trackingList : [];
+
+// ✅ ONLY allowed 5 vehicles
+const filteredTrackingList = safeTrackingList.filter((item) =>
+  ALLOWED_VEHICLES.has(String(item?.truck_no || item?.truck_number || "").trim())
+);
+
+        const safeComplaints = Array.isArray(complaints) ? complaints : [];
+
+        // ✅ Normalize Vehicles for analytics utils
+       const normalizedVehicles = filteredTrackingList.map((item) => ({
+          status: getVehicleStatus(item),
+          assignedWard: item?.address || "Unknown",
+          ward: item?.address || "Unknown",
+        }));
+
+        // ✅ Normalize complaints status
+        const normalizedComplaints = safeComplaints.map((c) => ({
+          ...c,
+          status: String(c?.status || "").toLowerCase().trim(),
+        }));
+
+        setVehicleData(buildVehicleStatusData(normalizedVehicles));
+        setComplaintData(buildComplaintStatusData(normalizedComplaints));
+        setWardPerformance(buildWardPerformance(normalizedVehicles));
       } catch (err) {
         console.log("Analytics Error:", err);
+        setVehicleData([]);
+        setComplaintData([]);
+        setWardPerformance([]);
       }
     };
 
     loadAnalytics();
   }, []);
 
+  // ✅ KPI calculations
   const totalVehicles = vehicleData.reduce((s, v) => s + (v.value || 0), 0);
-  const runningVehicles = vehicleData.find((v) => v.name === "running")?.value || 0;
+
+  const runningVehicles =
+    vehicleData.find((v) => v.name === "running")?.value || 0;
+
   const totalComplaints = complaintData.reduce((s, c) => s + (c.count || 0), 0);
-  const resolved = complaintData.find((c) => c.name === "Resolved")?.count || 0;
+
+  const resolved =
+    complaintData.find((c) => c.name === "resolved")?.count || 0;
 
   const resolutionRate = totalComplaints
     ? `${Math.round((resolved / totalComplaints) * 100)}%`

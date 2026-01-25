@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import {
-  getAllSupervisors,
   createSupervisor,
-  updateSupervisor,
   deleteSupervisor,
-} from '../../../api/admin/supervisor.api'
+  getAllSupervisors,
+  updateSupervisor,
+} from "../../../api/admin/supervisor.api";
 
 import {
   buildSupervisorPayload,
@@ -52,10 +52,24 @@ export const useSupervisors = () => {
     toast.success("Password generated!");
   };
 
+  /* 🔥 UPDATED HERE */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // ✅ FRONTEND VALIDATION (VERY IMPORTANT)
+    if (formData.mobile.length !== 10) {
+      toast.error("Mobile number must be exactly 10 digits");
+      return;
+    }
+
+    if (!formData.password) {
+      toast.error("Password is required");
+      return;
+    }
+
     const payload = buildSupervisorPayload(formData);
+
+    console.log("CREATE supervisor payload:", payload); // 🔍 debug once
 
     try {
       if (selectedSupervisor) {
@@ -68,8 +82,20 @@ export const useSupervisors = () => {
 
       closeModal();
       loadSupervisors();
-    } catch {
-      toast.error("Failed to save supervisor");
+    } catch (error) {
+      console.error("Error saving supervisor:", error);
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to save supervisor";
+
+      const errors = error.response?.data?.errors;
+
+      if (errors && Array.isArray(errors)) {
+        errors.forEach((err) => toast.error(err));
+      } else {
+        toast.error(errorMessage);
+      }
     }
   };
 

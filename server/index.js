@@ -12,7 +12,7 @@ import fuelManagementRoutes from "./routes/fuelManagement.routes.js";
 import machineryDefectRoutes from "./routes/machineryDefect.routes.js";
 import mccRoutes from "./routes/mcc.routes.js";
 import mrfRoutes from "./routes/mrf.routes.js";
-
+import moKhataRoutes from "./routes/moKhata.routes.js";
 
 
 dotenv.config({ path: ".env" });
@@ -47,6 +47,8 @@ app.use("/api/fuel-management", fuelManagementRoutes);
 app.use("/api/machinery-defects", machineryDefectRoutes);
 app.use("/api/mcc", mccRoutes);
 app.use("/api/mrf", mrfRoutes);
+app.use("/api/mokhata", moKhataRoutes);
+
 
 
 

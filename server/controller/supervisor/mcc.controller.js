@@ -62,3 +62,18 @@ export const getAllMccRecords = async (req, res) => {
     });
   }
 };
+export const resetMccRecords = async (req, res) => {
+  try {
+    await MccRecord.deleteMany({});
+    res.status(200).json({
+      success: true,
+      message: "MCC reset successfully ✅",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "MCC reset failed ❌",
+      error: error.message,
+    });
+  }
+};

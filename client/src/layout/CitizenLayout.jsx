@@ -1,5 +1,6 @@
-import { Outlet, NavLink } from "react-router-dom";
+// @ts-nocheck
 import { useState } from "react";
+import { NavLink, Outlet } from "react-router-dom";
 import logo from "/image.jpg";
 
 export default function CitizenLayout() {
@@ -77,7 +78,7 @@ export default function CitizenLayout() {
       {/* ================= MAIN WRAPPER ================= */}
       <div className="flex-1 flex flex-col h-screen">
         {/* ================= HEADER (FIXED) ================= */}
-        <header className="fixed top-0 right-0 left-0 lg:left-56
+        <header className="fixed top-0 right-0 left-0 lg:left-64
                            h-14 bg-emerald-600 text-white shadow
                            flex items-center justify-between
                            px-4 sm:px-6 z-30">

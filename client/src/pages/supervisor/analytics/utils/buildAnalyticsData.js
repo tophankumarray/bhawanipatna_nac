@@ -39,11 +39,26 @@ export const buildWardPerformance = (vehicles = []) => {
 
   vehicles.forEach((v) => {
     const ward = String(v.ward || v.assignedWard || "Unknown").trim();
-    if (!wardMap[ward]) wardMap[ward] = 70 + Math.floor(Math.random() * 25);
+
+    if (!wardMap[ward]) {
+      wardMap[ward] = { total: 0, running: 0 };
+    }
+
+    wardMap[ward].total += 1;
+
+    const status = (v.status || "").toLowerCase().trim();
+    if (status === "running") {
+      wardMap[ward].running += 1;
+    }
   });
 
-  return Object.keys(wardMap).map((w) => ({
-    ward: `Ward ${w}`,
-    percent: wardMap[w],
-  }));
+  return Object.keys(wardMap).map((ward) => {
+    const total = wardMap[ward].total;
+    const running = wardMap[ward].running;
+
+    return {
+      ward: ward,
+      percent: total ? Math.round((running / total) * 100) : 0,
+    };
+  });
 };

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../../api/mockAPI";
+import api from "../../../api/api";
 
 import DashboardAlert from "./components/DashboardAlert";
 import DashboardHeader from "./components/DashboardHeader";
@@ -12,52 +12,115 @@ import QuickActions from "./components/QuickActions";
 
 import { fallbackTrend, getKpiConfig, QUICK_ACTIONS } from "./dashboardConfig";
 
+// ✅ same as vehicles page
+import { normalizeVehicles } from "../vehicles/utils/normalizeVehicles";
+import { ALLOWED_VEHICLES } from "../vehicles/vehiclesConfig";
+
 const SupervisorDashboard = () => {
   const navigate = useNavigate();
 
   const [vehicles, setVehicles] = useState([]);
   const [complaints, setComplaints] = useState([]);
   const [wards, setWards] = useState([]);
-  const [collectionTrend, setCollectionTrend] = useState(fallbackTrend);
+  const [collectionTrend] = useState(fallbackTrend);
+
+  // ✅ normalize complaint status (fix: in progress not showing)
+  const normalizeStatus = (st) =>
+    String(st || "")
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, "-"); // "in progress" -> "in-progress"
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [vehicleRes, complaintRes] = await Promise.all([
-          api.get("/vehicles"),
-          api.get("/complaints"),
+        const results = await Promise.allSettled([
+          api.get("/tracking/trackings"),
+          api.get("/complaints/allcomplaints"),
         ]);
 
-        setVehicles(vehicleRes.data || []);
-        setComplaints(complaintRes.data || []);
+        // ✅ VEHICLES
+        if (results[0].status === "fulfilled") {
+          const list = results[0]?.value?.data?.data?.list || [];
+
+          const normalized = normalizeVehicles(list);
+
+          // ✅ only show allowed 5 vehicles
+          const allowedVehicles = normalized.filter((v) =>
+            ALLOWED_VEHICLES.has(v.registrationNumber)
+          );
+
+          setVehicles(allowedVehicles);
+        } else {
+          console.log("Tracking API failed:", results[0].reason);
+          setVehicles([]);
+        }
+
+        // ✅ COMPLAINTS
+        if (results[1].status === "fulfilled") {
+          const raw =
+            results[1]?.value?.data?.data ||
+            results[1]?.value?.data ||
+            [];
+
+          // ensure array
+          const complaintArray = Array.isArray(raw) ? raw : [];
+
+          // normalize status for safe filtering
+          const normalizedComplaints = complaintArray.map((c) => ({
+            ...c,
+            status: normalizeStatus(c.status),
+          }));
+
+          setComplaints(normalizedComplaints);
+        } else {
+          console.log("Complaints API failed:", results[1].reason);
+          setComplaints([]);
+        }
       } catch (err) {
-        console.error("Dashboard API Error", err);
+        console.error("Dashboard load error:", err);
+        setVehicles([]);
+        setComplaints([]);
       }
     };
 
     loadData();
   }, []);
 
-  const activeComplaints = complaints.filter(
-    (c) => c.status === "pending" || c.status === "in-progress"
+  // ✅ Complaint counts (fixed)
+  const activeComplaints = complaints.filter((c) => {
+    const st = normalizeStatus(c.status);
+    return st === "pending" || st === "in-progress";
+  }).length;
+
+  const inProgress = complaints.filter(
+    (c) => normalizeStatus(c.status) === "in-progress"
   ).length;
 
-  const inProgress = complaints.filter((c) => c.status === "in-progress").length;
+  const resolved = complaints.filter(
+    (c) => normalizeStatus(c.status) === "resolved"
+  ).length;
 
-  const resolved = complaints.filter((c) => c.status === "resolved").length;
-
+  // ✅ Ward performance based on complaints
   useEffect(() => {
-    if (!complaints.length) return;
+    if (!complaints.length) {
+      setWards([]);
+      return;
+    }
 
     const wardMap = {};
 
     complaints.forEach((c) => {
-      if (!wardMap[c.ward]) {
-        wardMap[c.ward] = { total: 0, resolved: 0 };
+      const ward = String(c.ward || c.assignedWard || "Unknown").trim();
+
+      if (!wardMap[ward]) {
+        wardMap[ward] = { total: 0, resolved: 0 };
       }
-      wardMap[c.ward].total += 1;
-      if (c.status === "resolved") {
-        wardMap[c.ward].resolved += 1;
+
+      wardMap[ward].total += 1;
+
+      if (normalizeStatus(c.status) === "resolved") {
+        wardMap[ward].resolved += 1;
       }
     });
 
@@ -69,6 +132,7 @@ const SupervisorDashboard = () => {
     setWards(wardStats);
   }, [complaints]);
 
+  // ✅ KPI values
   const kpis = getKpiConfig({
     vehiclesCount: vehicles.length,
     activeComplaints,
